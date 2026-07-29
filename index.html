@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mid-Hampshire Emissions Explorer</title>
+<meta name="description" content="Greenhouse gas emissions for Winchester and the proposed Mid-Hampshire unitary authority, built from official government statistics.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">🌍</span>
+      <div class="brand-text">
+        <h1>Mid-Hampshire Emissions Explorer</h1>
+        <p class="brand-sub">Comparing emissions across current and future Hampshire local authority boundaries</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs wrap" role="tablist" aria-label="Sections">
+  <button class="tab-btn is-active" role="tab" aria-selected="true" aria-controls="panel-dashboard" id="tab-dashboard">Dashboard</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-roadmap" id="tab-roadmap">What else could we add?</button>
+</nav>
+
+<main class="wrap">
+
+  <section id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+
+    <div class="region-toggle-row">
+      <div class="region-toggle" role="group" aria-label="Choose region">
+        <button class="seg-btn is-active" data-region="winchester">Winchester</button>
+        <button class="seg-btn" data-region="mid-hampshire">Mid-Hampshire <span class="pill">proposed</span></button>
+      </div>
+      <button class="info-btn" data-info="region-toggle" aria-label="About this selector">i</button>
+    </div>
+
+    <div class="kpi-row" id="kpi-row">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Total emissions, 2005&ndash;<span id="latest-year-a">2023</span></h2>
+        <button class="info-btn" data-info="trend-chart" aria-label="About this chart">i</button>
+      </div>
+      <div class="chart-wrap" id="trend-chart"></div>
+      <button class="table-toggle" data-target="trend-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="trend-table"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2><span id="sector-region-label">Winchester</span> emissions by sector, <span id="latest-year-b">2023</span></h2>
+        <button class="info-btn" data-info="sector-chart" aria-label="About this chart">i</button>
+      </div>
+      <div class="chart-wrap" id="sector-chart"></div>
+      <button class="table-toggle" data-target="sector-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="sector-table"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>What makes up Mid-Hampshire?</h2>
+        <button class="info-btn" data-info="composition-chart" aria-label="About this chart">i</button>
+      </div>
+      <div class="chart-wrap" id="composition-chart"></div>
+      <button class="table-toggle" data-target="composition-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="composition-table"></div>
+    </div>
+
+    <p class="footnote">
+      All figures: territorial greenhouse gas emissions, DESNZ local authority statistics, 2005&ndash;2023 (published 3 July 2025).
+      <button class="link-btn" data-info="general-methodology">Full methodology &amp; sources</button>
+    </p>
+
+  </section>
+
+  <section id="panel-roadmap" role="tabpanel" aria-labelledby="tab-roadmap" hidden>
+    <h2>What else could we add?</h2>
+    <p class="roadmap-intro">This dashboard deliberately starts small &mdash; a few headline figures, built on data we're confident in. Below is a longer list of what the same underlying dataset (and some others) could support if there's interest.</p>
+    <div id="roadmap-list" class="roadmap-list"><!-- filled by JS --></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Data: <a href="https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible" target="_blank" rel="noopener">DESNZ UK local authority &amp; regional GHG emissions statistics</a> &middot; Boundary: Government LGR decision, 25 March 2026 (subject to judicial review)</p>
+  </div>
+</footer>
+
+<div class="modal-overlay is-hidden" id="modal-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
