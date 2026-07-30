@@ -2,7 +2,6 @@
   "use strict";
 
   const SVG_NS = "http://www.w3.org/2000/svg";
-  const DATA_URL = "data/mid_hampshire_emissions.json";
 
   let DATA = null;
   let currentRegion = "winchester";
@@ -83,8 +82,8 @@
     const tt = ensureTooltip();
     clearNode(tt);
     buildFn(tt);
-    tt.style.left = (x + 14) + "px";
-    tt.style.top = (y + 14) + "px";
+    tt.style.left = (x + window.scrollX + 14) + "px";
+    tt.style.top = (y + window.scrollY + 14) + "px";
     tt.classList.add("is-visible");
   }
 
@@ -771,19 +770,16 @@
   }
 
   function init() {
-    fetch(DATA_URL)
-      .then(r => r.json())
-      .then(data => {
-        DATA = data;
-        wireEvents();
-        setRegion("winchester");
-        buildTrendChart();
-        buildCompositionChart();
-        renderRoadmap();
-      })
-      .catch(err => {
-        document.getElementById("kpi-row").textContent = "Could not load emissions data: " + err.message;
-      });
+    if (!window.MHE_DATA) {
+      document.getElementById("kpi-row").textContent = "Could not load emissions data: data/mid_hampshire_emissions.js did not load.";
+      return;
+    }
+    DATA = window.MHE_DATA;
+    wireEvents();
+    setRegion("winchester");
+    buildTrendChart();
+    buildCompositionChart();
+    renderRoadmap();
   }
 
   document.addEventListener("DOMContentLoaded", init);

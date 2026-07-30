@@ -91,6 +91,11 @@ out["subsector_detail_latest_year"] = {
 with open("mid_hampshire_emissions.json", "w") as f:
     json.dump(out, f, indent=1)
 
+with open("mid_hampshire_emissions.js", "w") as f:
+    f.write("window.MHE_DATA = ")
+    json.dump(out, f, indent=1)
+    f.write(";\n")
+
 print("years:", years[0], "-", years[-1])
 print("Winchester latest total:", out["regions"]["winchester"]["years"][latest]["total_kt_co2e"], "kt CO2e")
 print("Mid-Hampshire latest total:", out["regions"]["mid-hampshire"]["years"][latest]["total_kt_co2e"], "kt CO2e")
