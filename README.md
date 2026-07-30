@@ -39,3 +39,7 @@ No build step, no server. Just open `index.html` directly in a browser (double-c
 - DESNZ data lags roughly 18–24 months behind the current year.
 
 See the in-app "What else could we add?" tab for a longer list of possible extensions.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
