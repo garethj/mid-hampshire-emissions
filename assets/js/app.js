@@ -845,13 +845,13 @@
     "trend-chart": {
       title: "Total emissions over time",
       body: [
-        "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2023, summed across all sectors.",
+        "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
         "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), and between a single latest-year comparison and the full historical trend.",
         "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire and Hampshire and the Solent are calculated here by summing the same DESNZ district figures — neither is an official published figure.",
         "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at 2050 — a straight-line \"required pathway\" showing the average pace of reduction still needed to reach net zero by 2050, the target set by Hampshire County Council for the whole Hampshire area (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line. The vertical marker at 2030 is Winchester City Council's own, more ambitious, district-wide carbon-neutral target from its Carbon Neutrality Action Plan.",
-        "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2023 (published 3 July 2025)."
+        "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024 (published 25 June 2026)."
       ],
-      link: { href: "https://assets.publishing.service.gov.uk/media/68653c7ee6c3cc924228943f/2005-23-uk-local-authority-ghg-emissions-CSV-dataset.csv", label: "Download the source CSV" }
+      link: { href: "https://assets.publishing.service.gov.uk/media/6a3bacc9d52550a19950f2f5/2005-24-local-authority-ghg-emissions-csv-dataset.csv", label: "Download the source CSV" }
     },
     "sector-chart": {
       title: "Emissions by sector",
@@ -865,12 +865,12 @@
     "general-methodology": {
       title: "Full methodology & sources",
       dl: [
-        ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2023”, published 3 July 2025."],
+        ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2024”, published 25 June 2026."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
         ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the 11 parishes moving to neighbouring unitaries (South-West/South-East Hampshire) under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
         ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need the parish-level adjustment above, since it doesn't matter which new unitary those parishes end up in)."],
         ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire, as above)."],
-        ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 29 July 2026 and is updated manually when a new release lands."],
+        ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 4 August 2026 and is updated manually when a new release lands."],
         ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with Mid-Hampshire district figures scaled down using 2021 Census parish population shares (see the boundary note above) — nothing else here is estimated or modelled."]
       ],
       link: { href: "https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible", label: "gov.uk statistical release" }
