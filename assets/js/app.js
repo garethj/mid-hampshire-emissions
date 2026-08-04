@@ -4,6 +4,7 @@
   const SVG_NS = "http://www.w3.org/2000/svg";
 
   let DATA = null;
+  let ENERGY_DATA = null;
   let currentRegion = "winchester";
   let currentMetric = "per_capita"; // "total" | "per_capita"
   let currentView = "latest"; // "latest" | "historical"
@@ -28,6 +29,10 @@
   // slots since the sector and gas charts are never shown side by side.
   const GAS_ORDER = ["CO2", "CH4", "N2O"];
   const GAS_LABEL = { CO2: "CO2", CH4: "CH4 (methane)", N2O: "N2O (nitrous oxide)" };
+
+  // Matches ENERGY_DATA.meta.technology_groups (see process_energy.py) — order here controls
+  // display order, colour-slotted 1-5 like sectors/gases (never shown alongside those charts).
+  const ENERGY_TECH_ORDER = ["Solar", "Wind", "Hydro", "Bioenergy & waste", "Other"];
 
   // ---------------- helpers ----------------
 
@@ -76,6 +81,16 @@
 
   function unitShort(metric) {
     return metric === "total" ? "kt" : "t";
+  }
+
+  // Energy figures are stored in MWh (matching the source workbooks) but always displayed in
+  // GWh, since these regions' totals (tens of thousands to ~1M MWh) read better compressed.
+  function fmtGwh(mwh) {
+    return (Number(mwh) / 1000).toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  }
+
+  function fmtRatioPct(n) {
+    return Number(n).toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + "%";
   }
 
   // Appended to chart/KPI titles whenever the 20-year horizon is active, so it's never ambiguous
@@ -222,6 +237,36 @@
     return label.replace(/'/g, "");
   }
 
+  // ---------------- energy data access ----------------
+
+  function energyGenerationYears() {
+    return ENERGY_DATA.meta.generation_years;
+  }
+
+  function energyLatestGenerationYear() {
+    const years = energyGenerationYears();
+    return years[years.length - 1];
+  }
+
+  function energyGeneration(regionKey, year) {
+    return ENERGY_DATA.regions[regionKey].generation[year];
+  }
+
+  function energyConsumption(regionKey, year) {
+    return ENERGY_DATA.regions[regionKey].consumption[year];
+  }
+
+  // Renewable generation as a % of local electricity demand — not the same as "how much of
+  // this area's electricity is renewable", since the grid means generation isn't necessarily
+  // consumed where it's produced (see the energy-kpi info modal). Null if either figure is
+  // missing for that year (consumption data starts 2005, generation data starts 2014).
+  function energyGenerationShareOfDemand(regionKey, year) {
+    const gen = energyGeneration(regionKey, year);
+    const con = energyConsumption(regionKey, year);
+    if (!gen || !con) return null;
+    return (gen.total_mwh / con.electricity_consumption_mwh) * 100;
+  }
+
   // ---------------- KPI tiles ----------------
 
   function renderKPIs(regionKey) {
@@ -342,6 +387,77 @@
     }, svg);
     el("circle", { cx: x(lastIdx).toFixed(1), cy: y(values[lastIdx]).toFixed(1), r: "3", fill: color }, svg);
     return svg;
+  }
+
+  // ---------------- energy KPI tiles ----------------
+
+  // Deliberately doesn't reuse buildKpiTile's up/down colouring (green=down, amber=up) — that
+  // encodes "down is good", correct for emissions but backwards here, since more renewable
+  // generation is the desirable direction. These tiles show the same shape (value + delta +
+  // sparkline) but with a direction-neutral delta.
+  function buildEnergyKpiTile(label, value, unit, deltaText, trendValues, color) {
+    const tile = document.createElement("div");
+    tile.className = "kpi-tile";
+    const head = document.createElement("div");
+    head.className = "kpi-head";
+    const labelEl = document.createElement("div");
+    labelEl.className = "kpi-label";
+    labelEl.textContent = label;
+    head.appendChild(labelEl);
+    tile.appendChild(head);
+
+    const valueEl = document.createElement("div");
+    valueEl.className = "kpi-value";
+    valueEl.textContent = value;
+    if (unit) {
+      const unitEl = document.createElement("span");
+      unitEl.className = "kpi-unit";
+      unitEl.textContent = unit;
+      valueEl.appendChild(unitEl);
+    }
+    tile.appendChild(valueEl);
+
+    const deltaEl = document.createElement("div");
+    deltaEl.className = "kpi-delta flat";
+    deltaEl.textContent = deltaText;
+    tile.appendChild(deltaEl);
+
+    tile.appendChild(buildSparkline(trendValues, color));
+    return tile;
+  }
+
+  function renderEnergyKPIs(regionKey) {
+    const row = document.getElementById("energy-kpi-row");
+    if (!row || !ENERGY_DATA) return;
+    clearNode(row);
+
+    const years = energyGenerationYears();
+    const gy = years[years.length - 1];
+    const py = years[years.length - 2];
+    const color = regionColor(regionKey);
+
+    const gen = energyGeneration(regionKey, gy).total_mwh;
+    const prevGen = energyGeneration(regionKey, py).total_mwh;
+    const genDeltaPct = ((gen - prevGen) / prevGen) * 100;
+    const genTrend = years.map(y => energyGeneration(regionKey, y).total_mwh);
+
+    row.appendChild(buildEnergyKpiTile(
+      "Renewable electricity generation, " + gy,
+      fmtGwh(gen), "GWh",
+      fmtPct(genDeltaPct) + " vs " + py,
+      genTrend, color
+    ));
+
+    const ratio = energyGenerationShareOfDemand(regionKey, gy);
+    const prevRatio = energyGenerationShareOfDemand(regionKey, py);
+    const ratioTrend = years.map(y => energyGenerationShareOfDemand(regionKey, y));
+
+    row.appendChild(buildEnergyKpiTile(
+      "Renewable generation vs local electricity demand, " + gy,
+      fmtRatioPct(ratio), "",
+      (ratio - prevRatio >= 0 ? "+" : "") + (ratio - prevRatio).toFixed(1) + " pts vs " + py,
+      ratioTrend, color
+    ));
   }
 
   // ---------------- trend chart (historical line / latest bar) ----------------
@@ -1042,6 +1158,192 @@
     wrap.appendChild(table);
   }
 
+  // ---------------- energy chart (latest bars / historical lines) ----------------
+  // Structurally mirrors the gas chart above: technologies, like gases, are never negative, so
+  // bars run left-to-right from a fixed edge rather than diverging from a centre zero line.
+
+  function buildEnergyChart(regionKey) {
+    const container = document.getElementById("energy-chart");
+    if (!container || !ENERGY_DATA) return;
+    clearNode(container);
+    const years = energyGenerationYears();
+    const gy = energyLatestGenerationYear();
+    const view = currentView;
+
+    document.getElementById("energy-chart-title").textContent =
+      REGION_LABEL[regionKey] + " renewable electricity generation by technology, " +
+      (view === "historical" ? (years[0] + "–" + gy) : gy);
+
+    if (view === "historical") {
+      buildEnergyChartHistorical(container, regionKey, years);
+    } else {
+      buildEnergyChartLatest(container, regionKey, gy);
+    }
+  }
+
+  function buildEnergyChartLatest(container, regionKey, gy) {
+    const gen = energyGeneration(regionKey, gy);
+    const rows = ENERGY_TECH_ORDER.map((t, i) => ({ name: t, value: gen.by_technology_mwh[t], slot: i + 1 }))
+      .sort((a, b) => b.value - a.value);
+
+    const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
+    const M = { top: 10, right: 80, bottom: 10, left: 150 };
+    const plotW = W - M.left - M.right;
+    const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
+
+    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = v => (v / maxVal) * plotW;
+
+    rows.forEach((r, i) => {
+      const y = M.top + i * (rowH + gap);
+      const barW = xScale(r.value);
+      const color = seriesColor(r.slot);
+      const barY = y + (rowH - barH) / 2;
+
+      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
+      label.textContent = r.name;
+
+      const rect = el("rect", { x: M.left, y: barY, width: Math.max(barW, 0), height: barH, rx: "4", fill: color }, svg);
+      rect.style.cursor = "pointer";
+
+      const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
+      valText.textContent = fmtGwh(r.value) + " GWh";
+
+      rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
+      rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
+      rect.addEventListener("pointermove", (ev) => {
+        showTooltip(ev.clientX, ev.clientY, (tt) => {
+          ttTitle(tt, r.name);
+          ttRow(tt, color, gy + "", fmtGwh(r.value) + " GWh");
+        });
+      });
+    });
+
+    buildEnergyTableLatest(gy, rows);
+  }
+
+  function buildEnergyChartHistorical(container, regionKey, years) {
+    const series = ENERGY_TECH_ORDER.map((t, i) => ({
+      name: t,
+      color: seriesColor(i + 1),
+      values: years.map(y => energyGeneration(regionKey, y).by_technology_mwh[t])
+    }));
+
+    const W = 860, H = 340;
+    const M = { top: 20, right: 20, bottom: 32, left: 64 };
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+
+    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08 || 1;
+
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
+    const yScale = v => M.top + plotH - (v / maxVal) * plotH;
+
+    const yTicks = 5;
+    for (let t = 0; t <= yTicks; t++) {
+      const val = (maxVal / yTicks) * t;
+      const yy = yScale(val);
+      el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
+      const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = fmtGwh(val);
+    }
+
+    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
+    xTickYears.forEach(y => {
+      const i = years.indexOf(y);
+      const txt = el("text", { x: xScale(i), y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = y;
+    });
+
+    el("line", { x1: M.left, x2: M.left + plotW, y1: yScale(0), y2: yScale(0), stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
+
+    series.forEach(s => {
+      let d = "";
+      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
+      el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+
+    const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
+    const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" }, svg);
+
+    hitRect.addEventListener("pointermove", (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const localX = (ev.clientX - rect.left) * scaleX;
+      let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
+      idx = Math.max(0, Math.min(years.length - 1, idx));
+      const xx = xScale(idx);
+      crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
+      showTooltip(ev.clientX, ev.clientY, (tt) => {
+        ttTitle(tt, String(years[idx]));
+        series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
+          ttRow(tt, s.color, s.name, fmtGwh(s.values[idx]) + " GWh");
+        });
+      });
+    });
+    hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
+
+    const legendWrap = document.createElement("div");
+    legendWrap.className = "legend";
+    series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
+    container.appendChild(legendWrap);
+
+    buildEnergyTableHistorical(years, series);
+  }
+
+  function buildEnergyTableLatest(gy, rows) {
+    const wrap = document.getElementById("energy-table");
+    if (!wrap) return;
+    clearNode(wrap);
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Technology", "GWh (" + gy + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      [r.name, fmtGwh(r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  function buildEnergyTableHistorical(years, series) {
+    const wrap = document.getElementById("energy-table");
+    if (!wrap) return;
+    clearNode(wrap);
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Year"].concat(series.map(s => s.name + " (GWh)")).forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    years.forEach((y, i) => {
+      const tr = document.createElement("tr");
+      const cells = [y].concat(series.map(s => fmtGwh(s.values[i])));
+      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
   // ---------------- info modal ----------------
 
   const INFO_CONTENT = {
@@ -1093,6 +1395,27 @@
         "Use the control panel above to switch between totals and per-person figures, and between a latest-year snapshot and the trend since 2005."
       ]
     },
+    "energy-chart": {
+      title: "Renewable electricity generation by technology",
+      body: [
+        "Renewable electricity generated within the area's boundary, in GWh, split by technology: Solar (photovoltaics), Wind (onshore + offshore), Hydro, Bioenergy & waste (anaerobic digestion, sewage gas, landfill gas, municipal solid waste, animal and plant biomass, cofiring), and Other (wave/tidal, plus a small residual — see the note below).",
+        "This is generation, not consumption — how much renewable electricity is physically produced within the area, regardless of where it's ultimately used. See the \"Renewable generation vs local electricity demand\" KPI above the chart for how that compares to what the area actually consumes.",
+        "DESNZ suppresses some small per-technology generation figures (shown as \"[X]\" in its source workbook) to avoid revealing individual plants' output — mainly affects Wind, Hydro and Bioenergy in these mostly solar-dominated local authorities. This site treats suppressed cells as 0 for their own technology and folds the (small) gap against DESNZ's own published total into \"Other\", so the bars always sum exactly to DESNZ's figure.",
+        "Data starts 2014, the first year DESNZ publishes local authority-level renewable generation.",
+        "For Mid-Hampshire, each technology is the sum of that technology's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
+      ],
+      link: { href: "https://www.gov.uk/government/statistics/regional-renewable-statistics", label: "gov.uk statistical release" }
+    },
+    "energy-kpi": {
+      title: "Renewable generation vs local electricity demand",
+      body: [
+        "Local renewable electricity generation (the chart below) as a percentage of local electricity consumption (from DESNZ's sub-national total final energy consumption statistics) — a rough gauge of how self-sufficient the area is in renewable electricity, not a claim about where that electricity actually goes.",
+        "These are not directly connected: Great Britain runs on one shared national grid, so electricity generated by a local wind farm or solar array isn't routed to local homes and businesses — it's exported to the grid and pooled with generation from everywhere else, while local demand draws from that same shared pool. A ratio near or above 100% means an area generates roughly as much renewable electricity as it consumes in total, not that it's disconnected from the grid or unaffected by outages elsewhere.",
+        "Electricity consumption figures are published in ktoe (kilotonnes of oil equivalent) and converted here to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh.",
+        "Consumption data runs 2005–2024; generation data starts 2014, so the ratio and its trend are only available from 2014 onward."
+      ],
+      link: { href: "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level", label: "gov.uk statistical release" }
+    },
     "general-methodology": {
       title: "Full methodology & sources",
       dl: [
@@ -1103,6 +1426,7 @@
         ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need the parish-level adjustment above, since it doesn't matter which new unitary those parishes end up in)."],
         ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire, as above)."],
         ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 4 August 2026 and is updated manually when a new release lands."],
+        ["Energy data", "Renewable electricity generation (2014–2024) and electricity consumption (2005–2024) both from DESNZ, at local authority level, aggregated to these three regions the same way as the emissions figures above. See the energy chart's own \"i\" button for technology grouping and suppression handling."],
         ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with Mid-Hampshire district figures scaled down using 2021 Census parish population shares (see the boundary note above) — nothing else here is estimated or modelled."]
       ],
       link: { href: "https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible", label: "gov.uk statistical release" }
@@ -1156,6 +1480,8 @@
     renderKPIs(regionKey);
     buildSectorChart(regionKey);
     buildGasChart(regionKey);
+    renderEnergyKPIs(regionKey);
+    buildEnergyChart(regionKey);
   }
 
   function setMetric(metric) {
@@ -1177,6 +1503,7 @@
     buildTrendChart();
     buildSectorChart(currentRegion);
     buildGasChart(currentRegion);
+    buildEnergyChart(currentRegion);
   }
 
   // Horizon is deliberately page-wide (not a per-chart control): it changes which numbers are
@@ -1237,6 +1564,7 @@
         buildTrendChart();
         buildSectorChart(currentRegion);
         buildGasChart(currentRegion);
+        buildEnergyChart(currentRegion);
       });
     }
   }
@@ -1247,6 +1575,7 @@
       return;
     }
     DATA = window.MHE_DATA;
+    ENERGY_DATA = window.MHE_ENERGY_DATA || null;
     wireEvents();
     setRegion("winchester");
     buildTrendChart();

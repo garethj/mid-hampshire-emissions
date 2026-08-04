@@ -109,8 +109,30 @@
       <div class="table-scroll is-hidden" id="gas-table"></div>
     </div>
 
+    <div class="section-divider">
+      <div class="section-divider-head">
+        <h2>Energy</h2>
+        <button class="info-btn" data-info="energy-kpi" aria-label="About renewable generation vs local demand">i</button>
+      </div>
+      <p>Renewable electricity generation and how it compares to local demand &mdash; a separate DESNZ dataset from the emissions figures above, using the same region selector and Latest year / Historical trend view above.</p>
+    </div>
+
+    <div class="kpi-row" id="energy-kpi-row">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 id="energy-chart-title">Winchester renewable electricity generation by technology, 2024</h2>
+        <button class="info-btn" data-info="energy-chart" aria-label="About this chart">i</button>
+      </div>
+      <div class="chart-wrap" id="energy-chart"></div>
+      <button class="table-toggle" data-target="energy-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="energy-table"></div>
+    </div>
+
     <p class="footnote">
-      All figures: territorial greenhouse gas emissions, DESNZ local authority statistics, 2005&ndash;2024 (published 25 June 2026).
+      All figures: territorial greenhouse gas emissions, DESNZ local authority statistics, 2005&ndash;2024 (published 25 June 2026). Energy figures: DESNZ renewable electricity and energy consumption statistics &mdash;
       <button class="link-btn" data-info="general-methodology">Full methodology &amp; sources</button>
     </p>
 
@@ -133,6 +155,7 @@
 </div>
 
 <script src="data/mid_hampshire_emissions.js"></script>
+<script src="data/mid_hampshire_energy.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
