@@ -24,6 +24,11 @@
 
   const SECTOR_ORDER = ["Agriculture", "Commercial", "Domestic", "Industry", "LULUCF", "Public Sector", "Transport", "Waste"];
 
+  // Gas display order, colour-slotted 1/2/3 (blue/orange/aqua) — separate from the 1-8 sector
+  // slots since the sector and gas charts are never shown side by side.
+  const GAS_ORDER = ["CO2", "CH4", "N2O"];
+  const GAS_LABEL = { CO2: "CO2", CH4: "CH4 (methane)", N2O: "N2O (nitrous oxide)" };
+
   // ---------------- helpers ----------------
 
   function cssVar(name) {
@@ -178,6 +183,12 @@
   function sectorMetricValue(regionKey, year, sector, metric) {
     const yd = yearData(regionKey, year);
     const raw = yd.sectors_kt_co2e[sector];
+    return metric === "total" ? raw : raw / yd.population_thousands;
+  }
+
+  function gasMetricValue(regionKey, year, gas, metric) {
+    const yd = yearData(regionKey, year);
+    const raw = yd.gases_kt_co2e[gas];
     return metric === "total" ? raw : raw / yd.population_thousands;
   }
 
@@ -846,6 +857,191 @@
     wrap.appendChild(table);
   }
 
+  // ---------------- gas chart (latest bars / historical lines) ----------------
+  // Unlike sectors, gases are never negative, so these bars run from a fixed left edge rather
+  // than diverging from a centre zero line — a plain left-to-right bar reads better when nothing
+  // needs to point the other way. Rows keep GAS_ORDER's fixed CO2/CH4/N2O order rather than
+  // sorting by magnitude, since which gas is which is the whole point of this chart.
+
+  function buildGasChart(regionKey) {
+    const container = document.getElementById("gas-chart");
+    clearNode(container);
+    const ly = latestYear();
+    const metric = currentMetric;
+    const view = currentView;
+
+    const metricLabel = metric === "total" ? "emissions by greenhouse gas" : "emissions per person by greenhouse gas";
+    document.getElementById("gas-chart-title").textContent =
+      REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly) + horizonTitleSuffix();
+
+    if (view === "historical") {
+      buildGasChartHistorical(container, regionKey, metric);
+    } else {
+      buildGasChartLatest(container, regionKey, ly, metric);
+    }
+  }
+
+  function buildGasChartLatest(container, regionKey, ly, metric) {
+    const rows = GAS_ORDER.map((g, i) => ({ key: g, name: GAS_LABEL[g], value: gasMetricValue(regionKey, ly, g, metric), slot: i + 1 }));
+
+    const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
+    const M = { top: 10, right: 80, bottom: 10, left: 150 };
+    const plotW = W - M.left - M.right;
+    const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
+
+    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = v => (v / maxVal) * plotW;
+
+    rows.forEach((r, i) => {
+      const y = M.top + i * (rowH + gap);
+      const barW = xScale(r.value);
+      const color = seriesColor(r.slot);
+      const barY = y + (rowH - barH) / 2;
+
+      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
+      label.textContent = r.name;
+
+      const rect = el("rect", { x: M.left, y: barY, width: Math.max(barW, 0), height: barH, rx: "4", fill: color }, svg);
+      rect.style.cursor = "pointer";
+
+      const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
+      valText.textContent = fmtAxisValue(metric, r.value);
+
+      rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
+      rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
+      rect.addEventListener("pointermove", (ev) => {
+        showTooltip(ev.clientX, ev.clientY, (tt) => {
+          ttTitle(tt, r.name);
+          ttRow(tt, color, ly + "", fmtValue(metric, r.value) + " " + unitLabel(metric));
+        });
+      });
+    });
+
+    buildGasTableLatest(ly, rows, metric);
+  }
+
+  function buildGasChartHistorical(container, regionKey, metric) {
+    const years = DATA.meta.years;
+    const series = GAS_ORDER.map((g, i) => ({
+      key: g,
+      name: GAS_LABEL[g],
+      color: seriesColor(i + 1),
+      values: years.map(y => gasMetricValue(regionKey, y, g, metric))
+    }));
+
+    const W = 860, H = 340;
+    const M = { top: 20, right: 20, bottom: 32, left: 64 };
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+
+    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08;
+
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
+    const yScale = v => M.top + plotH - (v / maxVal) * plotH;
+
+    const yTicks = 5;
+    for (let t = 0; t <= yTicks; t++) {
+      const val = (maxVal / yTicks) * t;
+      const yy = yScale(val);
+      el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
+      const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = fmtAxisValue(metric, val);
+    }
+
+    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
+    xTickYears.forEach(y => {
+      const i = years.indexOf(y);
+      const txt = el("text", { x: xScale(i), y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = y;
+    });
+
+    el("line", { x1: M.left, x2: M.left + plotW, y1: yScale(0), y2: yScale(0), stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
+
+    series.forEach(s => {
+      let d = "";
+      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
+      el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+
+    const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
+    const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" }, svg);
+
+    hitRect.addEventListener("pointermove", (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const localX = (ev.clientX - rect.left) * scaleX;
+      let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
+      idx = Math.max(0, Math.min(years.length - 1, idx));
+      const xx = xScale(idx);
+      crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
+      showTooltip(ev.clientX, ev.clientY, (tt) => {
+        ttTitle(tt, String(years[idx]));
+        series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
+          ttRow(tt, s.color, s.name, fmtValue(metric, s.values[idx]) + " " + unitShort(metric));
+        });
+      });
+    });
+    hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
+
+    const legendWrap = document.createElement("div");
+    legendWrap.className = "legend";
+    series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
+    container.appendChild(legendWrap);
+
+    buildGasTableHistorical(years, series, metric);
+  }
+
+  function buildGasTableLatest(ly, rows, metric) {
+    const wrap = document.getElementById("gas-table");
+    clearNode(wrap);
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Gas", unitLabel(metric) + " (" + ly + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      [r.name, fmtValue(metric, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  function buildGasTableHistorical(years, series, metric) {
+    const wrap = document.getElementById("gas-table");
+    clearNode(wrap);
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Year"].concat(series.map(s => s.name + " (" + unitLabel(metric) + ")")).forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    years.forEach((y, i) => {
+      const tr = document.createElement("tr");
+      const cells = [y].concat(series.map(s => fmtValue(metric, s.values[i])));
+      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
   // ---------------- info modal ----------------
 
   const INFO_CONTENT = {
@@ -886,6 +1082,15 @@
         "The Time horizon toggle changes how heavily this chart weights methane — switching it to \"20-year\" makes Agriculture and Waste (the two most methane-heavy sectors) noticeably larger relative to the others; Transport, Domestic and Commercial (mostly CO2) barely move. See the \"i\" button next to Time horizon above for why.",
         "LULUCF (land use, land-use change and forestry) is usually negative — it represents a net carbon sink from woodland, hedgerows and soils, which subtracts from the total rather than adding to it.",
         "For Mid-Hampshire, each sector is the sum of that sector's figure across the four constituent districts."
+      ]
+    },
+    "gas-chart": {
+      title: "Emissions by greenhouse gas",
+      body: [
+        "The same territorial emissions as the sector chart above, split instead by the three gases DESNZ publishes at local authority level: CO2, methane (CH4) and nitrous oxide (N2O) — each already converted to CO2e using the active time horizon (see the Time horizon toggle above).",
+        "CO2 is almost entirely energy use — heating, electricity, vehicle fuel. CH4 is mostly agriculture (livestock) and waste (landfill). N2O is mostly agriculture (fertilised soils) and manure management. This split is a useful cross-check on the sector chart: two areas can have the same total emissions for very different reasons — one dominated by CO2 from transport and heating, another by CH4 from farming — and this chart is what makes that visible.",
+        "Switch the Time horizon toggle to \"20-year\" and watch the CH4 bar roughly triple while CO2 and N2O barely move — the clearest single illustration on this site of what that toggle actually does. Fluorinated gases (HFCs etc.) are excluded here, as DESNZ excludes them from local authority statistics entirely (they're under 2% of the UK total).",
+        "Use the control panel above to switch between totals and per-person figures, and between a latest-year snapshot and the trend since 2005."
       ]
     },
     "general-methodology": {
@@ -950,6 +1155,7 @@
     });
     renderKPIs(regionKey);
     buildSectorChart(regionKey);
+    buildGasChart(regionKey);
   }
 
   function setMetric(metric) {
@@ -960,6 +1166,7 @@
     renderKPIs(currentRegion);
     buildTrendChart();
     buildSectorChart(currentRegion);
+    buildGasChart(currentRegion);
   }
 
   function setView(view) {
@@ -969,6 +1176,7 @@
     });
     buildTrendChart();
     buildSectorChart(currentRegion);
+    buildGasChart(currentRegion);
   }
 
   // Horizon is deliberately page-wide (not a per-chart control): it changes which numbers are
@@ -984,6 +1192,7 @@
     renderKPIs(currentRegion);
     buildTrendChart();
     buildSectorChart(currentRegion);
+    buildGasChart(currentRegion);
   }
 
   function wireEvents() {
@@ -1027,6 +1236,7 @@
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
         buildTrendChart();
         buildSectorChart(currentRegion);
+        buildGasChart(currentRegion);
       });
     }
   }

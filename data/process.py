@@ -51,9 +51,12 @@ MID_HAMPSHIRE_RETAINED_FRACTION = {
 GWP100 = {"CO2": 1.0, "CH4": 28.0, "N2O": 265.0}
 GWP20 = {"CO2": 1.0, "CH4": 84.0, "N2O": 264.0}
 GWP20_OVER_GWP100 = {gas: GWP20[gas] / GWP100[gas] for gas in GWP100}
+GASES = ["CO2", "CH4", "N2O"]
 
 detail = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(float))))
 detail_gwp20 = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(float))))
+detail_gas = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
+detail_gas_gwp20 = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
 population = defaultdict(dict)
 area = {}
 
@@ -70,6 +73,8 @@ with open(SRC, newline="", encoding="utf-8") as f:
         val = float(row["Territorial emissions (kt CO2e)"])
         detail[year][la][sector][subsector] += val
         detail_gwp20[year][la][sector][subsector] += val * GWP20_OVER_GWP100.get(gas, 1.0)
+        detail_gas[year][la][gas] += val
+        detail_gas_gwp20[year][la][gas] += val * GWP20_OVER_GWP100.get(gas, 1.0)
         population[year][la] = float(row["Mid-year Population (thousands)"])
         area[la] = float(row["Area (km2)"])
 
@@ -88,11 +93,12 @@ out = {
         "units": "kt CO2e (thousand tonnes carbon dioxide equivalent), territorial basis",
         "years": years,
         "sectors": sectors,
+        "gases": GASES,
         "constituent_las": MID_HAMPSHIRE_LAS,
         "note_boundary": "Mid-Hampshire (proposed unitary, decision 25 March 2026) = East Hampshire + Winchester + New Forest + Test Valley, adjusted to exclude the 11 parishes moving to South-West/South-East Hampshire under the same decision (Clanfield, Horndean, Rowlands Castle from East Hampshire; Newlands from Winchester; Totton and Eling, Marchwood, Hythe and Dibden, Fawley from New Forest; Chilworth, Nursling and Rownhams, Valley Park from Test Valley). No official sub-district emissions data exists, so each district's contribution is scaled down by its 2021 Census parish population share instead of using the whole district — see mid_hampshire_retained_fraction.",
         "mid_hampshire_retained_fraction": {la: round(f, 4) for la, f in MID_HAMPSHIRE_RETAINED_FRACTION.items()},
         "note_hampshire_solent": "Hampshire and the Solent Combined County Authority (established 4 June 2026 under SI 2026/595) = Hampshire County Council + Portsmouth City Council + Southampton City Council + Isle of Wight Council. Modelled here as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight (Hampshire CC itself isn't a DESNZ-reporting unit). This total isn't affected by the 11-parish boundary change above, since those parishes stay within the CCA regardless of which new unitary they land in.",
-        "note_gwp20": "DESNZ's published figures (everything outside the 'gwp20' keys below) use 100-year Global Warming Potentials (GWP100), the international reporting standard, converting CH4 and N2O to CO2e using IPCC AR5 values. This site additionally computes an unofficial 20-year-horizon view (GWP20, same AR5 table) by rescaling each gas's already-published CO2e contribution by GWP20/GWP100 for that gas — methane is ~3x more potent on a 20-year view than on the standard 100-year one, so this shifts sectors and regions with more Agriculture (livestock) and Waste (landfill) noticeably higher relative to their official figure. Nested 'gwp20' objects mirror the shape of their parent (same keys: total_kt_co2e, per_capita_t_co2e, sectors_kt_co2e).",
+        "note_gwp20": "DESNZ's published figures (everything outside the 'gwp20' keys below) use 100-year Global Warming Potentials (GWP100), the international reporting standard, converting CH4 and N2O to CO2e using IPCC AR5 values. This site additionally computes an unofficial 20-year-horizon view (GWP20, same AR5 table) by rescaling each gas's already-published CO2e contribution by GWP20/GWP100 for that gas — methane is ~3x more potent on a 20-year view than on the standard 100-year one, so this shifts sectors, gases and regions with more Agriculture (livestock) and Waste (landfill) noticeably higher relative to their official figure. Nested 'gwp20' objects mirror the shape of their parent (same keys: total_kt_co2e, per_capita_t_co2e, sectors_kt_co2e, gases_kt_co2e).",
         "gwp100_factors": {"CO2": GWP100["CO2"], "CH4": GWP100["CH4"], "N2O": GWP100["N2O"]},
         "gwp20_factors": {"CO2": GWP20["CO2"], "CH4": GWP20["CH4"], "N2O": GWP20["N2O"]},
         "generated": date.today().isoformat()
@@ -107,12 +113,20 @@ def sector_totals_for(detail_map, y, la_list, la_weight):
         for s in sectors
     }
 
+def gas_totals_for(detail_map, y, la_list, la_weight):
+    return {
+        g: round(sum(detail_map[y][la].get(g, 0.0) * (la_weight[la] if la_weight else 1.0) for la in la_list), 4)
+        for g in GASES
+    }
+
 def build_region(name, la_list, la_weight=None):
     r = {"name": name, "las": la_list, "years": {}}
     for y in years:
         pop = sum(population[y][la] * (la_weight[la] if la_weight else 1.0) for la in la_list if la in population[y])
         sector_totals = sector_totals_for(detail, y, la_list, la_weight)
         sector_totals_gwp20 = sector_totals_for(detail_gwp20, y, la_list, la_weight)
+        gas_totals = gas_totals_for(detail_gas, y, la_list, la_weight)
+        gas_totals_gwp20 = gas_totals_for(detail_gas_gwp20, y, la_list, la_weight)
         total = round(sum(sector_totals.values()), 4)
         total_gwp20 = round(sum(sector_totals_gwp20.values()), 4)
         r["years"][y] = {
@@ -120,10 +134,12 @@ def build_region(name, la_list, la_weight=None):
             "population_thousands": round(pop, 3),
             "per_capita_t_co2e": round((total * 1000) / (pop * 1000), 4) if pop else None,
             "sectors_kt_co2e": sector_totals,
+            "gases_kt_co2e": gas_totals,
             "gwp20": {
                 "total_kt_co2e": total_gwp20,
                 "per_capita_t_co2e": round((total_gwp20 * 1000) / (pop * 1000), 4) if pop else None,
-                "sectors_kt_co2e": sector_totals_gwp20
+                "sectors_kt_co2e": sector_totals_gwp20,
+                "gases_kt_co2e": gas_totals_gwp20
             }
         }
     return r

@@ -35,6 +35,11 @@ window.MHE_DATA = {
    "Transport",
    "Waste"
   ],
+  "gases": [
+   "CO2",
+   "CH4",
+   "N2O"
+  ],
   "constituent_las": [
    "Winchester",
    "East Hampshire",
@@ -49,7 +54,7 @@ window.MHE_DATA = {
    "Test Valley": 0.888
   },
   "note_hampshire_solent": "Hampshire and the Solent Combined County Authority (established 4 June 2026 under SI 2026/595) = Hampshire County Council + Portsmouth City Council + Southampton City Council + Isle of Wight Council. Modelled here as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight (Hampshire CC itself isn't a DESNZ-reporting unit). This total isn't affected by the 11-parish boundary change above, since those parishes stay within the CCA regardless of which new unitary they land in.",
-  "note_gwp20": "DESNZ's published figures (everything outside the 'gwp20' keys below) use 100-year Global Warming Potentials (GWP100), the international reporting standard, converting CH4 and N2O to CO2e using IPCC AR5 values. This site additionally computes an unofficial 20-year-horizon view (GWP20, same AR5 table) by rescaling each gas's already-published CO2e contribution by GWP20/GWP100 for that gas \u2014 methane is ~3x more potent on a 20-year view than on the standard 100-year one, so this shifts sectors and regions with more Agriculture (livestock) and Waste (landfill) noticeably higher relative to their official figure. Nested 'gwp20' objects mirror the shape of their parent (same keys: total_kt_co2e, per_capita_t_co2e, sectors_kt_co2e).",
+  "note_gwp20": "DESNZ's published figures (everything outside the 'gwp20' keys below) use 100-year Global Warming Potentials (GWP100), the international reporting standard, converting CH4 and N2O to CO2e using IPCC AR5 values. This site additionally computes an unofficial 20-year-horizon view (GWP20, same AR5 table) by rescaling each gas's already-published CO2e contribution by GWP20/GWP100 for that gas \u2014 methane is ~3x more potent on a 20-year view than on the standard 100-year one, so this shifts sectors, gases and regions with more Agriculture (livestock) and Waste (landfill) noticeably higher relative to their official figure. Nested 'gwp20' objects mirror the shape of their parent (same keys: total_kt_co2e, per_capita_t_co2e, sectors_kt_co2e, gases_kt_co2e).",
   "gwp100_factors": {
    "CO2": 1.0,
    "CH4": 28.0,
@@ -99,6 +104,11 @@ window.MHE_DATA = {
       "Transport": 481.8895,
       "Waste": 48.5269
      },
+     "gases_kt_co2e": {
+      "CO2": 1101.1076,
+      "CH4": 123.106,
+      "N2O": 59.4535
+     },
      "gwp20": {
       "total_kt_co2e": 1529.6546,
       "per_capita_t_co2e": 13.9127,
@@ -111,6 +121,11 @@ window.MHE_DATA = {
        "Public Sector": 81.2561,
        "Transport": 488.1786,
        "Waste": 138.4055
+      },
+      "gases_kt_co2e": {
+       "CO2": 1101.1076,
+       "CH4": 369.318,
+       "N2O": 59.2292
       }
      }
     },
@@ -128,6 +143,11 @@ window.MHE_DATA = {
       "Transport": 477.9406,
       "Waste": 47.8109
      },
+     "gases_kt_co2e": {
+      "CO2": 1079.5682,
+      "CH4": 120.9524,
+      "N2O": 58.6902
+     },
      "gwp20": {
       "total_kt_co2e": 1500.8942,
       "per_capita_t_co2e": 13.567,
@@ -140,6 +160,11 @@ window.MHE_DATA = {
        "Public Sector": 65.2013,
        "Transport": 483.7944,
        "Waste": 136.1783
+      },
+      "gases_kt_co2e": {
+       "CO2": 1079.5682,
+       "CH4": 362.8573,
+       "N2O": 58.4687
       }
      }
     },
@@ -157,6 +182,11 @@ window.MHE_DATA = {
       "Transport": 482.7947,
       "Waste": 39.548
      },
+     "gases_kt_co2e": {
+      "CO2": 1068.714,
+      "CH4": 108.7061,
+      "N2O": 56.9903
+     },
      "gwp20": {
       "total_kt_co2e": 1451.6075,
       "per_capita_t_co2e": 12.9816,
@@ -169,6 +199,11 @@ window.MHE_DATA = {
        "Public Sector": 62.6892,
        "Transport": 488.5819,
        "Waste": 111.052
+      },
+      "gases_kt_co2e": {
+       "CO2": 1068.714,
+       "CH4": 326.1182,
+       "N2O": 56.7753
       }
      }
     },
@@ -186,6 +221,11 @@ window.MHE_DATA = {
       "Transport": 468.8019,
       "Waste": 39.5724
      },
+     "gases_kt_co2e": {
+      "CO2": 1063.6597,
+      "CH4": 108.0335,
+      "N2O": 57.1825
+     },
      "gwp20": {
       "total_kt_co2e": 1444.727,
       "per_capita_t_co2e": 12.7551,
@@ -198,6 +238,11 @@ window.MHE_DATA = {
        "Public Sector": 63.473,
        "Transport": 473.8861,
        "Waste": 111.0726
+      },
+      "gases_kt_co2e": {
+       "CO2": 1063.6597,
+       "CH4": 324.1004,
+       "N2O": 56.9667
       }
      }
     },
@@ -215,6 +260,11 @@ window.MHE_DATA = {
       "Transport": 451.5533,
       "Waste": 25.0507
      },
+     "gases_kt_co2e": {
+      "CO2": 998.6787,
+      "CH4": 91.1413,
+      "N2O": 56.8755
+     },
      "gwp20": {
       "total_kt_co2e": 1328.7636,
       "per_capita_t_co2e": 11.6044,
@@ -227,6 +277,11 @@ window.MHE_DATA = {
        "Public Sector": 59.1222,
        "Transport": 456.8036,
        "Waste": 67.2399
+      },
+      "gases_kt_co2e": {
+       "CO2": 998.6787,
+       "CH4": 273.424,
+       "N2O": 56.6609
       }
      }
     },
@@ -244,6 +299,11 @@ window.MHE_DATA = {
       "Transport": 446.9078,
       "Waste": 23.2631
      },
+     "gases_kt_co2e": {
+      "CO2": 1030.8403,
+      "CH4": 89.5857,
+      "N2O": 58.8093
+     },
      "gwp20": {
       "total_kt_co2e": 1358.1848,
       "per_capita_t_co2e": 11.7298,
@@ -256,6 +316,11 @@ window.MHE_DATA = {
        "Public Sector": 62.574,
        "Transport": 451.5477,
        "Waste": 61.5368
+      },
+      "gases_kt_co2e": {
+       "CO2": 1030.8403,
+       "CH4": 268.7572,
+       "N2O": 58.5874
       }
      }
     },
@@ -273,6 +338,11 @@ window.MHE_DATA = {
       "Transport": 444.0954,
       "Waste": 27.1726
      },
+     "gases_kt_co2e": {
+      "CO2": 961.877,
+      "CH4": 91.0375,
+      "N2O": 59.4309
+     },
      "gwp20": {
       "total_kt_co2e": 1294.196,
       "per_capita_t_co2e": 11.0785,
@@ -285,6 +355,11 @@ window.MHE_DATA = {
        "Public Sector": 55.6789,
        "Transport": 449.2619,
        "Waste": 73.3133
+      },
+      "gases_kt_co2e": {
+       "CO2": 961.877,
+       "CH4": 273.1124,
+       "N2O": 59.2067
       }
      }
     },
@@ -302,6 +377,11 @@ window.MHE_DATA = {
       "Transport": 436.0423,
       "Waste": 26.9941
      },
+     "gases_kt_co2e": {
+      "CO2": 999.1027,
+      "CH4": 91.4492,
+      "N2O": 59.1257
+     },
      "gwp20": {
       "total_kt_co2e": 1332.3529,
       "per_capita_t_co2e": 11.3114,
@@ -314,6 +394,11 @@ window.MHE_DATA = {
        "Public Sector": 60.8508,
        "Transport": 440.4216,
        "Waste": 73.0776
+      },
+      "gases_kt_co2e": {
+       "CO2": 999.1027,
+       "CH4": 274.3476,
+       "N2O": 58.9026
       }
      }
     },
@@ -331,6 +416,11 @@ window.MHE_DATA = {
       "Transport": 433.8872,
       "Waste": 22.6196
      },
+     "gases_kt_co2e": {
+      "CO2": 970.9615,
+      "CH4": 84.3095,
+      "N2O": 58.9744
+     },
      "gwp20": {
       "total_kt_co2e": 1282.642,
       "per_capita_t_co2e": 10.8025,
@@ -343,6 +433,11 @@ window.MHE_DATA = {
        "Public Sector": 58.2362,
        "Transport": 438.1566,
        "Waste": 59.5763
+      },
+      "gases_kt_co2e": {
+       "CO2": 970.9615,
+       "CH4": 252.9286,
+       "N2O": 58.7519
       }
      }
     },
@@ -360,6 +455,11 @@ window.MHE_DATA = {
       "Transport": 445.963,
       "Waste": 26.157
      },
+     "gases_kt_co2e": {
+      "CO2": 900.4376,
+      "CH4": 88.3743,
+      "N2O": 58.6729
+     },
      "gwp20": {
       "total_kt_co2e": 1224.0121,
       "per_capita_t_co2e": 10.2055,
@@ -372,6 +472,11 @@ window.MHE_DATA = {
        "Public Sector": 51.6629,
        "Transport": 450.1542,
        "Waste": 69.7017
+      },
+      "gases_kt_co2e": {
+       "CO2": 900.4376,
+       "CH4": 265.123,
+       "N2O": 58.4514
       }
      }
     },
@@ -389,6 +494,11 @@ window.MHE_DATA = {
       "Transport": 451.4979,
       "Waste": 29.358
      },
+     "gases_kt_co2e": {
+      "CO2": 866.9186,
+      "CH4": 90.0585,
+      "N2O": 58.6908
+     },
      "gwp20": {
       "total_kt_co2e": 1195.5632,
       "per_capita_t_co2e": 9.8449,
@@ -401,6 +511,11 @@ window.MHE_DATA = {
        "Public Sector": 44.7568,
        "Transport": 455.6054,
        "Waste": 79.494
+      },
+      "gases_kt_co2e": {
+       "CO2": 866.9186,
+       "CH4": 270.1754,
+       "N2O": 58.4693
       }
      }
     },
@@ -418,6 +533,11 @@ window.MHE_DATA = {
       "Transport": 464.9823,
       "Waste": 23.8898
      },
+     "gases_kt_co2e": {
+      "CO2": 839.109,
+      "CH4": 81.5556,
+      "N2O": 55.737
+     },
      "gwp20": {
       "total_kt_co2e": 1139.3025,
       "per_capita_t_co2e": 9.2744,
@@ -430,6 +550,11 @@ window.MHE_DATA = {
        "Public Sector": 37.2553,
        "Transport": 469.1274,
        "Waste": 63.2677
+      },
+      "gases_kt_co2e": {
+       "CO2": 839.109,
+       "CH4": 244.6668,
+       "N2O": 55.5267
       }
      }
     },
@@ -447,6 +572,11 @@ window.MHE_DATA = {
       "Transport": 471.5923,
       "Waste": 26.8072
      },
+     "gases_kt_co2e": {
+      "CO2": 816.6535,
+      "CH4": 83.5694,
+      "N2O": 57.1479
+     },
      "gwp20": {
       "total_kt_co2e": 1124.2939,
       "per_capita_t_co2e": 9.0837,
@@ -459,6 +589,11 @@ window.MHE_DATA = {
        "Public Sector": 38.5707,
        "Transport": 476.1453,
        "Waste": 71.4312
+      },
+      "gases_kt_co2e": {
+       "CO2": 816.6535,
+       "CH4": 250.7081,
+       "N2O": 56.9323
       }
      }
     },
@@ -476,6 +611,11 @@ window.MHE_DATA = {
       "Transport": 466.0598,
       "Waste": 25.6332
      },
+     "gases_kt_co2e": {
+      "CO2": 805.8011,
+      "CH4": 80.9211,
+      "N2O": 55.3735
+     },
      "gwp20": {
       "total_kt_co2e": 1103.7288,
       "per_capita_t_co2e": 8.9099,
@@ -488,6 +628,11 @@ window.MHE_DATA = {
        "Public Sector": 41.4028,
        "Transport": 471.0103,
        "Waste": 67.8034
+      },
+      "gases_kt_co2e": {
+       "CO2": 805.8011,
+       "CH4": 242.7632,
+       "N2O": 55.1645
       }
      }
     },
@@ -505,6 +650,11 @@ window.MHE_DATA = {
       "Transport": 448.3846,
       "Waste": 28.5048
      },
+     "gases_kt_co2e": {
+      "CO2": 758.0065,
+      "CH4": 84.152,
+      "N2O": 59.0245
+     },
      "gwp20": {
       "total_kt_co2e": 1069.2642,
       "per_capita_t_co2e": 8.5949,
@@ -517,6 +667,11 @@ window.MHE_DATA = {
        "Public Sector": 32.2101,
        "Transport": 452.8722,
        "Waste": 76.2419
+      },
+      "gases_kt_co2e": {
+       "CO2": 758.0065,
+       "CH4": 252.456,
+       "N2O": 58.8017
       }
      }
     },
@@ -534,6 +689,11 @@ window.MHE_DATA = {
       "Transport": 367.7598,
       "Waste": 21.6918
      },
+     "gases_kt_co2e": {
+      "CO2": 663.3625,
+      "CH4": 75.7725,
+      "N2O": 53.6613
+     },
      "gwp20": {
       "total_kt_co2e": 944.1388,
       "per_capita_t_co2e": 7.5078,
@@ -546,6 +706,11 @@ window.MHE_DATA = {
        "Public Sector": 31.1421,
        "Transport": 371.3637,
        "Waste": 55.5702
+      },
+      "gases_kt_co2e": {
+       "CO2": 663.3625,
+       "CH4": 227.3176,
+       "N2O": 53.4588
       }
      }
     },
@@ -563,6 +728,11 @@ window.MHE_DATA = {
       "Transport": 389.3905,
       "Waste": 19.4772
      },
+     "gases_kt_co2e": {
+      "CO2": 705.8068,
+      "CH4": 71.9661,
+      "N2O": 55.8665
+     },
      "gwp20": {
       "total_kt_co2e": 977.3607,
       "per_capita_t_co2e": 7.6403,
@@ -575,6 +745,11 @@ window.MHE_DATA = {
        "Public Sector": 33.9534,
        "Transport": 392.4605,
        "Waste": 48.6694
+      },
+      "gases_kt_co2e": {
+       "CO2": 705.8068,
+       "CH4": 215.8982,
+       "N2O": 55.6557
       }
      }
     },
@@ -592,6 +767,11 @@ window.MHE_DATA = {
       "Transport": 394.5154,
       "Waste": 21.3084
      },
+     "gases_kt_co2e": {
+      "CO2": 676.0715,
+      "CH4": 72.2602,
+      "N2O": 52.2907
+     },
      "gwp20": {
       "total_kt_co2e": 944.9456,
       "per_capita_t_co2e": 7.235,
@@ -604,6 +784,11 @@ window.MHE_DATA = {
        "Public Sector": 31.8705,
        "Transport": 397.2138,
        "Waste": 54.045
+      },
+      "gases_kt_co2e": {
+       "CO2": 676.0715,
+       "CH4": 216.7807,
+       "N2O": 52.0934
       }
      }
     },
@@ -621,6 +806,11 @@ window.MHE_DATA = {
       "Transport": 388.6188,
       "Waste": 22.2507
      },
+     "gases_kt_co2e": {
+      "CO2": 649.0487,
+      "CH4": 70.3103,
+      "N2O": 52.901
+     },
      "gwp20": {
       "total_kt_co2e": 912.681,
       "per_capita_t_co2e": 6.8492,
@@ -633,6 +823,11 @@ window.MHE_DATA = {
        "Public Sector": 28.949,
        "Transport": 391.2574,
        "Waste": 56.5561
+      },
+      "gases_kt_co2e": {
+       "CO2": 649.0487,
+       "CH4": 210.9309,
+       "N2O": 52.7014
       }
      }
     },
@@ -650,6 +845,11 @@ window.MHE_DATA = {
       "Transport": 393.8058,
       "Waste": 20.9233
      },
+     "gases_kt_co2e": {
+      "CO2": 659.6975,
+      "CH4": 69.886,
+      "N2O": 51.5598
+     },
      "gwp20": {
       "total_kt_co2e": 920.7208,
       "per_capita_t_co2e": 6.7884,
@@ -662,6 +862,11 @@ window.MHE_DATA = {
        "Public Sector": 30.2801,
        "Transport": 396.4337,
        "Waste": 52.4004
+      },
+      "gases_kt_co2e": {
+       "CO2": 659.6975,
+       "CH4": 209.6581,
+       "N2O": 51.3652
       }
      }
     }
@@ -690,6 +895,11 @@ window.MHE_DATA = {
       "Transport": 1470.5578,
       "Waste": 179.4114
      },
+     "gases_kt_co2e": {
+      "CO2": 4149.6106,
+      "CH4": 550.0237,
+      "N2O": 178.1625
+     },
      "gwp20": {
       "total_kt_co2e": 5977.1721,
       "per_capita_t_co2e": 14.8214,
@@ -702,6 +912,11 @@ window.MHE_DATA = {
        "Public Sector": 190.8705,
        "Transport": 1490.5561,
        "Waste": 504.7637
+      },
+      "gases_kt_co2e": {
+       "CO2": 4149.6106,
+       "CH4": 1650.0712,
+       "N2O": 177.4902
       }
      }
     },
@@ -719,6 +934,11 @@ window.MHE_DATA = {
       "Transport": 1459.5677,
       "Waste": 177.0293
      },
+     "gases_kt_co2e": {
+      "CO2": 3994.2966,
+      "CH4": 521.0997,
+      "N2O": 170.1491
+     },
      "gwp20": {
       "total_kt_co2e": 5727.1029,
       "per_capita_t_co2e": 14.119,
@@ -731,6 +951,11 @@ window.MHE_DATA = {
        "Public Sector": 169.1974,
        "Transport": 1478.1387,
        "Waste": 497.3045
+      },
+      "gases_kt_co2e": {
+       "CO2": 3994.2966,
+       "CH4": 1563.2991,
+       "N2O": 169.5071
       }
      }
     },
@@ -748,6 +973,11 @@ window.MHE_DATA = {
       "Transport": 1473.9478,
       "Waste": 145.7817
      },
+     "gases_kt_co2e": {
+      "CO2": 4069.5898,
+      "CH4": 520.1629,
+      "N2O": 167.9194
+     },
      "gwp20": {
       "total_kt_co2e": 5797.3641,
       "per_capita_t_co2e": 14.1735,
@@ -760,6 +990,11 @@ window.MHE_DATA = {
        "Public Sector": 159.1279,
        "Transport": 1492.2455,
        "Waste": 402.9646
+      },
+      "gases_kt_co2e": {
+       "CO2": 4069.5898,
+       "CH4": 1560.4886,
+       "N2O": 167.2857
       }
      }
     },
@@ -777,6 +1012,11 @@ window.MHE_DATA = {
       "Transport": 1422.8031,
       "Waste": 144.8824
      },
+     "gases_kt_co2e": {
+      "CO2": 3971.719,
+      "CH4": 483.2133,
+      "N2O": 164.1236
+     },
      "gwp20": {
       "total_kt_co2e": 5584.8631,
       "per_capita_t_co2e": 13.5536,
@@ -789,6 +1029,11 @@ window.MHE_DATA = {
        "Public Sector": 158.4007,
        "Transport": 1438.8108,
        "Waste": 400.7956
+      },
+      "gases_kt_co2e": {
+       "CO2": 3971.719,
+       "CH4": 1449.6399,
+       "N2O": 163.5043
       }
      }
     },
@@ -806,6 +1051,11 @@ window.MHE_DATA = {
       "Transport": 1373.4358,
       "Waste": 116.0614
      },
+     "gases_kt_co2e": {
+      "CO2": 3714.3678,
+      "CH4": 465.9443,
+      "N2O": 161.7963
+     },
      "gwp20": {
       "total_kt_co2e": 5273.3866,
       "per_capita_t_co2e": 12.7121,
@@ -818,6 +1068,11 @@ window.MHE_DATA = {
        "Public Sector": 146.492,
        "Transport": 1389.7807,
        "Waste": 312.9226
+      },
+      "gases_kt_co2e": {
+       "CO2": 3714.3678,
+       "CH4": 1397.833,
+       "N2O": 161.1858
       }
      }
     },
@@ -835,6 +1090,11 @@ window.MHE_DATA = {
       "Transport": 1364.1471,
       "Waste": 108.0298
      },
+     "gases_kt_co2e": {
+      "CO2": 3376.9747,
+      "CH4": 388.5181,
+      "N2O": 161.3042
+     },
      "gwp20": {
       "total_kt_co2e": 4703.2244,
       "per_capita_t_co2e": 11.2511,
@@ -847,6 +1107,11 @@ window.MHE_DATA = {
        "Public Sector": 155.0238,
        "Transport": 1378.6641,
        "Waste": 286.9449
+      },
+      "gases_kt_co2e": {
+       "CO2": 3376.9747,
+       "CH4": 1165.5543,
+       "N2O": 160.6955
       }
      }
     },
@@ -864,6 +1129,11 @@ window.MHE_DATA = {
       "Transport": 1345.9857,
       "Waste": 112.0472
      },
+     "gases_kt_co2e": {
+      "CO2": 3070.1044,
+      "CH4": 373.3087,
+      "N2O": 162.9631
+     },
      "gwp20": {
       "total_kt_co2e": 4352.3785,
       "per_capita_t_co2e": 10.347,
@@ -876,6 +1146,11 @@ window.MHE_DATA = {
        "Public Sector": 139.8966,
        "Transport": 1361.9897,
        "Waste": 298.2509
+      },
+      "gases_kt_co2e": {
+       "CO2": 3070.1044,
+       "CH4": 1119.9261,
+       "N2O": 162.3481
       }
      }
     },
@@ -893,6 +1168,11 @@ window.MHE_DATA = {
       "Transport": 1331.3775,
       "Waste": 116.4591
      },
+     "gases_kt_co2e": {
+      "CO2": 3200.7191,
+      "CH4": 376.8216,
+      "N2O": 163.0443
+     },
      "gwp20": {
       "total_kt_co2e": 4493.6129,
       "per_capita_t_co2e": 10.627,
@@ -905,6 +1185,11 @@ window.MHE_DATA = {
        "Public Sector": 152.6802,
        "Transport": 1345.0591,
        "Waste": 311.6824
+      },
+      "gases_kt_co2e": {
+       "CO2": 3200.7191,
+       "CH4": 1130.4647,
+       "N2O": 162.4291
       }
      }
     },
@@ -922,6 +1207,11 @@ window.MHE_DATA = {
       "Transport": 1322.5853,
       "Waste": 101.8971
      },
+     "gases_kt_co2e": {
+      "CO2": 3127.2151,
+      "CH4": 355.1548,
+      "N2O": 165.1124
+     },
      "gwp20": {
       "total_kt_co2e": 4357.1689,
       "per_capita_t_co2e": 10.2267,
@@ -934,6 +1224,11 @@ window.MHE_DATA = {
        "Public Sector": 148.2913,
        "Transport": 1335.8894,
        "Waste": 267.0861
+      },
+      "gases_kt_co2e": {
+       "CO2": 3127.2151,
+       "CH4": 1065.4644,
+       "N2O": 164.4893
       }
      }
     },
@@ -951,6 +1246,11 @@ window.MHE_DATA = {
       "Transport": 1358.1856,
       "Waste": 110.4587
      },
+     "gases_kt_co2e": {
+      "CO2": 2815.4999,
+      "CH4": 281.3905,
+      "N2O": 160.9331
+     },
      "gwp20": {
       "total_kt_co2e": 3819.9971,
       "per_capita_t_co2e": 8.8972,
@@ -963,6 +1263,11 @@ window.MHE_DATA = {
        "Public Sector": 127.2669,
        "Transport": 1371.2192,
        "Waste": 291.5147
+      },
+      "gases_kt_co2e": {
+       "CO2": 2815.4999,
+       "CH4": 844.1714,
+       "N2O": 160.3258
       }
      }
     },
@@ -980,6 +1285,11 @@ window.MHE_DATA = {
       "Transport": 1378.2997,
       "Waste": 128.8586
      },
+     "gases_kt_co2e": {
+      "CO2": 2693.3223,
+      "CH4": 291.0983,
+      "N2O": 161.0823
+     },
      "gwp20": {
       "total_kt_co2e": 3727.0915,
       "per_capita_t_co2e": 8.6082,
@@ -992,6 +1302,11 @@ window.MHE_DATA = {
        "Public Sector": 111.9315,
        "Transport": 1391.0928,
        "Waste": 346.5224
+      },
+      "gases_kt_co2e": {
+       "CO2": 2693.3223,
+       "CH4": 873.2948,
+       "N2O": 160.4744
       }
      }
     },
@@ -1009,6 +1324,11 @@ window.MHE_DATA = {
       "Transport": 1426.9482,
       "Waste": 115.2885
      },
+     "gases_kt_co2e": {
+      "CO2": 2622.0167,
+      "CH4": 268.4964,
+      "N2O": 155.0833
+     },
      "gwp20": {
       "total_kt_co2e": 3582.0039,
       "per_capita_t_co2e": 8.2137,
@@ -1021,6 +1341,11 @@ window.MHE_DATA = {
        "Public Sector": 92.3671,
        "Transport": 1439.9035,
        "Waste": 305.6929
+      },
+      "gases_kt_co2e": {
+       "CO2": 2622.0167,
+       "CH4": 805.4892,
+       "N2O": 154.498
       }
      }
     },
@@ -1038,6 +1363,11 @@ window.MHE_DATA = {
       "Transport": 1442.4096,
       "Waste": 112.7763
      },
+     "gases_kt_co2e": {
+      "CO2": 2543.3003,
+      "CH4": 264.0959,
+      "N2O": 159.3853
+     },
      "gwp20": {
       "total_kt_co2e": 3494.3716,
       "per_capita_t_co2e": 7.9716,
@@ -1050,6 +1380,11 @@ window.MHE_DATA = {
        "Public Sector": 87.5896,
        "Transport": 1456.5591,
        "Waste": 297.1433
+      },
+      "gases_kt_co2e": {
+       "CO2": 2543.3003,
+       "CH4": 792.2876,
+       "N2O": 158.7838
       }
      }
     },
@@ -1067,6 +1402,11 @@ window.MHE_DATA = {
       "Transport": 1421.3912,
       "Waste": 106.6298
      },
+     "gases_kt_co2e": {
+      "CO2": 2516.8842,
+      "CH4": 257.9316,
+      "N2O": 155.6633
+     },
      "gwp20": {
       "total_kt_co2e": 3445.7548,
       "per_capita_t_co2e": 7.8229,
@@ -1079,6 +1419,11 @@ window.MHE_DATA = {
        "Public Sector": 87.2491,
        "Transport": 1436.6931,
        "Waste": 279.293
+      },
+      "gases_kt_co2e": {
+       "CO2": 2516.8842,
+       "CH4": 773.7947,
+       "N2O": 155.0759
       }
      }
     },
@@ -1096,6 +1441,11 @@ window.MHE_DATA = {
       "Transport": 1374.0978,
       "Waste": 86.584
      },
+     "gases_kt_co2e": {
+      "CO2": 2378.8665,
+      "CH4": 234.0127,
+      "N2O": 161.9911
+     },
      "gwp20": {
       "total_kt_co2e": 3242.2845,
       "per_capita_t_co2e": 7.3187,
@@ -1108,6 +1458,11 @@ window.MHE_DATA = {
        "Public Sector": 74.7347,
        "Transport": 1388.0423,
        "Waste": 218.223
+      },
+      "gases_kt_co2e": {
+       "CO2": 2378.8665,
+       "CH4": 702.0382,
+       "N2O": 161.3798
       }
      }
     },
@@ -1125,6 +1480,11 @@ window.MHE_DATA = {
       "Transport": 1134.6201,
       "Waste": 75.2672
      },
+     "gases_kt_co2e": {
+      "CO2": 2091.1828,
+      "CH4": 214.671,
+      "N2O": 151.0039
+     },
      "gwp20": {
       "total_kt_co2e": 2885.6299,
       "per_capita_t_co2e": 6.4704,
@@ -1137,6 +1497,11 @@ window.MHE_DATA = {
        "Public Sector": 73.1498,
        "Transport": 1145.8831,
        "Waste": 184.3964
+      },
+      "gases_kt_co2e": {
+       "CO2": 2091.1828,
+       "CH4": 644.0131,
+       "N2O": 150.4341
       }
      }
     },
@@ -1154,6 +1519,11 @@ window.MHE_DATA = {
       "Transport": 1196.1759,
       "Waste": 75.6891
      },
+     "gases_kt_co2e": {
+      "CO2": 2212.8282,
+      "CH4": 210.684,
+      "N2O": 156.0252
+     },
      "gwp20": {
       "total_kt_co2e": 3000.3168,
       "per_capita_t_co2e": 6.6331,
@@ -1166,6 +1536,11 @@ window.MHE_DATA = {
        "Public Sector": 79.6083,
        "Transport": 1205.7458,
        "Waste": 184.5238
+      },
+      "gases_kt_co2e": {
+       "CO2": 2212.8282,
+       "CH4": 632.052,
+       "N2O": 155.4364
       }
      }
     },
@@ -1183,6 +1558,11 @@ window.MHE_DATA = {
       "Transport": 1199.9905,
       "Waste": 72.5375
      },
+     "gases_kt_co2e": {
+      "CO2": 2073.8866,
+      "CH4": 201.1997,
+      "N2O": 147.3445
+     },
      "gwp20": {
       "total_kt_co2e": 2824.274,
       "per_capita_t_co2e": 6.1753,
@@ -1195,6 +1575,11 @@ window.MHE_DATA = {
        "Public Sector": 72.4789,
        "Transport": 1208.3407,
        "Waste": 173.9802
+      },
+      "gases_kt_co2e": {
+       "CO2": 2073.8866,
+       "CH4": 603.599,
+       "N2O": 146.7885
       }
      }
     },
@@ -1212,6 +1597,11 @@ window.MHE_DATA = {
       "Transport": 1184.3773,
       "Waste": 89.4481
      },
+     "gases_kt_co2e": {
+      "CO2": 1982.1298,
+      "CH4": 207.7494,
+      "N2O": 144.4599
+     },
      "gwp20": {
       "total_kt_co2e": 2749.2929,
       "per_capita_t_co2e": 5.9468,
@@ -1224,6 +1614,11 @@ window.MHE_DATA = {
        "Public Sector": 64.1799,
        "Transport": 1192.5585,
        "Waste": 223.4967
+      },
+      "gases_kt_co2e": {
+       "CO2": 1982.1298,
+       "CH4": 623.2483,
+       "N2O": 143.9148
       }
      }
     },
@@ -1241,6 +1636,11 @@ window.MHE_DATA = {
       "Transport": 1192.1672,
       "Waste": 79.8973
      },
+     "gases_kt_co2e": {
+      "CO2": 1972.8878,
+      "CH4": 196.727,
+      "N2O": 141.3265
+     },
      "gwp20": {
       "total_kt_co2e": 2703.8621,
       "per_capita_t_co2e": 5.7962,
@@ -1253,6 +1653,11 @@ window.MHE_DATA = {
        "Public Sector": 64.035,
        "Transport": 1200.3038,
        "Waste": 194.1381
+      },
+      "gases_kt_co2e": {
+       "CO2": 1972.8878,
+       "CH4": 590.1809,
+       "N2O": 140.7932
       }
      }
     }
@@ -1291,6 +1696,11 @@ window.MHE_DATA = {
       "Transport": 4521.0025,
       "Waste": 882.544
      },
+     "gases_kt_co2e": {
+      "CO2": 14364.0939,
+      "CH4": 1637.726,
+      "N2O": 427.1045
+     },
      "gwp20": {
       "total_kt_co2e": 19702.7648,
       "per_capita_t_co2e": 10.8065,
@@ -1303,6 +1713,11 @@ window.MHE_DATA = {
        "Public Sector": 857.7456,
        "Transport": 4584.1106,
        "Waste": 2439.2103
+      },
+      "gases_kt_co2e": {
+       "CO2": 14364.0939,
+       "CH4": 4913.1781,
+       "N2O": 425.4928
       }
      }
     },
@@ -1320,6 +1735,11 @@ window.MHE_DATA = {
       "Transport": 4496.2072,
       "Waste": 870.6781
      },
+     "gases_kt_co2e": {
+      "CO2": 14056.8404,
+      "CH4": 1573.0695,
+      "N2O": 413.7495
+     },
      "gwp20": {
       "total_kt_co2e": 19188.2371,
       "per_capita_t_co2e": 10.4689,
@@ -1332,6 +1752,11 @@ window.MHE_DATA = {
        "Public Sector": 799.6269,
        "Transport": 4554.7355,
        "Waste": 2402.876
+      },
+      "gases_kt_co2e": {
+       "CO2": 14056.8404,
+       "CH4": 4719.2086,
+       "N2O": 412.1881
       }
      }
     },
@@ -1349,6 +1774,11 @@ window.MHE_DATA = {
       "Transport": 4483.9355,
       "Waste": 760.0722
      },
+     "gases_kt_co2e": {
+      "CO2": 13915.3077,
+      "CH4": 1503.0269,
+      "N2O": 402.4135
+     },
      "gwp20": {
       "total_kt_co2e": 18825.2835,
       "per_capita_t_co2e": 10.2097,
@@ -1361,6 +1791,11 @@ window.MHE_DATA = {
        "Public Sector": 753.4798,
        "Transport": 4541.0686,
        "Waste": 2080.9452
+      },
+      "gases_kt_co2e": {
+       "CO2": 13915.3077,
+       "CH4": 4509.0808,
+       "N2O": 400.8949
       }
      }
     },
@@ -1378,6 +1813,11 @@ window.MHE_DATA = {
       "Transport": 4300.4123,
       "Waste": 752.4098
      },
+     "gases_kt_co2e": {
+      "CO2": 13664.4785,
+      "CH4": 1438.0123,
+      "N2O": 387.4312
+     },
      "gwp20": {
       "total_kt_co2e": 18364.4846,
       "per_capita_t_co2e": 9.8908,
@@ -1390,6 +1830,11 @@ window.MHE_DATA = {
        "Public Sector": 753.4364,
        "Transport": 4350.121,
        "Waste": 2073.6012
+      },
+      "gases_kt_co2e": {
+       "CO2": 13664.4785,
+       "CH4": 4314.0369,
+       "N2O": 385.9692
       }
      }
     },
@@ -1407,6 +1852,11 @@ window.MHE_DATA = {
       "Transport": 4171.039,
       "Waste": 640.8146
      },
+     "gases_kt_co2e": {
+      "CO2": 12586.2963,
+      "CH4": 1336.3045,
+      "N2O": 380.4696
+     },
      "gwp20": {
       "total_kt_co2e": 16974.2439,
       "per_capita_t_co2e": 9.0817,
@@ -1419,6 +1869,11 @@ window.MHE_DATA = {
        "Public Sector": 674.6442,
        "Transport": 4221.9426,
        "Waste": 1732.6103
+      },
+      "gases_kt_co2e": {
+       "CO2": 12586.2963,
+       "CH4": 4008.9136,
+       "N2O": 379.0339
       }
      }
     },
@@ -1436,6 +1891,11 @@ window.MHE_DATA = {
       "Transport": 4129.7707,
       "Waste": 606.5923
      },
+     "gases_kt_co2e": {
+      "CO2": 12313.0109,
+      "CH4": 1187.1133,
+      "N2O": 382.3646
+     },
      "gwp20": {
       "total_kt_co2e": 16255.2727,
       "per_capita_t_co2e": 8.6166,
@@ -1448,6 +1908,11 @@ window.MHE_DATA = {
        "Public Sector": 716.765,
        "Transport": 4174.9402,
        "Waste": 1620.3037
+      },
+      "gases_kt_co2e": {
+       "CO2": 12313.0109,
+       "CH4": 3561.34,
+       "N2O": 380.9218
       }
      }
     },
@@ -1465,6 +1930,11 @@ window.MHE_DATA = {
       "Transport": 4058.6853,
       "Waste": 624.1857
      },
+     "gases_kt_co2e": {
+      "CO2": 11225.3216,
+      "CH4": 1162.9105,
+      "N2O": 388.7714
+     },
      "gwp20": {
       "total_kt_co2e": 15101.3575,
       "per_capita_t_co2e": 7.9405,
@@ -1477,6 +1947,11 @@ window.MHE_DATA = {
        "Public Sector": 644.165,
        "Transport": 4108.2051,
        "Waste": 1665.1291
+      },
+      "gases_kt_co2e": {
+       "CO2": 11225.3216,
+       "CH4": 3488.7315,
+       "N2O": 387.3044
       }
      }
     },
@@ -1494,6 +1969,11 @@ window.MHE_DATA = {
       "Transport": 4018.5707,
       "Waste": 633.7574
      },
+     "gases_kt_co2e": {
+      "CO2": 11688.2908,
+      "CH4": 1167.9005,
+      "N2O": 399.6868
+     },
      "gwp20": {
       "total_kt_co2e": 15590.1709,
       "per_capita_t_co2e": 8.1452,
@@ -1506,6 +1986,11 @@ window.MHE_DATA = {
        "Public Sector": 686.2514,
        "Transport": 4061.1103,
        "Waste": 1685.3595
+      },
+      "gases_kt_co2e": {
+       "CO2": 11688.2908,
+       "CH4": 3503.7015,
+       "N2O": 398.1786
       }
      }
     },
@@ -1523,6 +2008,11 @@ window.MHE_DATA = {
       "Transport": 3961.334,
       "Waste": 594.4104
      },
+     "gases_kt_co2e": {
+      "CO2": 11300.5711,
+      "CH4": 1098.9264,
+      "N2O": 391.7019
+     },
      "gwp20": {
       "total_kt_co2e": 14987.5744,
       "per_capita_t_co2e": 7.7919,
@@ -1535,6 +2025,11 @@ window.MHE_DATA = {
        "Public Sector": 644.6714,
        "Transport": 4002.3994,
        "Waste": 1583.9203
+      },
+      "gases_kt_co2e": {
+       "CO2": 11300.5711,
+       "CH4": 3296.7793,
+       "N2O": 390.2238
       }
      }
     },
@@ -1552,6 +2047,11 @@ window.MHE_DATA = {
       "Transport": 4037.8809,
       "Waste": 586.8879
      },
+     "gases_kt_co2e": {
+      "CO2": 10205.4643,
+      "CH4": 948.5507,
+      "N2O": 387.9934
+     },
      "gwp20": {
       "total_kt_co2e": 13437.6457,
       "per_capita_t_co2e": 6.9399,
@@ -1564,6 +2064,11 @@ window.MHE_DATA = {
        "Public Sector": 561.813,
        "Transport": 4077.8582,
        "Waste": 1555.8702
+      },
+      "gases_kt_co2e": {
+       "CO2": 10205.4643,
+       "CH4": 2845.6521,
+       "N2O": 386.5293
       }
      }
     },
@@ -1581,6 +2086,11 @@ window.MHE_DATA = {
       "Transport": 4072.8306,
       "Waste": 604.091
      },
+     "gases_kt_co2e": {
+      "CO2": 9754.4384,
+      "CH4": 945.322,
+      "N2O": 387.3131
+     },
      "gwp20": {
       "total_kt_co2e": 12976.2561,
       "per_capita_t_co2e": 6.6538,
@@ -1593,6 +2103,11 @@ window.MHE_DATA = {
        "Public Sector": 509.3708,
        "Transport": 4111.845,
        "Waste": 1606.8414
+      },
+      "gases_kt_co2e": {
+       "CO2": 9754.4384,
+       "CH4": 2835.9661,
+       "N2O": 385.8515
       }
      }
     },
@@ -1610,6 +2125,11 @@ window.MHE_DATA = {
       "Transport": 4183.5346,
       "Waste": 582.8607
      },
+     "gases_kt_co2e": {
+      "CO2": 9336.8635,
+      "CH4": 894.2222,
+      "N2O": 377.9601
+     },
      "gwp20": {
       "total_kt_co2e": 12396.0638,
       "per_capita_t_co2e": 6.3031,
@@ -1622,6 +2142,11 @@ window.MHE_DATA = {
        "Public Sector": 427.6599,
        "Transport": 4222.7331,
        "Waste": 1541.5579
+      },
+      "gases_kt_co2e": {
+       "CO2": 9336.8635,
+       "CH4": 2682.6665,
+       "N2O": 376.5338
       }
      }
     },
@@ -1639,6 +2164,11 @@ window.MHE_DATA = {
       "Transport": 4196.7381,
       "Waste": 572.0869
      },
+     "gases_kt_co2e": {
+      "CO2": 8926.737,
+      "CH4": 868.2589,
+      "N2O": 387.2464
+     },
      "gwp20": {
       "total_kt_co2e": 11917.2988,
       "per_capita_t_co2e": 6.0294,
@@ -1651,6 +2181,11 @@ window.MHE_DATA = {
        "Public Sector": 434.1101,
        "Transport": 4239.0785,
        "Waste": 1501.4053
+      },
+      "gases_kt_co2e": {
+       "CO2": 8926.737,
+       "CH4": 2604.7767,
+       "N2O": 385.7851
       }
      }
     },
@@ -1668,6 +2203,11 @@ window.MHE_DATA = {
       "Transport": 4090.8082,
       "Waste": 557.5826
      },
+     "gases_kt_co2e": {
+      "CO2": 8788.387,
+      "CH4": 855.9784,
+      "N2O": 381.857
+     },
      "gwp20": {
       "total_kt_co2e": 11736.7382,
       "per_capita_t_co2e": 5.9221,
@@ -1680,6 +2220,11 @@ window.MHE_DATA = {
        "Public Sector": 396.3705,
        "Transport": 4135.9257,
        "Waste": 1457.7245
+      },
+      "gases_kt_co2e": {
+       "CO2": 8788.387,
+       "CH4": 2567.9351,
+       "N2O": 380.416
       }
      }
     },
@@ -1697,6 +2242,11 @@ window.MHE_DATA = {
       "Transport": 3953.9091,
       "Waste": 470.7347
      },
+     "gases_kt_co2e": {
+      "CO2": 8287.2406,
+      "CH4": 757.4846,
+      "N2O": 393.8718
+     },
      "gwp20": {
       "total_kt_co2e": 10952.0801,
       "per_capita_t_co2e": 5.5147,
@@ -1709,6 +2259,11 @@ window.MHE_DATA = {
        "Public Sector": 349.0677,
        "Transport": 3994.9723,
        "Waste": 1193.4538
+      },
+      "gases_kt_co2e": {
+       "CO2": 8287.2406,
+       "CH4": 2272.4539,
+       "N2O": 392.3855
       }
      }
     },
@@ -1726,6 +2281,11 @@ window.MHE_DATA = {
       "Transport": 3239.9934,
       "Waste": 413.2625
      },
+     "gases_kt_co2e": {
+      "CO2": 7374.104,
+      "CH4": 674.5668,
+      "N2O": 371.879
+     },
      "gwp20": {
       "total_kt_co2e": 9768.2799,
       "per_capita_t_co2e": 4.9086,
@@ -1738,6 +2298,11 @@ window.MHE_DATA = {
        "Public Sector": 323.2383,
        "Transport": 3272.8289,
        "Waste": 1020.0698
+      },
+      "gases_kt_co2e": {
+       "CO2": 7374.104,
+       "CH4": 2023.7003,
+       "N2O": 370.4757
       }
      }
     },
@@ -1755,6 +2320,11 @@ window.MHE_DATA = {
       "Transport": 3415.9518,
       "Waste": 424.7359
      },
+     "gases_kt_co2e": {
+      "CO2": 7793.1689,
+      "CH4": 671.8332,
+      "N2O": 379.6707
+     },
      "gwp20": {
       "total_kt_co2e": 10186.9065,
       "per_capita_t_co2e": 5.0889,
@@ -1767,6 +2337,11 @@ window.MHE_DATA = {
        "Public Sector": 351.6513,
        "Transport": 3444.0216,
        "Waste": 1049.4641
+      },
+      "gases_kt_co2e": {
+       "CO2": 7793.1689,
+       "CH4": 2015.4996,
+       "N2O": 378.238
       }
      }
     },
@@ -1784,6 +2359,11 @@ window.MHE_DATA = {
       "Transport": 3443.3053,
       "Waste": 410.0168
      },
+     "gases_kt_co2e": {
+      "CO2": 7245.5896,
+      "CH4": 633.9458,
+      "N2O": 359.0606
+     },
      "gwp20": {
       "total_kt_co2e": 9505.1325,
       "per_capita_t_co2e": 4.7044,
@@ -1796,6 +2376,11 @@ window.MHE_DATA = {
        "Public Sector": 317.352,
        "Transport": 3468.0448,
        "Waste": 1001.5701
+      },
+      "gases_kt_co2e": {
+       "CO2": 7245.5896,
+       "CH4": 1901.8373,
+       "N2O": 357.7057
       }
      }
     },
@@ -1813,6 +2398,11 @@ window.MHE_DATA = {
       "Transport": 3407.199,
       "Waste": 428.2782
      },
+     "gases_kt_co2e": {
+      "CO2": 6839.2186,
+      "CH4": 628.7089,
+      "N2O": 356.4461
+     },
      "gwp20": {
       "total_kt_co2e": 9080.4463,
       "per_capita_t_co2e": 4.4377,
@@ -1825,6 +2415,11 @@ window.MHE_DATA = {
        "Public Sector": 282.3428,
        "Transport": 3431.4762,
        "Waste": 1050.3245
+      },
+      "gases_kt_co2e": {
+       "CO2": 6839.2186,
+       "CH4": 1886.1266,
+       "N2O": 355.101
       }
      }
     },
@@ -1842,6 +2437,11 @@ window.MHE_DATA = {
       "Transport": 3399.3747,
       "Waste": 390.2065
      },
+     "gases_kt_co2e": {
+      "CO2": 6748.3975,
+      "CH4": 584.0206,
+      "N2O": 351.8968
+     },
      "gwp20": {
       "total_kt_co2e": 8851.028,
       "per_capita_t_co2e": 4.2912,
@@ -1854,6 +2454,11 @@ window.MHE_DATA = {
        "Public Sector": 278.9386,
        "Transport": 3423.0477,
        "Waste": 932.172
+      },
+      "gases_kt_co2e": {
+       "CO2": 6748.3975,
+       "CH4": 1752.0618,
+       "N2O": 350.5689
       }
      }
     }
