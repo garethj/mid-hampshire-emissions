@@ -340,6 +340,12 @@
     }
   }
 
+  // Target years shown on the historical trend chart. Both are "reach ~zero by year Y"
+  // targets, so — unlike the CCC's percentage-vs-1990 pathway, which DESNZ's LA data (starts
+  // 2005) can't express exactly — they need no baseline figure to plot.
+  const TARGET_NET_ZERO_YEAR = 2050; // Hampshire County Council area target, aligned to UK Gov's legally-binding Climate Change Act target
+  const TARGET_WCC_YEAR = 2030; // Winchester City Council's own district-wide carbon-neutral target
+
   function buildTrendChartHistorical(container, years, metric) {
     const series = REGIONS.map(r => ({
       key: r.key,
@@ -349,10 +355,25 @@
       values: years.map(y => regionMetricValue(r.key, y, metric))
     }));
 
+    const lastActualYear = years[years.length - 1];
+    const chartMinYear = years[0];
+    const chartMaxYear = TARGET_NET_ZERO_YEAR;
+
+    // Straight-line "required" trajectory from each region's latest actual value to zero at
+    // the net-zero target year — not a modelled decarbonisation pathway (real ones are rarely
+    // linear), just the simplest honest read of the average pace still needed from here.
+    function valueAtYear(s, year) {
+      if (year <= lastActualYear) {
+        const idx = years.indexOf(year);
+        return idx >= 0 ? s.values[idx] : null;
+      }
+      const lastVal = s.values[s.values.length - 1];
+      const t = (year - lastActualYear) / (TARGET_NET_ZERO_YEAR - lastActualYear);
+      return Math.max(0, lastVal * (1 - t));
+    }
+
     const W = 860, H = 320;
-    // Right margin sized for the longest region name's end-of-line label ("Hampshire and the
-    // Solent"), so it doesn't clip off the edge of the chart.
-    const M = { top: 20, right: 190, bottom: 32, left: 56 };
+    const M = { top: 20, right: 30, bottom: 32, left: 56 };
     const plotW = W - M.left - M.right;
     const plotH = H - M.top - M.bottom;
 
@@ -361,7 +382,7 @@
     container.appendChild(svg);
 
     const maxVal = Math.max(...series.flatMap(s => s.values)) * 1.08;
-    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
+    const xScale = year => M.left + ((year - chartMinYear) / (chartMaxYear - chartMinYear)) * plotW;
     const yScale = v => M.top + plotH - (v / maxVal) * plotH;
 
     // gridlines + y ticks
@@ -375,29 +396,51 @@
     }
 
     // x ticks
-    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
-    xTickYears.forEach(y => {
-      const i = years.indexOf(y);
-      const xx = xScale(i);
+    const xTickYears = [chartMinYear, 2015, lastActualYear, TARGET_WCC_YEAR, 2040, TARGET_NET_ZERO_YEAR];
+    xTickYears.forEach(year => {
+      const xx = xScale(year);
       const txt = el("text", { x: xx, y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = y;
+      txt.textContent = year;
     });
 
     el("line", { x1: M.left, x2: M.left + plotW, y1: M.top + plotH, y2: M.top + plotH, stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
 
+    // WCC 2030 target marker (background layer, drawn before data lines so it doesn't
+    // compete with them for attention).
+    const wccX = xScale(TARGET_WCC_YEAR);
+    el("line", { x1: wccX, x2: wccX, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", "stroke-dasharray": "3,3", opacity: "0.6" }, svg);
+    const wccLabel1 = el("text", { x: wccX, y: M.top + 12, "text-anchor": "middle", "font-size": "10.5", "font-weight": "700", fill: cssVar("--text-muted") }, svg);
+    wccLabel1.textContent = "WCC target:";
+    const wccLabel2 = el("text", { x: wccX, y: M.top + 25, "text-anchor": "middle", "font-size": "10.5", fill: cssVar("--text-muted") }, svg);
+    wccLabel2.textContent = "Winchester carbon-neutral";
+
     series.forEach(s => {
       let d = "";
-      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
+      years.forEach((y, i) => { d += (i === 0 ? "M" : "L") + xScale(y).toFixed(1) + "," + yScale(s.values[i]).toFixed(1) + " "; });
       el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
-      const lastX = xScale(s.values.length - 1), lastY = yScale(s.values[s.values.length - 1]);
+      const lastX = xScale(lastActualYear), lastY = yScale(s.values[s.values.length - 1]);
       el("circle", { cx: lastX, cy: lastY, r: "5", fill: s.color, stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
+
+      // dashed "required pathway to net zero" continuation
+      el("line", {
+        x1: lastX, y1: lastY, x2: xScale(TARGET_NET_ZERO_YEAR), y2: yScale(0),
+        stroke: s.color, "stroke-width": "2", "stroke-dasharray": "5,4", opacity: "0.5"
+      }, svg);
     });
 
-    // End-of-line labels: the circle markers stay at their true data position, but the
-    // two-line name/value labels are pushed apart vertically as a group when series end
-    // close together in value, so they don't overlap. Colour-coding the name keeps a
-    // shifted label identifiable even once it's no longer level with its marker.
-    const lastX = xScale(years.length - 1);
+    // Net-zero target marker, shared since every region's dashed line converges on it.
+    const nzX = xScale(TARGET_NET_ZERO_YEAR), nzY = yScale(0);
+    el("circle", { cx: nzX, cy: nzY, r: "4", fill: cssVar("--text-muted") }, svg);
+    const nzLabel = el("text", { x: nzX - 8, y: nzY - 10, "text-anchor": "end", "font-size": "11", "font-weight": "700", fill: cssVar("--text-secondary") }, svg);
+    nzLabel.textContent = TARGET_NET_ZERO_YEAR + ": Net Zero";
+    const nzLabel2 = el("text", { x: nzX - 8, y: nzY + 5, "text-anchor": "end", "font-size": "10", fill: cssVar("--text-muted") }, svg);
+    nzLabel2.textContent = "HCC & UK Gov target";
+
+    // End-of-line labels: sit at the latest actual year (not the chart's right edge, which is
+    // now the 2050 target), and are pushed apart vertically as a group when series end close
+    // together in value, so they don't overlap. Colour-coding the name keeps a shifted label
+    // identifiable even once it's no longer level with its marker.
+    const labelX = xScale(lastActualYear);
     const MIN_LABEL_GAP = 30;
     const endLabels = series.map(s => ({ ...s, y: yScale(s.values[s.values.length - 1]) }))
       .sort((a, b) => a.y - b.y);
@@ -407,13 +450,14 @@
       }
     }
     endLabels.forEach(item => {
-      const nameText = el("text", { x: lastX + 10, y: item.y - 2, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
+      const nameText = el("text", { x: labelX + 10, y: item.y - 2, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
       nameText.textContent = item.label;
-      const valText = el("text", { x: lastX + 10, y: item.y + 13, "font-size": "11", fill: cssVar("--text-secondary") }, svg);
+      const valText = el("text", { x: labelX + 10, y: item.y + 13, "font-size": "11", fill: cssVar("--text-secondary") }, svg);
       valText.textContent = fmtAxisValue(metric, item.values[item.values.length - 1]) + " " + unitShort(metric);
     });
 
-    // crosshair + hover
+    // crosshair + hover — works across the whole 2005-2050 range; years beyond the latest
+    // actual figure show the interpolated pathway value instead of real data.
     const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
     const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" }, svg);
 
@@ -421,14 +465,15 @@
       const rect = svg.getBoundingClientRect();
       const scaleX = W / rect.width;
       const localX = (ev.clientX - rect.left) * scaleX;
-      let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
-      idx = Math.max(0, Math.min(years.length - 1, idx));
-      const xx = xScale(idx);
+      const yearFloat = chartMinYear + ((localX - M.left) / plotW) * (chartMaxYear - chartMinYear);
+      const year = Math.round(Math.max(chartMinYear, Math.min(chartMaxYear, yearFloat)));
+      const xx = xScale(year);
+      const isFuture = year > lastActualYear;
       crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
       showTooltip(ev.clientX, ev.clientY, (tt) => {
-        ttTitle(tt, String(years[idx]));
+        ttTitle(tt, String(year) + (isFuture ? " — required pathway" : ""));
         series.forEach(s => {
-          ttRow(tt, s.color, s.label, fmtValue(metric, s.values[idx]) + " " + unitShort(metric));
+          ttRow(tt, s.color, s.label, fmtValue(metric, valueAtYear(s, year)) + " " + unitShort(metric));
         });
       });
     });
@@ -439,6 +484,11 @@
     legendWrap.className = "legend";
     series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.legendLabel)));
     container.appendChild(legendWrap);
+
+    const note = document.createElement("p");
+    note.className = "chart-note";
+    note.textContent = "Dashed lines: straight-line pathway required to reach net zero by " + TARGET_NET_ZERO_YEAR + " from the latest actual figure — not a modelled forecast.";
+    container.appendChild(note);
 
     buildTrendTableHistorical(years, series, metric);
   }
@@ -797,7 +847,8 @@
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2023, summed across all sectors.",
         "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), and between a single latest-year comparison and the full historical trend.",
-        "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire is calculated here by summing the same DESNZ figures for East Hampshire, Winchester, New Forest and Test Valley — it is not an official published figure.",
+        "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire and Hampshire and the Solent are calculated here by summing the same DESNZ district figures — neither is an official published figure.",
+        "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at 2050 — a straight-line \"required pathway\" showing the average pace of reduction still needed to reach net zero by 2050, the target set by Hampshire County Council for the whole Hampshire area (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line. The vertical marker at 2030 is Winchester City Council's own, more ambitious, district-wide carbon-neutral target from its Carbon Neutrality Action Plan.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2023 (published 3 July 2025)."
       ],
       link: { href: "https://assets.publishing.service.gov.uk/media/68653c7ee6c3cc924228943f/2005-23-uk-local-authority-ghg-emissions-CSV-dataset.csv", label: "Download the source CSV" }
