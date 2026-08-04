@@ -21,17 +21,29 @@ assets/css/style.css       styling, incl. light/dark theme tokens
 assets/js/app.js           data loading, chart rendering (hand-rolled SVG), interactivity
 data/mid_hampshire_emissions.json   pre-processed data baked from the DESNZ CSV (reference copy, not loaded by the app)
 data/mid_hampshire_emissions.js     same data as above, wrapped as `window.MHE_DATA = {...}` so index.html can load it via <script> instead of fetch
-data/emissions_source.csv           raw DESNZ source CSV (~85MB), committed so a refresh never depends on re-downloading; process.py's default input
+data/emissions_source.csv           raw DESNZ source CSV (~85MB); gitignored, not committed — see below for how to get it
+data/fetch_source.py                downloads/updates data/emissions_source.csv from the current DESNZ release
 data/process.py                     turns the raw CSV above into the two pre-processed files above
 ```
+
+## Getting the raw source data
+
+`data/emissions_source.csv` (~85MB) isn't committed to this repo — it's gitignored, and `data/fetch_source.py` fetches it instead:
+
+```
+cd data
+python3 fetch_source.py
+```
+
+It finds the newest release on the [DESNZ collection page](https://www.gov.uk/government/collections/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics), compares its CSV against the local copy's size, and only downloads if the file is missing or has changed — safe to re-run any time (e.g. from a `cron`/CI job checking for a new release) without needlessly re-fetching an 85MB file. Pass `--force` to re-download unconditionally.
 
 ## Updating the data for a new year
 
 DESNZ typically publishes a new release each summer. To refresh:
 
-1. Find the new CSV on the [DESNZ collection page](https://www.gov.uk/government/collections/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics) (look for the "Full dataset (csv)" link) and download it, replacing `data/emissions_source.csv` in place.
-2. From the `data/` directory, run `python3 process.py` (it defaults to reading `emissions_source.csv`; pass an explicit path to use a file elsewhere instead). It filters the CSV to the 14 local authorities needed across all three regions (Winchester's, Mid-Hampshire's four, and Hampshire and the Solent's fourteen — see `MID_HAMPSHIRE_LAS`/`HAMPSHIRE_SOLENT_LAS` in `process.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place. It also reads the CSV's per-row `Greenhouse gas` column to compute a parallel 20-year-GWP ("gwp20") view of every figure alongside the official 100-year one — see `GWP100`/`GWP20` in `process.py`.
-3. Commit the updated `emissions_source.csv` alongside both regenerated output files. No other changes needed — the app reads whatever years/sectors are in the file.
+1. From the `data/` directory, run `python3 fetch_source.py` to pull the latest `emissions_source.csv` (see above).
+2. Still in `data/`, run `python3 process.py`. It filters the CSV to the 14 local authorities needed across all three regions (Winchester's, Mid-Hampshire's four, and Hampshire and the Solent's fourteen — see `MID_HAMPSHIRE_LAS`/`HAMPSHIRE_SOLENT_LAS` in `process.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place. It also reads the CSV's per-row `Greenhouse gas` column to compute a parallel 20-year-GWP ("gwp20") view of every figure alongside the official 100-year one — see `GWP100`/`GWP20` in `process.py`.
+3. Commit the two regenerated output files (not the raw CSV, which stays gitignored). No other changes needed — the app reads whatever years/sectors are in the file.
 
 ## Local development
 
