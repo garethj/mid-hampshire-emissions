@@ -838,41 +838,6 @@
     document.getElementById("modal-overlay").classList.add("is-hidden");
   }
 
-  // ---------------- roadmap tab ----------------
-
-  const ROADMAP_ITEMS = [
-    { tag: "More regions", title: "All five new Hampshire unitaries", body: "Add North, Southwest and Southeast Hampshire and Isle of Wight so Mid-Hampshire can be compared against its neighbours, not just its own history." },
-    { tag: "More regions", title: "Build-your-own region", body: "Let anyone tick any combination of current districts and get an instant combined chart — useful if boundaries change again, or to test other groupings." },
-    { tag: "Accuracy", title: "Correct for the 11 parishes", body: "Use 2021 Census parish population/dwelling counts to pro-rate the small area moving from Mid-Hampshire to neighbouring unitaries, instead of using whole districts." },
-    { tag: "Targets", title: "Compare against a net-zero pathway", body: "Add a target trajectory line — e.g. the Tyndall Centre's local carbon budget, or a locally agreed net-zero target — so the trend can be read against what's actually needed." },
-    { tag: "Other data", title: "Renewable energy generation", body: "DESNZ also publishes local renewable electricity generation by type and capacity — could sit alongside emissions as a second dashboard." },
-    { tag: "Other data", title: "Housing & retrofit (EPC data)", body: "Energy Performance Certificate data by district could show housing stock efficiency and retrofit progress, relevant to the large Domestic sector." },
-    { tag: "Other data", title: "Transport specifics", body: "EV charge-point density, ULEV registrations and active travel mode share — useful given transport is the single largest sector here." },
-    { tag: "Visuals", title: "Map view", body: "A choropleth map of the constituent districts, using free ONS boundary files, showing each district's share of the Mid-Hampshire total." },
-    { tag: "Usability", title: "Download the data", body: "A one-click CSV export of whatever's currently on screen, for anyone who wants to do their own analysis." },
-    { tag: "Usability", title: "Interactive legends", body: "Click a legend entry to isolate that series on the chart — handy once there are more than two or three regions or sectors on screen at once." }
-  ];
-
-  function renderRoadmap() {
-    const list = document.getElementById("roadmap-list");
-    clearNode(list);
-    ROADMAP_ITEMS.forEach(item => {
-      const card = document.createElement("div");
-      card.className = "roadmap-item";
-      const tag = document.createElement("span");
-      tag.className = "roadmap-tag";
-      tag.textContent = item.tag;
-      const h3 = document.createElement("h3");
-      h3.textContent = item.title;
-      const p = document.createElement("p");
-      p.textContent = item.body;
-      card.appendChild(tag);
-      card.appendChild(h3);
-      card.appendChild(p);
-      list.appendChild(card);
-    });
-  }
-
   // ---------------- wiring ----------------
 
   function setRegion(regionKey) {
@@ -937,27 +902,12 @@
       });
     });
 
-    const tabDashboard = document.getElementById("tab-dashboard");
-    const tabRoadmap = document.getElementById("tab-roadmap");
-    tabDashboard.addEventListener("click", () => switchTab("dashboard"));
-    tabRoadmap.addEventListener("click", () => switchTab("roadmap"));
-
     if (window.matchMedia) {
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
         buildTrendChart();
         buildSectorChart(currentRegion);
       });
     }
-  }
-
-  function switchTab(name) {
-    const isDash = name === "dashboard";
-    document.getElementById("tab-dashboard").classList.toggle("is-active", isDash);
-    document.getElementById("tab-dashboard").setAttribute("aria-selected", isDash);
-    document.getElementById("tab-roadmap").classList.toggle("is-active", !isDash);
-    document.getElementById("tab-roadmap").setAttribute("aria-selected", !isDash);
-    document.getElementById("panel-dashboard").hidden = !isDash;
-    document.getElementById("panel-roadmap").hidden = isDash;
   }
 
   function init() {
@@ -969,7 +919,6 @@
     wireEvents();
     setRegion("winchester");
     buildTrendChart();
-    renderRoadmap();
   }
 
   document.addEventListener("DOMContentLoaded", init);

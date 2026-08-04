@@ -13,7 +13,7 @@ Live site: hosted on GitHub Pages from this repo's `main` branch, `/` root.
 ## Structure
 
 ```
-index.html                 the whole app (dashboard + roadmap tab + modal)
+index.html                 the whole app (dashboard + modal)
 assets/css/style.css       styling, incl. light/dark theme tokens
 assets/js/app.js           data loading, chart rendering (hand-rolled SVG), interactivity
 data/mid_hampshire_emissions.json   pre-processed data baked from the DESNZ CSV (reference copy, not loaded by the app)
@@ -38,7 +38,7 @@ No build step, no server. Just open `index.html` directly in a browser (double-c
 - The LGR decision (25 March 2026) is subject to a judicial review sought by Hampshire County Council.
 - DESNZ data lags roughly 18–24 months behind the current year.
 
-See the in-app "What else could we add?" tab for a longer list of possible extensions.
+See [ROADMAP.md](ROADMAP.md) for a longer list of possible extensions.
 
 ## License
 

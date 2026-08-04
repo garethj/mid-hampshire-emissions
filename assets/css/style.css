@@ -92,16 +92,6 @@ a { color: var(--brand); }
 .brand-sub { margin: 4px 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.85); }
 .brand-sub a { color: #fff; text-decoration: underline; }
 
-/* ---------- Tabs ---------- */
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--gridline); margin-top: 18px; }
-.tab-btn {
-  font: inherit; font-weight: 500; font-size: 0.95rem;
-  background: none; border: none; border-bottom: 3px solid transparent;
-  padding: 10px 14px; cursor: pointer; color: var(--text-secondary);
-}
-.tab-btn.is-active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
-.tab-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-
 main.wrap { padding-top: 24px; padding-bottom: 40px; }
 
 /* ---------- Region toggle ---------- */
@@ -204,18 +194,6 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 .site-footer { border-top: 1px solid var(--gridline); padding: 20px 0 40px; margin-top: 20px; }
 .site-footer p { font-size: 0.78rem; color: var(--text-muted); }
 .site-footer a { color: var(--text-muted); }
-
-/* ---------- Roadmap tab ---------- */
-.roadmap-intro { color: var(--text-secondary); max-width: 640px; }
-.roadmap-list { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
-.roadmap-item { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px; padding: 14px 16px; }
-.roadmap-item h3 { font-size: 0.98rem; margin-bottom: 4px; }
-.roadmap-item p { margin: 0; font-size: 0.88rem; color: var(--text-secondary); }
-.roadmap-tag {
-  display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.03em; padding: 2px 7px; border-radius: 5px; margin-bottom: 6px;
-  background: var(--gridline); color: var(--text-secondary);
-}
 
 /* ---------- Modal ---------- */
 .modal-overlay {
