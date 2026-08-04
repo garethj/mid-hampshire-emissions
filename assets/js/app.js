@@ -7,6 +7,7 @@
   let currentRegion = "winchester";
   let currentMetric = "total"; // "total" | "per_capita"
   let currentView = "latest"; // "latest" | "historical"
+  let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let tooltipEl = null;
 
   const REGION_LABEL = {
@@ -156,6 +157,35 @@
     const yd = DATA.regions[regionKey].years[year];
     const raw = yd.sectors_kt_co2e[sector];
     return metric === "total" ? raw : raw / yd.population_thousands;
+  }
+
+  // Sub-sector detail only exists for the latest year (DATA.subsector_detail_latest_year),
+  // grouped by parent sector (in SECTOR_ORDER) and sorted by magnitude within each sector.
+  function sectorSubrows(regionKey, ly, metric) {
+    const detailBySector = DATA.subsector_detail_latest_year[regionKey];
+    const population = DATA.regions[regionKey].years[ly].population_thousands;
+    const rows = [];
+    SECTOR_ORDER.forEach((sector, i) => {
+      const subs = detailBySector[sector] || {};
+      const subRows = Object.keys(subs).map(name => ({
+        name: name,
+        sector: sector,
+        value: metric === "total" ? subs[name] : subs[name] / population,
+        slot: i + 1
+      })).sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+      rows.push(...subRows);
+    });
+    return rows;
+  }
+
+  // Sub-sector names repeat their parent sector's name as a prefix (e.g. "Agriculture
+  // Livestock", "LULUCF Net Emissions: Forestry") — strip it for the chart row label
+  // since the row is already colour-coded by sector; full names still appear in the table.
+  function shortSubsectorLabel(sector, name) {
+    let label = name;
+    if (label.startsWith(sector + " ")) label = label.slice(sector.length + 1);
+    if (sector === "LULUCF") label = label.replace(/^Net Emissions:\s*/, "");
+    return label.replace(/'/g, "");
   }
 
   // ---------------- KPI tiles ----------------
@@ -525,6 +555,15 @@
     const metric = currentMetric;
     const view = currentView;
 
+    // Sub-sector detail only exists for the latest year, so disable it whenever the
+    // historical view is active (and force it off so the toggle doesn't lie about state).
+    const detailAvailable = view === "latest";
+    if (!detailAvailable) currentDetail = false;
+    const detailToggle = document.getElementById("sector-detail-toggle");
+    detailToggle.checked = currentDetail;
+    detailToggle.disabled = !detailAvailable;
+    document.getElementById("sector-detail-row").classList.toggle("is-disabled", !detailAvailable);
+
     const metricLabel = metric === "total" ? "emissions by sector" : "emissions per person by sector";
     document.getElementById("sector-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly);
@@ -532,17 +571,22 @@
     if (view === "historical") {
       buildSectorChartHistorical(container, regionKey, metric);
     } else {
-      buildSectorChartLatest(container, regionKey, ly, metric);
+      buildSectorChartLatest(container, regionKey, ly, metric, currentDetail);
     }
   }
 
-  function buildSectorChartLatest(container, regionKey, ly, metric) {
-    const rows = SECTOR_ORDER.map((s, i) => ({ name: s, value: sectorMetricValue(regionKey, ly, s, metric), slot: i + 1 }))
-      .sort((a, b) => b.value - a.value);
+  function buildSectorChartLatest(container, regionKey, ly, metric, detail) {
+    const rows = detail
+      ? sectorSubrows(regionKey, ly, metric)
+      : SECTOR_ORDER.map((s, i) => ({ name: s, value: sectorMetricValue(regionKey, ly, s, metric), slot: i + 1 }))
+          .sort((a, b) => b.value - a.value);
 
     const W = 860;
-    const rowH = 34, gap = 6;
-    const M = { top: 10, right: 70, bottom: 10, left: 130 };
+    const rowH = detail ? 26 : 34;
+    const gap = detail ? 3 : 6;
+    const barH = detail ? 18 : 24;
+    const labelFontSize = detail ? "11" : "12.5";
+    const M = { top: 10, right: 70, bottom: 10, left: detail ? 185 : 130 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap);
 
@@ -561,11 +605,10 @@
       const barW = xScale(r.value);
       const barX = r.value >= 0 ? zeroX : zeroX + barW;
       const color = seriesColor(r.slot);
-      const barH = 24;
       const barY = y + (rowH - barH) / 2;
 
-      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": "12.5", fill: cssVar("--text-secondary") }, svg);
-      label.textContent = r.name;
+      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
+      label.textContent = detail ? shortSubsectorLabel(r.sector, r.name) : r.name;
 
       const rect = el("rect", {
         x: barX, y: barY, width: Math.abs(barW), height: barH, rx: "4",
@@ -575,20 +618,20 @@
 
       const valX = r.value >= 0 ? barX + Math.abs(barW) + 8 : barX - 8;
       const valAnchor = r.value >= 0 ? "start" : "end";
-      const valText = el("text", { x: valX, y: y + rowH / 2 + 4, "text-anchor": valAnchor, "font-size": "12.5", "font-weight": "700", fill: cssVar("--text-primary") }, svg);
+      const valText = el("text", { x: valX, y: y + rowH / 2 + 4, "text-anchor": valAnchor, "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
       valText.textContent = fmtAxisValue(metric, r.value);
 
       rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
       rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
       rect.addEventListener("pointermove", (ev) => {
         showTooltip(ev.clientX, ev.clientY, (tt) => {
-          ttTitle(tt, r.name);
+          ttTitle(tt, detail ? (r.sector + " — " + shortSubsectorLabel(r.sector, r.name)) : r.name);
           ttRow(tt, color, ly + "", fmtValue(metric, r.value) + " " + unitLabel(metric));
         });
       });
     });
 
-    buildSectorTableLatest(regionKey, ly, rows, metric);
+    buildSectorTableLatest(regionKey, ly, rows, metric, detail);
   }
 
   function buildSectorChartHistorical(container, regionKey, metric) {
@@ -668,20 +711,24 @@
     buildSectorTableHistorical(regionKey, years, series, metric);
   }
 
-  function buildSectorTableLatest(regionKey, ly, rows, metric) {
+  function buildSectorTableLatest(regionKey, ly, rows, metric, detail) {
     const wrap = document.getElementById("sector-table");
     clearNode(wrap);
     const table = document.createElement("table");
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Sector", unitLabel(metric) + " (" + ly + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
+    const headers = detail
+      ? ["Sector", "Sub-sector", unitLabel(metric) + " (" + ly + ")"]
+      : ["Sector", unitLabel(metric) + " (" + ly + ")"];
+    headers.forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
     thead.appendChild(htr);
     table.appendChild(thead);
     const tbody = document.createElement("tbody");
     rows.forEach(r => {
       const tr = document.createElement("tr");
-      [r.name, fmtValue(metric, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      const cells = detail ? [r.sector, r.name, fmtValue(metric, r.value)] : [r.name, fmtValue(metric, r.value)];
+      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -735,7 +782,7 @@
       title: "Emissions by sector",
       body: [
         "Territorial emissions split by the eight DESNZ sectors (Agriculture, Commercial, Domestic, Industry, LULUCF, Public Sector, Transport, Waste), each summed across their sub-sectors and gases.",
-        "Use the control panel above to switch between totals and per-capita figures, and between a latest-year snapshot and each sector's trend since 2005.",
+        "Use the control panel above to switch between totals and per-capita figures, and between a latest-year snapshot and each sector's trend since 2005. In the latest-year view, tick “Show sub-sector detail” to break each sector down further (e.g. Transport into road, rail and other) — sub-sector figures are only published for the latest year, so this detail isn't available in the historical trend view.",
         "LULUCF (land use, land-use change and forestry) is usually negative — it represents a net carbon sink from woodland, hedgerows and soils, which subtracts from the total rather than adding to it.",
         "For Mid-Hampshire, each sector is the sum of that sector's figure across the four constituent districts."
       ]
@@ -798,7 +845,6 @@
     { tag: "More regions", title: "Build-your-own region", body: "Let anyone tick any combination of current districts and get an instant combined chart — useful if boundaries change again, or to test other groupings." },
     { tag: "Accuracy", title: "Correct for the 11 parishes", body: "Use 2021 Census parish population/dwelling counts to pro-rate the small area moving from Mid-Hampshire to neighbouring unitaries, instead of using whole districts." },
     { tag: "Targets", title: "Compare against a net-zero pathway", body: "Add a target trajectory line — e.g. the Tyndall Centre's local carbon budget, or a locally agreed net-zero target — so the trend can be read against what's actually needed." },
-    { tag: "Detail", title: "Sub-sector drill-down", body: "The source data goes one level deeper than sector (e.g. within Transport: road transport, railways, aviation). Already downloaded, not yet surfaced." },
     { tag: "Other data", title: "Renewable energy generation", body: "DESNZ also publishes local renewable electricity generation by type and capacity — could sit alongside emissions as a second dashboard." },
     { tag: "Other data", title: "Housing & retrofit (EPC data)", body: "Energy Performance Certificate data by district could show housing stock efficiency and retrofit progress, relevant to the large Domestic sector." },
     { tag: "Other data", title: "Transport specifics", body: "EV charge-point density, ULEV registrations and active travel mode share — useful given transport is the single largest sector here." },
@@ -867,6 +913,11 @@
     });
     document.querySelectorAll("[data-view]").forEach(btn => {
       btn.addEventListener("click", () => setView(btn.dataset.view));
+    });
+
+    document.getElementById("sector-detail-toggle").addEventListener("change", (ev) => {
+      currentDetail = ev.target.checked;
+      buildSectorChart(currentRegion);
     });
 
     document.querySelectorAll(".info-btn, .link-btn[data-info]").forEach(btn => {

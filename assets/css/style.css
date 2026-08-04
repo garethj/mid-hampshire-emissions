@@ -159,6 +159,13 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 .chart-wrap { width: 100%; overflow-x: auto; }
 .chart-wrap svg { display: block; width: 100%; height: auto; }
 
+/* ---------- Sector detail toggle ---------- */
+.sector-detail-row { margin: -2px 0 10px; }
+.detail-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+.detail-toggle input { accent-color: var(--brand); cursor: pointer; }
+.sector-detail-row.is-disabled .detail-toggle { opacity: 0.45; cursor: not-allowed; }
+.sector-detail-row.is-disabled .detail-toggle input { cursor: not-allowed; }
+
 /* ---------- Table toggle & table view ---------- */
 .table-toggle {
   font: inherit; font-size: 0.82rem; color: var(--brand); background: none; border: none;
