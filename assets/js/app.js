@@ -8,6 +8,7 @@
   let currentMetric = "per_capita"; // "total" | "per_capita"
   let currentView = "latest"; // "latest" | "historical"
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
+  let currentHorizon = "gwp100"; // "gwp100" (official DESNZ) | "gwp20"
   let tooltipEl = null;
 
   // Region display order for the trend chart, legends and tables — also the source of truth
@@ -70,6 +71,13 @@
 
   function unitShort(metric) {
     return metric === "total" ? "kt" : "t";
+  }
+
+  // Appended to chart/KPI titles whenever the 20-year horizon is active, so it's never ambiguous
+  // which set of figures is on screen — this is the one thing distinguishing an unofficial
+  // GWP20 view from DESNZ's own published GWP100 numbers.
+  function horizonTitleSuffix() {
+    return currentHorizon === "gwp20" ? " (20-year GWP)" : "";
   }
 
   function deltaClass(changeValue) {
@@ -146,9 +154,16 @@
     return DATA.meta.years;
   }
 
+  // Horizon-aware view of a region's year data: under GWP20, total_kt_co2e, per_capita_t_co2e
+  // and sectors_kt_co2e are swapped for their .gwp20 counterparts (see process.py) — everything
+  // else (population_thousands) is unaffected by the horizon, so it passes through unchanged.
+  function yearData(regionKey, year) {
+    const yd = DATA.regions[regionKey].years[year];
+    return currentHorizon === "gwp20" ? Object.assign({}, yd, yd.gwp20) : yd;
+  }
+
   function regionSeriesTotals(regionKey) {
-    const region = DATA.regions[regionKey];
-    return DATA.meta.years.map(y => region.years[y].total_kt_co2e);
+    return DATA.meta.years.map(y => yearData(regionKey, y).total_kt_co2e);
   }
 
   function latestYear() {
@@ -156,12 +171,12 @@
   }
 
   function regionMetricValue(regionKey, year, metric) {
-    const yd = DATA.regions[regionKey].years[year];
+    const yd = yearData(regionKey, year);
     return metric === "total" ? yd.total_kt_co2e : yd.per_capita_t_co2e;
   }
 
   function sectorMetricValue(regionKey, year, sector, metric) {
-    const yd = DATA.regions[regionKey].years[year];
+    const yd = yearData(regionKey, year);
     const raw = yd.sectors_kt_co2e[sector];
     return metric === "total" ? raw : raw / yd.population_thousands;
   }
@@ -169,7 +184,8 @@
   // Sub-sector detail only exists for the latest year (DATA.subsector_detail_latest_year),
   // grouped by parent sector (in SECTOR_ORDER) and sorted by magnitude within each sector.
   function sectorSubrows(regionKey, ly, metric) {
-    const detailBySector = DATA.subsector_detail_latest_year[regionKey];
+    const detailRoot = currentHorizon === "gwp20" ? DATA.subsector_detail_latest_year.gwp20 : DATA.subsector_detail_latest_year;
+    const detailBySector = detailRoot[regionKey];
     const population = DATA.regions[regionKey].years[ly].population_thousands;
     const rows = [];
     SECTOR_ORDER.forEach((sector, i) => {
@@ -198,15 +214,14 @@
   // ---------------- KPI tiles ----------------
 
   function renderKPIs(regionKey) {
-    const region = DATA.regions[regionKey];
     const years = DATA.meta.years;
     const ly = years[years.length - 1];
     const py = years[years.length - 2];
     const baseY = years[0];
 
-    const latest = region.years[ly];
-    const prev = region.years[py];
-    const base = region.years[baseY];
+    const latest = yearData(regionKey, ly);
+    const prev = yearData(regionKey, py);
+    const base = yearData(regionKey, baseY);
 
     const totalDelta = ((latest.total_kt_co2e - prev.total_kt_co2e) / prev.total_kt_co2e) * 100;
     const capitaDelta = ((latest.per_capita_t_co2e - prev.per_capita_t_co2e) / prev.per_capita_t_co2e) * 100;
@@ -215,27 +230,27 @@
     const sinceBase = ((latestVal - baseVal) / baseVal) * 100;
 
     const color = regionColor(regionKey);
-    const trend = years.map(y => region.years[y].total_kt_co2e);
+    const trend = years.map(y => yearData(regionKey, y).total_kt_co2e);
 
     const row = document.getElementById("kpi-row");
     clearNode(row);
 
     row.appendChild(buildKpiTile(
-      "Total emissions, " + ly,
+      "Total emissions, " + ly + horizonTitleSuffix(),
       fmtInt(latest.total_kt_co2e), "kt CO2e",
       totalDelta, py,
       trend, color
     ));
 
     row.appendChild(buildKpiTile(
-      "Per person, " + ly,
+      "Per person, " + ly + horizonTitleSuffix(),
       fmtPerCapita(latest.per_capita_t_co2e), "t CO2e",
       capitaDelta, py,
-      years.map(y => region.years[y].per_capita_t_co2e), color
+      years.map(y => yearData(regionKey, y).per_capita_t_co2e), color
     ));
 
     row.appendChild(buildKpiTileSimple(
-      "Change since " + baseY + (currentMetric === "per_capita" ? " (per person)" : ""),
+      "Change since " + baseY + (currentMetric === "per_capita" ? " (per person)" : "") + horizonTitleSuffix(),
       fmtPct(sinceBase), "",
       sinceBase
     ));
@@ -331,7 +346,7 @@
 
     const metricLabel = metric === "total" ? "Total emissions" : "Emissions per person";
     document.getElementById("trend-chart-title").textContent =
-      metricLabel + ", " + (view === "historical" ? (years[0] + "–" + ly) : ly);
+      metricLabel + ", " + (view === "historical" ? (years[0] + "–" + ly) : ly) + horizonTitleSuffix();
 
     if (view === "historical") {
       buildTrendChartHistorical(container, years, metric);
@@ -639,7 +654,7 @@
 
     const metricLabel = metric === "total" ? "emissions by sector" : "emissions per person by sector";
     document.getElementById("sector-chart-title").textContent =
-      REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly);
+      REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly) + horizonTitleSuffix();
 
     if (view === "historical") {
       buildSectorChartHistorical(container, regionKey, metric);
@@ -842,11 +857,21 @@
         "The Mid-Hampshire decision is subject to a judicial review sought by Hampshire County Council, so that boundary is the current best information, not guaranteed final."
       ]
     },
+    "horizon-toggle": {
+      title: "100-year vs 20-year time horizon",
+      body: [
+        "Methane (CH4) traps far more heat than CO2 while it's in the atmosphere, but breaks down over a decade or two, whereas CO2 lingers for centuries. To compare gases on one scale, emissions statistics weight each gas by its Global Warming Potential (GWP) — how much warming a tonne of it causes relative to a tonne of CO2, over a chosen time window.",
+        "DESNZ's official figures (\"100-year\" here) use GWP100 — the international reporting standard, and the default view on this site. Judged over 100 years, methane is weighted at 28x CO2 (IPCC AR5).",
+        "The \"20-year\" view reweights the same underlying gas quantities using GWP20 instead — methane at 84x CO2, roughly 3x higher than under GWP100. Nitrous oxide (N2O), the other major non-CO2 gas here, barely changes between the two (264x vs 265x), since it persists for over a century either way. Nothing about the underlying emissions changes — only how heavily methane counts.",
+        "Why it matters: a shorter horizon reflects the urgency of near-term warming and the fact that cutting methane now has an outsized effect on the next few decades' peak temperature — a case increasingly made in climate policy discussion, though GWP100 remains the official reporting basis DESNZ, the UK Government and the UNFCCC use. Areas with more livestock farming or landfill waste (both largely methane) look proportionally worse under the 20-year view than the official 100-year figures suggest; areas dominated by transport and heating (mostly CO2) barely move.",
+        "This 20-year view is calculated here, not published by DESNZ — it rescales each gas's contribution to the official CO2e figure by GWP20/GWP100 for that gas (IPCC AR5 Table 8.A.1, without climate-carbon feedbacks: CO2=1/1, CH4=84/28, N2O=264/265). Every other part of the methodology (boundaries, population, sectors) is identical between the two views."
+      ]
+    },
     "trend-chart": {
       title: "Total emissions over time",
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
-        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), and between a single latest-year comparison and the full historical trend.",
+        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means).",
         "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire and Hampshire and the Solent are calculated here by summing the same DESNZ district figures — neither is an official published figure.",
         "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at 2050 — a straight-line \"required pathway\" showing the average pace of reduction still needed to reach net zero by 2050, the target set by Hampshire County Council for the whole Hampshire area (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line. The vertical marker at 2030 is Winchester City Council's own, more ambitious, district-wide carbon-neutral target from its Carbon Neutrality Action Plan.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024 (published 25 June 2026)."
@@ -858,6 +883,7 @@
       body: [
         "Territorial emissions split by the eight DESNZ sectors (Agriculture, Commercial, Domestic, Industry, LULUCF, Public Sector, Transport, Waste), each summed across their sub-sectors and gases.",
         "Use the control panel above to switch between totals and per-person figures, and between a latest-year snapshot and each sector's trend since 2005. In the latest-year view, tick “Show sub-sector detail” to break each sector down further (e.g. Transport into road, rail and other) — sub-sector figures are only published for the latest year, so this detail isn't available in the historical trend view.",
+        "The Time horizon toggle changes how heavily this chart weights methane — switching it to \"20-year\" makes Agriculture and Waste (the two most methane-heavy sectors) noticeably larger relative to the others; Transport, Domestic and Commercial (mostly CO2) barely move. See the \"i\" button next to Time horizon above for why.",
         "LULUCF (land use, land-use change and forestry) is usually negative — it represents a net carbon sink from woodland, hedgerows and soils, which subtracts from the total rather than adding to it.",
         "For Mid-Hampshire, each sector is the sum of that sector's figure across the four constituent districts."
       ]
@@ -867,6 +893,7 @@
       dl: [
         ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2024”, published 25 June 2026."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
+        ["Time horizon", "The default (\"100-year\") view is DESNZ's own published figures, which weight CH4 and N2O by their 100-year Global Warming Potential (GWP100, IPCC AR5: CH4=28, N2O=265, CO2=1) — the international reporting standard. The \"20-year\" view, toggled above the charts, is calculated by this site (not DESNZ) by reweighting the same gas quantities using GWP20 instead (IPCC AR5: CH4=84, N2O=264, CO2=1) — methane counts roughly 3x more heavily, which raises Agriculture- and Waste-heavy areas' figures noticeably. See the Time horizon \"i\" button for the full explanation."],
         ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the 11 parishes moving to neighbouring unitaries (South-West/South-East Hampshire) under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
         ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need the parish-level adjustment above, since it doesn't matter which new unitary those parishes end up in)."],
         ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire, as above)."],
@@ -944,6 +971,21 @@
     buildSectorChart(currentRegion);
   }
 
+  // Horizon is deliberately page-wide (not a per-chart control): it changes which numbers are
+  // "true" everywhere at once, so a body-level class lets CSS reinforce that (e.g. a themed
+  // banner) rather than just re-rendering the two charts in isolation.
+  function setHorizon(horizon) {
+    currentHorizon = horizon;
+    document.querySelectorAll("[data-horizon]").forEach(b => {
+      b.classList.toggle("is-active", b.dataset.horizon === horizon);
+    });
+    document.body.classList.toggle("horizon-gwp20", horizon === "gwp20");
+    document.getElementById("horizon-banner").classList.toggle("is-hidden", horizon !== "gwp20");
+    renderKPIs(currentRegion);
+    buildTrendChart();
+    buildSectorChart(currentRegion);
+  }
+
   function wireEvents() {
     document.querySelectorAll(".region-toggle .seg-btn").forEach(btn => {
       btn.addEventListener("click", () => setRegion(btn.dataset.region));
@@ -954,6 +996,9 @@
     });
     document.querySelectorAll("[data-view]").forEach(btn => {
       btn.addEventListener("click", () => setView(btn.dataset.view));
+    });
+    document.querySelectorAll("[data-horizon]").forEach(btn => {
+      btn.addEventListener("click", () => setHorizon(btn.dataset.horizon));
     });
 
     document.getElementById("sector-detail-toggle").addEventListener("change", (ev) => {

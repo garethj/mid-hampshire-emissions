@@ -44,6 +44,20 @@
           <button class="seg-btn" data-view="historical">Historical trend</button>
         </div>
       </div>
+      <div class="control-group" role="group" aria-label="Choose time horizon">
+        <span class="control-label">Time horizon
+          <button class="info-btn" data-info="horizon-toggle" aria-label="About time horizon">i</button>
+        </span>
+        <div class="seg-toggle">
+          <button class="seg-btn is-active" data-horizon="gwp100">100-year (official)</button>
+          <button class="seg-btn" data-horizon="gwp20">20-year</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="horizon-banner is-hidden" id="horizon-banner">
+      Showing the unofficial <strong>20-year</strong> time horizon (GWP20) — methane-heavy figures (Agriculture, Waste) run higher here than DESNZ's official 100-year figures.
+      <button class="link-btn" data-info="horizon-toggle">Why?</button>
     </div>
 
     <div class="kpi-row" id="kpi-row">

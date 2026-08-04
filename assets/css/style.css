@@ -118,9 +118,22 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
   padding: 12px 16px; margin-bottom: 22px;
 }
 .control-group { display: flex; align-items: center; gap: 10px; }
-.control-label { font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); }
+.control-label { font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; }
 .seg-toggle { display: inline-flex; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-toggle .seg-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Horizon banner & page-wide indicator ---------- */
+/* The 20-year GWP view is a page-wide reweighting, not a per-chart option, so its cue needs to
+   be visible everywhere at once: a dismissible-feeling banner plus a thin accent border that
+   rides along every card and tile for as long as the toggle is set to "20-year". */
+.horizon-banner {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: rgba(235,104,52,0.10); border: 1px solid rgba(235,104,52,0.35);
+  border-radius: 10px; padding: 10px 16px; margin: -8px 0 22px; font-size: 0.85rem; color: var(--text-secondary);
+}
+.horizon-banner.is-hidden { display: none; }
+.horizon-banner strong { color: var(--series-2); }
+body.horizon-gwp20 .kpi-tile, body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 
 /* ---------- Info button ---------- */
 .info-btn {

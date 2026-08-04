@@ -10,6 +10,7 @@ Live site: hosted on GitHub Pages from this repo's `main` branch, `/` root.
 - Data: [DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024](https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible) (published 25 June 2026).
 - Mid-Hampshire figures are not official — they're built from the four constituent districts' published figures, each scaled down by its 2021 Census parish population share to exclude the 11 parishes that move to neighbouring unitaries under the same LGR decision (no official sub-district emissions data exists, so this is a proxy, not an exact figure). See the in-app methodology notes (the "i" buttons) for the per-district scaling factors and other caveats.
 - Hampshire and the Solent figures are also not official — they're the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (no parish-level correction needed, since that boundary doesn't depend on which new unitary the 11 parishes end up in).
+- A page-wide "Time horizon" toggle switches every figure between DESNZ's official 100-year Global Warming Potential basis (GWP100, the default) and an unofficial 20-year basis (GWP20) computed by this site, which weights methane roughly 3x more heavily — see the in-app "i" button next to the toggle for why that matters, and the caveat below.
 
 ## Structure
 
@@ -26,7 +27,7 @@ data/mid_hampshire_emissions.js     same data as above, wrapped as `window.MHE_D
 DESNZ typically publishes a new release each summer. To refresh:
 
 1. Find the new CSV on the [DESNZ collection page](https://www.gov.uk/government/collections/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics) (look for the "Full dataset (csv)" link) and download it somewhere local.
-2. From the `data/` directory, run `python3 process.py /path/to/downloaded.csv`. It filters the CSV to the 14 local authorities needed across all three regions (Winchester's, Mid-Hampshire's four, and Hampshire and the Solent's fourteen — see `MID_HAMPSHIRE_LAS`/`HAMPSHIRE_SOLENT_LAS` in `process.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place.
+2. From the `data/` directory, run `python3 process.py /path/to/downloaded.csv`. It filters the CSV to the 14 local authorities needed across all three regions (Winchester's, Mid-Hampshire's four, and Hampshire and the Solent's fourteen — see `MID_HAMPSHIRE_LAS`/`HAMPSHIRE_SOLENT_LAS` in `process.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place. It also reads the CSV's per-row `Greenhouse gas` column to compute a parallel 20-year-GWP ("gwp20") view of every figure alongside the official 100-year one — see `GWP100`/`GWP20` in `process.py`.
 3. Commit both updated files. No other changes needed — the app reads whatever years/sectors are in the file. The raw source CSV is not committed to this repo (it's ~80MB); keep it locally or re-download if needed.
 
 ## Local development
@@ -38,6 +39,7 @@ No build step, no server. Just open `index.html` directly in a browser (double-c
 - Mid-Hampshire's true boundary excludes 11 parishes moving to South-West/South-East Hampshire. No sub-district emissions data exists, so this is corrected by scaling each district down by its 2021 Census parish population share (a proxy based on population, not actual emissions in those parishes) rather than left uncorrected.
 - The LGR decision (25 March 2026) is subject to a judicial review sought by Hampshire County Council.
 - DESNZ data lags roughly 18–24 months behind the current year.
+- The 20-year GWP view isn't an official DESNZ output — it's calculated in this repo by rescaling DESNZ's own published per-gas CO2e figures using IPCC AR5 GWP20 factors (see `note_gwp20` in `mid_hampshire_emissions.json`). It uses the same fixed AR5 factors DESNZ uses for GWP100 (not a newer assessment report), and doesn't split methane into fossil/non-fossil sub-types, since DESNZ's own local-authority dataset doesn't either.
 
 See [ROADMAP.md](ROADMAP.md) for a longer list of possible extensions.
 
