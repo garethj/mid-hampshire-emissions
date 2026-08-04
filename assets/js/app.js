@@ -12,13 +12,6 @@
     "mid-hampshire": "Mid-Hampshire"
   };
 
-  const DISTRICT_COLOR_SLOT = {
-    "Winchester": 1,
-    "East Hampshire": 2,
-    "New Forest": 3,
-    "Test Valley": 4
-  };
-
   const SECTOR_ORDER = ["Agriculture", "Commercial", "Domestic", "Industry", "LULUCF", "Public Sector", "Transport", "Waste"];
 
   // ---------------- helpers ----------------
@@ -481,115 +474,6 @@
     wrap.appendChild(table);
   }
 
-  // ---------------- composition (stacked area) chart ----------------
-
-  function buildCompositionChart() {
-    const container = document.getElementById("composition-chart");
-    clearNode(container);
-
-    const years = DATA.meta.years;
-    const districts = ["Winchester", "East Hampshire", "New Forest", "Test Valley"];
-    const perDistrict = {};
-    districts.forEach(d => { perDistrict[d] = years.map(y => DATA.district_contributions[y][d]); });
-
-    const W = 860, H = 320;
-    const M = { top: 20, right: 130, bottom: 32, left: 56 };
-    const plotW = W - M.left - M.right;
-    const plotH = H - M.top - M.bottom;
-
-    const totals = years.map((y, i) => districts.reduce((s, d) => s + perDistrict[d][i], 0));
-    const maxVal = Math.max(...totals) * 1.05;
-
-    const svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    container.appendChild(svg);
-
-    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
-    const yScale = v => M.top + plotH - (v / maxVal) * plotH;
-
-    const yTicks = 5;
-    for (let t = 0; t <= yTicks; t++) {
-      const val = (maxVal / yTicks) * t;
-      const yy = yScale(val);
-      el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
-      const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = fmtInt(val);
-    }
-    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
-    xTickYears.forEach(y => {
-      const i = years.indexOf(y);
-      const txt = el("text", { x: xScale(i), y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = y;
-    });
-
-    let cumLow = years.map(() => 0);
-    const bandLabels = [];
-    districts.forEach(d => {
-      const vals = perDistrict[d];
-      const cumHigh = cumLow.map((lo, i) => lo + vals[i]);
-      let dPath = "";
-      years.forEach((y, i) => { dPath += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(cumLow[i]).toFixed(1) + " "; });
-      for (let i = years.length - 1; i >= 0; i--) { dPath += "L" + xScale(i).toFixed(1) + "," + yScale(cumHigh[i]).toFixed(1) + " "; }
-      dPath += "Z";
-      const color = seriesColor(DISTRICT_COLOR_SLOT[d]);
-      const band = el("path", { d: dPath, fill: color, "fill-opacity": "0.88", stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
-      band.style.cursor = "pointer";
-      band.addEventListener("pointermove", (ev) => {
-        const rect = svg.getBoundingClientRect();
-        const scaleX = W / rect.width;
-        const localX = (ev.clientX - rect.left) * scaleX;
-        let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
-        idx = Math.max(0, Math.min(years.length - 1, idx));
-        showTooltip(ev.clientX, ev.clientY, (tt) => {
-          ttTitle(tt, d + " — " + years[idx]);
-          ttRow(tt, color, "Emissions", fmtKt(vals[idx]) + " kt CO2e");
-          const totalY = totals[years.indexOf(years[idx])];
-          ttRow(tt, null, "Share of Mid-Hampshire", ((vals[idx] / totalY) * 100).toFixed(1) + "%");
-        });
-      });
-      band.addEventListener("pointerleave", hideTooltip);
-      bandLabels.push({ name: d, color: color, y: yScale((cumLow[years.length - 1] + cumHigh[years.length - 1]) / 2) });
-      cumLow = cumHigh;
-    });
-
-    bandLabels.sort((a, b) => a.y - b.y);
-    for (let i = 1; i < bandLabels.length; i++) {
-      if (bandLabels[i].y - bandLabels[i - 1].y < 14) bandLabels[i].y = bandLabels[i - 1].y + 14;
-    }
-    bandLabels.forEach(b => {
-      const dot = el("circle", { cx: M.left + plotW + 10, cy: b.y, r: "3.5", fill: b.color }, svg);
-      const txt = el("text", { x: M.left + plotW + 18, y: b.y + 4, "font-size": "12", fill: cssVar("--text-primary") }, svg);
-      txt.textContent = b.name;
-    });
-
-    el("line", { x1: M.left, x2: M.left + plotW, y1: M.top + plotH, y2: M.top + plotH, stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
-
-    buildCompositionTable(years, districts, perDistrict, totals);
-  }
-
-  function buildCompositionTable(years, districts, perDistrict, totals) {
-    const wrap = document.getElementById("composition-table");
-    clearNode(wrap);
-    const table = document.createElement("table");
-    table.className = "data-table";
-    const thead = document.createElement("thead");
-    const htr = document.createElement("tr");
-    ["Year"].concat(districts).concat(["Mid-Hampshire total"]).forEach(h => {
-      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
-    });
-    thead.appendChild(htr);
-    table.appendChild(thead);
-    const tbody = document.createElement("tbody");
-    years.forEach((y, i) => {
-      const tr = document.createElement("tr");
-      const cells = [y].concat(districts.map(d => fmtKt(perDistrict[d][i]))).concat([fmtKt(totals[i])]);
-      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
-      tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-    wrap.appendChild(table);
-  }
-
   // ---------------- info modal ----------------
 
   const INFO_CONTENT = {
@@ -615,13 +499,6 @@
         "The same year's territorial emissions, split by the eight DESNZ sectors (Agriculture, Commercial, Domestic, Industry, LULUCF, Public Sector, Transport, Waste), each summed across their sub-sectors and gases.",
         "LULUCF (land use, land-use change and forestry) is usually negative — it represents a net carbon sink from woodland, hedgerows and soils, which subtracts from the total rather than adding to it.",
         "For Mid-Hampshire, each sector is the sum of that sector's figure across the four constituent districts."
-      ]
-    },
-    "composition-chart": {
-      title: "What makes up Mid-Hampshire?",
-      body: [
-        "Shows how much each of the four constituent districts contributes to the Mid-Hampshire total in each year, 2005–2023.",
-        "Known limitation: the final Mid-Hampshire boundary excludes 11 parishes that move to South-West or South-East Hampshire instead (including Chilworth, Nursling, Rownhams and Valley Park from Test Valley). No official emissions data exists below district level, so this chart — and the Mid-Hampshire figures throughout this site — use the whole districts and slightly overstate the true final-boundary footprint. See the roadmap tab for a possible future fix."
       ]
     },
     "general-methodology": {
@@ -687,7 +564,7 @@
     { tag: "Other data", title: "Renewable energy generation", body: "DESNZ also publishes local renewable electricity generation by type and capacity — could sit alongside emissions as a second dashboard." },
     { tag: "Other data", title: "Housing & retrofit (EPC data)", body: "Energy Performance Certificate data by district could show housing stock efficiency and retrofit progress, relevant to the large Domestic sector." },
     { tag: "Other data", title: "Transport specifics", body: "EV charge-point density, ULEV registrations and active travel mode share — useful given transport is the single largest sector here." },
-    { tag: "Visuals", title: "Map view", body: "A choropleth map of the constituent districts, using free ONS boundary files, as an alternative to the stacked composition chart." },
+    { tag: "Visuals", title: "Map view", body: "A choropleth map of the constituent districts, using free ONS boundary files, showing each district's share of the Mid-Hampshire total." },
     { tag: "Usability", title: "Download the data", body: "A one-click CSV export of whatever's currently on screen, for anyone who wants to do their own analysis." },
     { tag: "Usability", title: "Interactive legends", body: "Click a legend entry to isolate that series on the chart — handy once there are more than two or three regions or sectors on screen at once." }
   ];
@@ -754,7 +631,6 @@
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
         buildTrendChart();
         buildSectorChart(currentRegion);
-        buildCompositionChart();
       });
     }
   }
@@ -778,7 +654,6 @@
     wireEvents();
     setRegion("winchester");
     buildTrendChart();
-    buildCompositionChart();
     renderRoadmap();
   }
 
