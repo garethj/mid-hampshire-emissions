@@ -5,7 +5,7 @@
 
   let DATA = null;
   let currentRegion = "winchester";
-  let currentMetric = "total"; // "total" | "per_capita"
+  let currentMetric = "per_capita"; // "total" | "per_capita"
   let currentView = "latest"; // "latest" | "historical"
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let tooltipEl = null;
@@ -792,7 +792,7 @@
       title: "Total emissions over time",
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2023, summed across all sectors.",
-        "Use the control panel above to switch between totals (kt CO2e) and per-capita figures (t CO2e per person), and between a single latest-year comparison and the full historical trend.",
+        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), and between a single latest-year comparison and the full historical trend.",
         "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire is calculated here by summing the same DESNZ figures for East Hampshire, Winchester, New Forest and Test Valley — it is not an official published figure.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2023 (published 3 July 2025)."
       ],
@@ -802,7 +802,7 @@
       title: "Emissions by sector",
       body: [
         "Territorial emissions split by the eight DESNZ sectors (Agriculture, Commercial, Domestic, Industry, LULUCF, Public Sector, Transport, Waste), each summed across their sub-sectors and gases.",
-        "Use the control panel above to switch between totals and per-capita figures, and between a latest-year snapshot and each sector's trend since 2005. In the latest-year view, tick “Show sub-sector detail” to break each sector down further (e.g. Transport into road, rail and other) — sub-sector figures are only published for the latest year, so this detail isn't available in the historical trend view.",
+        "Use the control panel above to switch between totals and per-person figures, and between a latest-year snapshot and each sector's trend since 2005. In the latest-year view, tick “Show sub-sector detail” to break each sector down further (e.g. Transport into road, rail and other) — sub-sector figures are only published for the latest year, so this detail isn't available in the historical trend view.",
         "LULUCF (land use, land-use change and forestry) is usually negative — it represents a net carbon sink from woodland, hedgerows and soils, which subtracts from the total rather than adding to it.",
         "For Mid-Hampshire, each sector is the sum of that sector's figure across the four constituent districts."
       ]
@@ -813,7 +813,7 @@
         ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2023”, published 3 July 2025."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
         ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley (whole districts), per the Government's LGR decision of 25 March 2026. Excludes 11 parishes moving to neighbouring unitaries, which cannot be corrected for as no sub-district emissions data is published. Decision subject to possible judicial review."],
-        ["Population / per-capita", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for Mid-Hampshire."],
+        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for Mid-Hampshire."],
         ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 29 July 2026 and is updated manually when a new release lands."],
         ["Data & code", "Every figure on this site traces back to the single published CSV linked below — nothing here is estimated or modelled beyond straightforward addition of official district-level figures."]
       ],
