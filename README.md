@@ -1,4 +1,4 @@
-# Mid-Hampshire Emissions Explorer
+# Hampshire Emissions Explorer
 
 A small, static, client-side dashboard comparing greenhouse gas emissions for Winchester and the proposed Mid-Hampshire unitary authority (East Hampshire + Winchester + New Forest + Test Valley), built for the Hampshire Local Government Reorganisation working group.
 
