@@ -40,8 +40,14 @@
    "New Forest",
    "Test Valley"
   ],
-  "note_boundary": "Mid-Hampshire (proposed unitary, decision 25 March 2026) = East Hampshire + Winchester + New Forest + Test Valley in full, minus 11 parishes moving to South-West/South-East Hampshire (incl. Chilworth, Nursling, Rownhams, Valley Park from Test Valley). No official sub-district emissions data exists, so this parish-level adjustment is not applied here; the Mid-Hampshire figures are a straight sum of the four whole districts and will slightly overstate the true final-boundary footprint.",
-  "generated": "2026-07-29"
+  "note_boundary": "Mid-Hampshire (proposed unitary, decision 25 March 2026) = East Hampshire + Winchester + New Forest + Test Valley, adjusted to exclude the 11 parishes moving to South-West/South-East Hampshire under the same decision (Clanfield, Horndean, Rowlands Castle from East Hampshire; Newlands from Winchester; Totton and Eling, Marchwood, Hythe and Dibden, Fawley from New Forest; Chilworth, Nursling and Rownhams, Valley Park from Test Valley). No official sub-district emissions data exists, so each district's contribution is scaled down by its 2021 Census parish population share instead of using the whole district \u2014 see mid_hampshire_retained_fraction.",
+  "mid_hampshire_retained_fraction": {
+   "East Hampshire": 0.8195,
+   "Winchester": 0.9773,
+   "New Forest": 0.6096,
+   "Test Valley": 0.888
+  },
+  "generated": "2026-08-04"
  },
  "areas_km2": {
   "East Hampshire": 514.4322,
@@ -353,407 +359,291 @@
    ],
    "years": {
     "2005": {
-     "total_kt_co2e": 6432.7698,
-     "population_thousands": 505.663,
-     "per_capita_t_co2e": 12.7215,
+     "total_kt_co2e": 4926.1352,
+     "population_thousands": 403.281,
+     "per_capita_t_co2e": 12.2152,
      "sectors_kt_co2e": {
-      "Agriculture": 464.3246,
-      "Commercial": 593.2364,
-      "Domestic": 1416.3256,
-      "Industry": 1826.0228,
-      "LULUCF": -228.0952,
-      "Public Sector": 217.6199,
-      "Transport": 1796.4896,
-      "Waste": 346.8461
+      "Agriculture": 388.4221,
+      "Commercial": 490.6693,
+      "Domestic": 1130.1634,
+      "Industry": 1172.9008,
+      "LULUCF": -167.3603,
+      "Public Sector": 183.3989,
+      "Transport": 1471.1022,
+      "Waste": 256.8388
      }
     },
     "2006": {
-     "total_kt_co2e": 6102.6494,
-     "population_thousands": 508.558,
-     "per_capita_t_co2e": 11.9999,
+     "total_kt_co2e": 4713.4386,
+     "population_thousands": 405.632,
+     "per_capita_t_co2e": 11.62,
      "sectors_kt_co2e": {
-      "Agriculture": 441.0235,
-      "Commercial": 575.1496,
-      "Domestic": 1424.2232,
-      "Industry": 1618.1098,
-      "LULUCF": -235.4957,
-      "Public Sector": 190.8825,
-      "Transport": 1786.0041,
-      "Waste": 302.7524
+      "Agriculture": 370.4526,
+      "Commercial": 480.2709,
+      "Domestic": 1138.5886,
+      "Industry": 1044.8928,
+      "LULUCF": -172.6944,
+      "Public Sector": 161.4715,
+      "Transport": 1461.3937,
+      "Waste": 229.0629
      }
     },
     "2007": {
-     "total_kt_co2e": 6251.8309,
-     "population_thousands": 512.597,
-     "per_capita_t_co2e": 12.1964,
+     "total_kt_co2e": 4781.6508,
+     "population_thousands": 409.029,
+     "per_capita_t_co2e": 11.6903,
      "sectors_kt_co2e": {
-      "Agriculture": 446.0109,
-      "Commercial": 566.6417,
-      "Domestic": 1360.0167,
-      "Industry": 1870.8179,
-      "LULUCF": -243.0535,
-      "Public Sector": 179.9497,
-      "Transport": 1800.9504,
-      "Waste": 270.4971
+      "Agriculture": 374.8182,
+      "Commercial": 473.4287,
+      "Domestic": 1087.0735,
+      "Industry": 1196.9895,
+      "LULUCF": -178.6818,
+      "Public Sector": 151.8498,
+      "Transport": 1475.3692,
+      "Waste": 200.8037
      }
     },
     "2008": {
-     "total_kt_co2e": 6035.5312,
-     "population_thousands": 516.088,
-     "per_capita_t_co2e": 11.6948,
+     "total_kt_co2e": 4638.2999,
+     "population_thousands": 412.059,
+     "per_capita_t_co2e": 11.2564,
      "sectors_kt_co2e": {
-      "Agriculture": 454.2642,
-      "Commercial": 568.5915,
-      "Domestic": 1379.129,
-      "Industry": 1725.1822,
-      "LULUCF": -255.5776,
-      "Public Sector": 176.5511,
-      "Transport": 1740.6514,
-      "Waste": 246.7394
+      "Agriculture": 382.995,
+      "Commercial": 476.1788,
+      "Domestic": 1102.6297,
+      "Industry": 1105.2729,
+      "LULUCF": -188.562,
+      "Public Sector": 149.7299,
+      "Transport": 1423.8836,
+      "Waste": 186.172
      }
     },
     "2009": {
-     "total_kt_co2e": 5658.7834,
-     "population_thousands": 519.449,
-     "per_capita_t_co2e": 10.8938,
+     "total_kt_co2e": 4344.9943,
+     "population_thousands": 414.833,
+     "per_capita_t_co2e": 10.4741,
      "sectors_kt_co2e": {
-      "Agriculture": 441.2333,
-      "Commercial": 514.744,
-      "Domestic": 1257.6132,
-      "Industry": 1670.2579,
-      "LULUCF": -256.2143,
-      "Public Sector": 164.3247,
-      "Transport": 1678.2215,
-      "Waste": 188.6031
+      "Agriculture": 371.7038,
+      "Commercial": 432.7673,
+      "Domestic": 1006.0504,
+      "Industry": 1067.544,
+      "LULUCF": -188.4933,
+      "Public Sector": 140.0767,
+      "Transport": 1374.2619,
+      "Waste": 141.0835
      }
     },
     "2010": {
-     "total_kt_co2e": 4937.3982,
-     "population_thousands": 523.276,
-     "per_capita_t_co2e": 9.4356,
+     "total_kt_co2e": 3929.7207,
+     "population_thousands": 418.023,
+     "per_capita_t_co2e": 9.4007,
      "sectors_kt_co2e": {
-      "Agriculture": 438.5023,
-      "Commercial": 530.3523,
-      "Domestic": 1354.0442,
-      "Industry": 858.6051,
-      "LULUCF": -257.64,
-      "Public Sector": 171.0053,
-      "Transport": 1667.7501,
-      "Waste": 174.7789
+      "Agriculture": 369.9311,
+      "Commercial": 446.055,
+      "Domestic": 1084.0854,
+      "Industry": 578.4441,
+      "LULUCF": -189.4744,
+      "Public Sector": 145.9038,
+      "Transport": 1365.1543,
+      "Waste": 129.6214
      }
     },
     "2011": {
-     "total_kt_co2e": 4498.1234,
-     "population_thousands": 526.317,
-     "per_capita_t_co2e": 8.5464,
+     "total_kt_co2e": 3605.4599,
+     "population_thousands": 420.641,
+     "per_capita_t_co2e": 8.5713,
      "sectors_kt_co2e": {
-      "Agriculture": 420.3688,
-      "Commercial": 495.0151,
-      "Domestic": 1191.5238,
-      "Industry": 678.656,
-      "LULUCF": -265.1653,
-      "Public Sector": 154.8695,
-      "Transport": 1645.4493,
-      "Waste": 177.4062
+      "Agriculture": 354.7912,
+      "Commercial": 415.7302,
+      "Domestic": 954.6385,
+      "Industry": 464.8158,
+      "LULUCF": -195.2252,
+      "Public Sector": 131.8099,
+      "Transport": 1347.3203,
+      "Waste": 131.5792
      }
     },
     "2012": {
-     "total_kt_co2e": 4659.1016,
-     "population_thousands": 528.822,
-     "per_capita_t_co2e": 8.8103,
+     "total_kt_co2e": 3739.6353,
+     "population_thousands": 422.849,
+     "per_capita_t_co2e": 8.8439,
      "sectors_kt_co2e": {
-      "Agriculture": 426.2772,
-      "Commercial": 535.38,
-      "Domestic": 1276.8252,
-      "Industry": 692.7557,
-      "LULUCF": -254.735,
-      "Public Sector": 169.6963,
-      "Transport": 1624.748,
-      "Waste": 188.1542
+      "Agriculture": 360.424,
+      "Commercial": 451.4039,
+      "Domestic": 1022.4655,
+      "Industry": 475.4275,
+      "LULUCF": -187.1902,
+      "Public Sector": 144.9198,
+      "Transport": 1333.3127,
+      "Waste": 138.8721
      }
     },
     "2013": {
-     "total_kt_co2e": 4542.1584,
-     "population_thousands": 532.509,
-     "per_capita_t_co2e": 8.5297,
+     "total_kt_co2e": 3645.945,
+     "population_thousands": 426.06,
+     "per_capita_t_co2e": 8.5574,
      "sectors_kt_co2e": {
-      "Agriculture": 426.3025,
-      "Commercial": 503.8793,
-      "Domestic": 1244.475,
-      "Industry": 695.1649,
-      "LULUCF": -268.984,
-      "Public Sector": 165.6618,
-      "Transport": 1613.1039,
-      "Waste": 162.555
+      "Agriculture": 361.6261,
+      "Commercial": 423.3289,
+      "Domestic": 997.183,
+      "Industry": 475.7893,
+      "LULUCF": -198.0698,
+      "Public Sector": 141.0442,
+      "Transport": 1324.741,
+      "Waste": 120.3023
      }
     },
     "2014": {
-     "total_kt_co2e": 4002.3872,
-     "population_thousands": 536.305,
-     "per_capita_t_co2e": 7.4629,
+     "total_kt_co2e": 3259.2121,
+     "population_thousands": 429.349,
+     "per_capita_t_co2e": 7.5911,
      "sectors_kt_co2e": {
-      "Agriculture": 406.4449,
-      "Commercial": 430.8514,
-      "Domestic": 1069.9473,
-      "Industry": 389.0258,
-      "LULUCF": -267.2594,
-      "Public Sector": 141.7861,
-      "Transport": 1659.4342,
-      "Waste": 172.1569
+      "Agriculture": 344.2611,
+      "Commercial": 361.3302,
+      "Domestic": 857.7934,
+      "Industry": 283.0222,
+      "LULUCF": -196.812,
+      "Public Sector": 120.788,
+      "Transport": 1360.4141,
+      "Waste": 128.4151
      }
     },
     "2015": {
-     "total_kt_co2e": 3853.8504,
-     "population_thousands": 540.269,
-     "per_capita_t_co2e": 7.1332,
+     "total_kt_co2e": 3148.0845,
+     "population_thousands": 432.97,
+     "per_capita_t_co2e": 7.2709,
      "sectors_kt_co2e": {
-      "Agriculture": 418.9538,
-      "Commercial": 365.1337,
-      "Domestic": 1025.2086,
-      "Industry": 311.8683,
-      "LULUCF": -273.2371,
-      "Public Sector": 123.3817,
-      "Transport": 1683.6729,
-      "Waste": 198.8685
+      "Agriculture": 355.373,
+      "Commercial": 304.9104,
+      "Domestic": 822.1133,
+      "Industry": 231.9361,
+      "LULUCF": -201.6488,
+      "Public Sector": 105.0192,
+      "Transport": 1380.5113,
+      "Waste": 149.87
      }
     },
     "2016": {
-     "total_kt_co2e": 3746.7767,
-     "population_thousands": 543.671,
-     "per_capita_t_co2e": 6.8916,
+     "total_kt_co2e": 3061.9489,
+     "population_thousands": 436.1,
+     "per_capita_t_co2e": 7.0212,
      "sectors_kt_co2e": {
-      "Agriculture": 398.6246,
-      "Commercial": 304.5675,
-      "Domestic": 976.8323,
-      "Industry": 294.2886,
-      "LULUCF": -260.8518,
-      "Public Sector": 103.4259,
-      "Transport": 1743.2901,
-      "Waste": 186.5995
+      "Agriculture": 338.1103,
+      "Commercial": 255.7122,
+      "Domestic": 783.7109,
+      "Industry": 218.6148,
+      "LULUCF": -191.6278,
+      "Public Sector": 88.2574,
+      "Transport": 1429.1376,
+      "Waste": 140.0335
      }
     },
     "2017": {
-     "total_kt_co2e": 3643.0265,
-     "population_thousands": 546.088,
-     "per_capita_t_co2e": 6.6711,
+     "total_kt_co2e": 2977.5715,
+     "population_thousands": 438.352,
+     "per_capita_t_co2e": 6.7926,
      "sectors_kt_co2e": {
-      "Agriculture": 399.631,
-      "Commercial": 258.1555,
-      "Domestic": 917.7353,
-      "Industry": 301.8757,
-      "LULUCF": -271.4433,
-      "Public Sector": 97.2752,
-      "Transport": 1761.0859,
-      "Waste": 178.7112
+      "Agriculture": 339.1447,
+      "Commercial": 216.2297,
+      "Domestic": 736.3673,
+      "Industry": 224.1281,
+      "LULUCF": -199.6661,
+      "Public Sector": 83.0171,
+      "Transport": 1445.0514,
+      "Waste": 133.2993
      }
     },
     "2018": {
-     "total_kt_co2e": 3602.6113,
-     "population_thousands": 548.523,
-     "per_capita_t_co2e": 6.5678,
+     "total_kt_co2e": 2943.774,
+     "population_thousands": 440.468,
+     "per_capita_t_co2e": 6.6833,
      "sectors_kt_co2e": {
-      "Agriculture": 372.8995,
-      "Commercial": 309.667,
-      "Domestic": 906.2642,
-      "Industry": 278.4391,
-      "LULUCF": -269.9083,
-      "Public Sector": 96.9448,
-      "Transport": 1733.9356,
-      "Waste": 174.3694
+      "Agriculture": 315.4013,
+      "Commercial": 260.0702,
+      "Domestic": 727.5767,
+      "Industry": 204.1787,
+      "LULUCF": -198.5987,
+      "Public Sector": 83.3992,
+      "Transport": 1423.3175,
+      "Waste": 128.4291
      }
     },
     "2019": {
-     "total_kt_co2e": 3397.7778,
-     "population_thousands": 551.324,
-     "per_capita_t_co2e": 6.1629,
+     "total_kt_co2e": 2784.051,
+     "population_thousands": 443.014,
+     "per_capita_t_co2e": 6.2843,
      "sectors_kt_co2e": {
-      "Agriculture": 382.4416,
-      "Commercial": 255.5721,
-      "Domestic": 864.7098,
-      "Industry": 276.0041,
-      "LULUCF": -273.1349,
-      "Public Sector": 83.3467,
-      "Transport": 1674.7694,
-      "Waste": 134.069
+      "Agriculture": 324.1374,
+      "Commercial": 214.3939,
+      "Domestic": 694.5079,
+      "Industry": 202.9816,
+      "LULUCF": -201.1047,
+      "Public Sector": 70.8633,
+      "Transport": 1376.5011,
+      "Waste": 101.7705
      }
     },
     "2020": {
-     "total_kt_co2e": 3012.367,
-     "population_thousands": 554.274,
-     "per_capita_t_co2e": 5.4348,
+     "total_kt_co2e": 2463.2894,
+     "population_thousands": 445.973,
+     "per_capita_t_co2e": 5.5234,
      "sectors_kt_co2e": {
-      "Agriculture": 365.2845,
-      "Commercial": 217.3768,
-      "Domestic": 860.4399,
-      "Industry": 257.307,
-      "LULUCF": -277.7389,
-      "Public Sector": 81.5252,
-      "Transport": 1386.0385,
-      "Waste": 122.134
+      "Agriculture": 309.6833,
+      "Commercial": 181.6114,
+      "Domestic": 691.6178,
+      "Industry": 189.1006,
+      "LULUCF": -204.3601,
+      "Public Sector": 69.3986,
+      "Transport": 1136.4535,
+      "Waste": 89.7843
      }
     },
     "2021": {
-     "total_kt_co2e": 3167.5784,
-     "population_thousands": 561.488,
-     "per_capita_t_co2e": 5.6414,
+     "total_kt_co2e": 2590.0547,
+     "population_thousands": 452.326,
+     "per_capita_t_co2e": 5.7261,
      "sectors_kt_co2e": {
-      "Agriculture": 370.9666,
-      "Commercial": 245.6463,
-      "Domestic": 867.6051,
-      "Industry": 266.2197,
-      "LULUCF": -268.2291,
-      "Public Sector": 87.7825,
-      "Transport": 1460.2196,
-      "Waste": 137.3677
+      "Agriculture": 314.743,
+      "Commercial": 205.2979,
+      "Domestic": 698.0261,
+      "Industry": 196.6093,
+      "LULUCF": -197.0697,
+      "Public Sector": 74.5601,
+      "Transport": 1198.3433,
+      "Waste": 99.5447
      }
     },
     "2022": {
-     "total_kt_co2e": 2980.6122,
-     "population_thousands": 566.738,
-     "per_capita_t_co2e": 5.2592,
+     "total_kt_co2e": 2442.8686,
+     "population_thousands": 457.231,
+     "per_capita_t_co2e": 5.3427,
      "sectors_kt_co2e": {
-      "Agriculture": 351.6004,
-      "Commercial": 250.3444,
-      "Domestic": 741.3906,
-      "Industry": 224.034,
-      "LULUCF": -259.5779,
-      "Public Sector": 79.9366,
-      "Transport": 1461.7254,
-      "Waste": 131.1587
+      "Agriculture": 298.3935,
+      "Commercial": 204.7116,
+      "Domestic": 596.7058,
+      "Industry": 168.3008,
+      "LULUCF": -190.5233,
+      "Public Sector": 68.0547,
+      "Transport": 1201.9811,
+      "Waste": 95.2444
      }
     },
     "2023": {
-     "total_kt_co2e": 2877.6822,
-     "population_thousands": 570.739,
-     "per_capita_t_co2e": 5.042,
+     "total_kt_co2e": 2358.0963,
+     "population_thousands": 461.018,
+     "per_capita_t_co2e": 5.115,
      "sectors_kt_co2e": {
-      "Agriculture": 345.2454,
-      "Commercial": 211.4358,
-      "Domestic": 694.6724,
-      "Industry": 214.751,
-      "LULUCF": -258.5526,
-      "Public Sector": 70.5557,
-      "Transport": 1442.8746,
-      "Waste": 156.6999
+      "Agriculture": 294.1511,
+      "Commercial": 172.9991,
+      "Domestic": 559.5274,
+      "Industry": 159.8107,
+      "LULUCF": -190.0302,
+      "Public Sector": 59.9212,
+      "Transport": 1186.3312,
+      "Waste": 115.3858
      }
     }
    }
-  }
- },
- "district_contributions": {
-  "2005": {
-   "Winchester": 1280.9307,
-   "East Hampshire": 962.2283,
-   "New Forest": 2998.1852,
-   "Test Valley": 1191.4256
-  },
-  "2006": {
-   "Winchester": 1256.5382,
-   "East Hampshire": 941.6179,
-   "New Forest": 2706.4401,
-   "Test Valley": 1198.0532
-  },
-  "2007": {
-   "Winchester": 1227.6144,
-   "East Hampshire": 918.3324,
-   "New Forest": 2933.7313,
-   "Test Valley": 1172.1529
-  },
-  "2008": {
-   "Winchester": 1225.244,
-   "East Hampshire": 912.1791,
-   "New Forest": 2759.4575,
-   "Test Valley": 1138.6508
-  },
-  "2009": {
-   "Winchester": 1140.6019,
-   "East Hampshire": 830.439,
-   "New Forest": 2604.2531,
-   "Test Valley": 1083.4892
-  },
-  "2010": {
-   "Winchester": 1172.8884,
-   "East Hampshire": 857.3955,
-   "New Forest": 1798.5937,
-   "Test Valley": 1108.5209
-  },
-  "2011": {
-   "Winchester": 1106.5722,
-   "East Hampshire": 795.1379,
-   "New Forest": 1556.2164,
-   "Test Valley": 1040.1969
-  },
-  "2012": {
-   "Winchester": 1143.4954,
-   "East Hampshire": 829.3269,
-   "New Forest": 1591.1663,
-   "Test Valley": 1095.113
-  },
-  "2013": {
-   "Winchester": 1108.4337,
-   "East Hampshire": 808.0845,
-   "New Forest": 1548.6682,
-   "Test Valley": 1076.972
-  },
-  "2014": {
-   "Winchester": 1042.1893,
-   "East Hampshire": 747.4516,
-   "New Forest": 1209.7549,
-   "Test Valley": 1002.9914
-  },
-  "2015": {
-   "Winchester": 1009.8305,
-   "East Hampshire": 731.7502,
-   "New Forest": 1128.6193,
-   "Test Valley": 983.6503
-  },
-  "2016": {
-   "Winchester": 974.3871,
-   "East Hampshire": 711.9646,
-   "New Forest": 1089.9852,
-   "Test Valley": 970.4397
-  },
-  "2017": {
-   "Winchester": 953.6733,
-   "East Hampshire": 695.0951,
-   "New Forest": 1059.6408,
-   "Test Valley": 934.6173
-  },
-  "2018": {
-   "Winchester": 940.7743,
-   "East Hampshire": 670.9118,
-   "New Forest": 1053.9421,
-   "Test Valley": 936.9832
-  },
-  "2019": {
-   "Winchester": 898.9822,
-   "East Hampshire": 631.1567,
-   "New Forest": 970.681,
-   "Test Valley": 896.9579
-  },
-  "2020": {
-   "Winchester": 790.4568,
-   "East Hampshire": 556.0473,
-   "New Forest": 877.1786,
-   "Test Valley": 788.6842
-  },
-  "2021": {
-   "Winchester": 828.9309,
-   "East Hampshire": 584.4856,
-   "New Forest": 922.2613,
-   "Test Valley": 831.9006
-  },
-  "2022": {
-   "Winchester": 796.8305,
-   "East Hampshire": 547.1861,
-   "New Forest": 853.4626,
-   "Test Valley": 783.133
-  },
-  "2023": {
-   "Winchester": 768.6126,
-   "East Hampshire": 535.7209,
-   "New Forest": 823.4183,
-   "Test Valley": 749.9303
   }
  },
  "subsector_detail_latest_year": {
@@ -809,52 +699,52 @@
   },
   "mid-hampshire": {
    "Agriculture": {
-    "Agriculture Electricity": 6.2088,
-    "Agriculture Gas": 2.0898,
-    "Agriculture Livestock": 143.4926,
-    "Agriculture 'Other'": 81.6386,
-    "Agriculture Soils": 111.8157
+    "Agriculture Electricity": 5.0107,
+    "Agriculture Gas": 1.4601,
+    "Agriculture Livestock": 120.2031,
+    "Agriculture 'Other'": 69.9608,
+    "Agriculture Soils": 97.5164
    },
    "Commercial": {
-    "Commercial Electricity": 136.6424,
-    "Commercial Gas": 49.963,
-    "Commercial 'Other'": 24.8305
+    "Commercial Electricity": 110.7665,
+    "Commercial Gas": 41.9169,
+    "Commercial 'Other'": 20.3158
    },
    "Domestic": {
-    "Domestic Electricity": 172.025,
-    "Domestic Gas": 408.7949,
-    "Domestic 'Other'": 113.8525
+    "Domestic Electricity": 138.8516,
+    "Domestic Gas": 325.5707,
+    "Domestic 'Other'": 95.105
    },
    "Industry": {
-    "Industry Electricity": 43.9435,
-    "Industry Gas": 33.0294,
-    "Industry 'Other'": 81.476,
-    "Large Industrial Installations": 56.3021
+    "Industry Electricity": 35.701,
+    "Industry Gas": 24.9201,
+    "Industry 'Other'": 64.5518,
+    "Large Industrial Installations": 34.6378
    },
    "LULUCF": {
-    "LULUCF Net Emissions: Bioenergy crops": -0.5335,
-    "LULUCF Net Emissions: Cropland mineral soils change": 61.0522,
-    "LULUCF Net Emissions: Forestry": -309.746,
-    "LULUCF Net Emissions: Grassland mineral soils change": -73.9514,
-    "LULUCF Net Emissions: Other LULUCF": 2.7808,
-    "LULUCF Net Emissions: Peatland": 38.303,
-    "LULUCF Net Emissions: Settlements": 23.5423
+    "LULUCF Net Emissions: Bioenergy crops": -0.4689,
+    "LULUCF Net Emissions: Cropland mineral soils change": 53.2675,
+    "LULUCF Net Emissions: Forestry": -239.2346,
+    "LULUCF Net Emissions: Grassland mineral soils change": -59.1925,
+    "LULUCF Net Emissions: Other LULUCF": 2.3141,
+    "LULUCF Net Emissions: Peatland": 34.686,
+    "LULUCF Net Emissions: Settlements": 18.5982
    },
    "Public Sector": {
-    "Public Sector Electricity": 22.866,
-    "Public Sector Gas": 38.4113,
-    "Public Sector 'Other'": 9.2784
+    "Public Sector Electricity": 19.1595,
+    "Public Sector Gas": 33.0441,
+    "Public Sector 'Other'": 7.7176
    },
    "Transport": {
-    "Diesel Railways": 13.2682,
-    "Road Transport (A roads)": 594.3781,
-    "Road Transport (Minor roads)": 529.5746,
-    "Road Transport (Motorways)": 287.1502,
-    "Transport 'Other'": 18.5034
+    "Diesel Railways": 11.6615,
+    "Road Transport (A roads)": 478.7672,
+    "Road Transport (Minor roads)": 423.1582,
+    "Road Transport (Motorways)": 257.5169,
+    "Transport 'Other'": 15.2273
    },
    "Waste": {
-    "Landfill": 55.2773,
-    "Waste 'Other'": 101.4226
+    "Landfill": 45.0296,
+    "Waste 'Other'": 70.3562
    }
   }
  }

@@ -7,10 +7,6 @@ This dashboard deliberately starts small — a few headline figures, built on da
 - **All five new Hampshire unitaries** — Add North, Southwest and Southeast Hampshire and Isle of Wight so Mid-Hampshire can be compared against its neighbours, not just its own history.
 - **Build-your-own region** — Let anyone tick any combination of current districts and get an instant combined chart — useful if boundaries change again, or to test other groupings.
 
-## Accuracy
-
-- **Correct for the 11 parishes** — Use 2021 Census parish population/dwelling counts to pro-rate the small area moving from Mid-Hampshire to neighbouring unitaries, instead of using whole districts.
-
 ## Targets
 
 - **Compare against a net-zero pathway** — Add a target trajectory line — e.g. the Tyndall Centre's local carbon budget, or a locally agreed net-zero target — so the trend can be read against what's actually needed.

@@ -812,10 +812,10 @@
       dl: [
         ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2023”, published 3 July 2025."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
-        ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley (whole districts), per the Government's LGR decision of 25 March 2026. Excludes 11 parishes moving to neighbouring unitaries, which cannot be corrected for as no sub-district emissions data is published. Decision subject to possible judicial review."],
-        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for Mid-Hampshire."],
+        ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the 11 parishes moving to neighbouring unitaries (South-West/South-East Hampshire) under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
+        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for Mid-Hampshire (and scaled down per district, as above)."],
         ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 29 July 2026 and is updated manually when a new release lands."],
-        ["Data & code", "Every figure on this site traces back to the single published CSV linked below — nothing here is estimated or modelled beyond straightforward addition of official district-level figures."]
+        ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with Mid-Hampshire district figures scaled down using 2021 Census parish population shares (see the boundary note above) — nothing else here is estimated or modelled."]
       ],
       link: { href: "https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible", label: "gov.uk statistical release" }
     }
