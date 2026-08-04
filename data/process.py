@@ -5,7 +5,17 @@ from collections import defaultdict
 from datetime import date
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else "emissions_source.csv"
-LAS = ["Winchester", "East Hampshire", "New Forest", "Test Valley"]
+MID_HAMPSHIRE_LAS = ["Winchester", "East Hampshire", "New Forest", "Test Valley"]
+
+# Hampshire and the Solent Combined County Authority (established 4 June 2026 under SI 2026/595)
+# = Hampshire County Council + Portsmouth + Southampton + Isle of Wight. Hampshire CC is an
+# upper-tier county, not itself a DESNZ-reporting unit, so at DESNZ's district-level granularity
+# this is all 11 current Hampshire districts plus the two unitary cities and the Isle of Wight.
+HAMPSHIRE_SOLENT_LAS = [
+    "Basingstoke and Deane", "East Hampshire", "Eastleigh", "Fareham", "Gosport", "Hart", "Havant",
+    "New Forest", "Rushmoor", "Test Valley", "Winchester", "Portsmouth", "Southampton", "Isle of Wight"
+]
+ALL_LAS = sorted(set(MID_HAMPSHIRE_LAS) | set(HAMPSHIRE_SOLENT_LAS))
 
 # 2021 Census parish population (ONS/Nomis "Parish data, England and Wales: Census 2021",
 # dataset NM_2352_1, boundaries as at December 2022), for the 11 parishes moving from these
@@ -38,7 +48,7 @@ with open(SRC, newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
         la = row["Local Authority"]
-        if la not in LAS:
+        if la not in ALL_LAS:
             continue
         year = int(row["Calendar Year"])
         sector = row["LA GHG Sector"]
@@ -63,9 +73,10 @@ out = {
         "units": "kt CO2e (thousand tonnes carbon dioxide equivalent), territorial basis",
         "years": years,
         "sectors": sectors,
-        "constituent_las": LAS,
+        "constituent_las": MID_HAMPSHIRE_LAS,
         "note_boundary": "Mid-Hampshire (proposed unitary, decision 25 March 2026) = East Hampshire + Winchester + New Forest + Test Valley, adjusted to exclude the 11 parishes moving to South-West/South-East Hampshire under the same decision (Clanfield, Horndean, Rowlands Castle from East Hampshire; Newlands from Winchester; Totton and Eling, Marchwood, Hythe and Dibden, Fawley from New Forest; Chilworth, Nursling and Rownhams, Valley Park from Test Valley). No official sub-district emissions data exists, so each district's contribution is scaled down by its 2021 Census parish population share instead of using the whole district — see mid_hampshire_retained_fraction.",
         "mid_hampshire_retained_fraction": {la: round(f, 4) for la, f in MID_HAMPSHIRE_RETAINED_FRACTION.items()},
+        "note_hampshire_solent": "Hampshire and the Solent Combined County Authority (established 4 June 2026 under SI 2026/595) = Hampshire County Council + Portsmouth City Council + Southampton City Council + Isle of Wight Council. Modelled here as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight (Hampshire CC itself isn't a DESNZ-reporting unit). This total isn't affected by the 11-parish boundary change above, since those parishes stay within the CCA regardless of which new unitary they land in.",
         "generated": date.today().isoformat()
     },
     "areas_km2": area,
@@ -90,7 +101,8 @@ def build_region(name, la_list, la_weight=None):
     return r
 
 out["regions"]["winchester"] = build_region("Winchester", ["Winchester"])
-out["regions"]["mid-hampshire"] = build_region("Mid-Hampshire (proposed)", LAS, MID_HAMPSHIRE_RETAINED_FRACTION)
+out["regions"]["mid-hampshire"] = build_region("Mid-Hampshire (proposed)", MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION)
+out["regions"]["hampshire-solent"] = build_region("Hampshire and the Solent", HAMPSHIRE_SOLENT_LAS)
 
 latest = years[-1]
 def subsector_detail(la_list, year, la_weight=None):
@@ -105,7 +117,8 @@ def subsector_detail(la_list, year, la_weight=None):
 out["subsector_detail_latest_year"] = {
     "year": latest,
     "winchester": subsector_detail(["Winchester"], latest),
-    "mid-hampshire": subsector_detail(LAS, latest, MID_HAMPSHIRE_RETAINED_FRACTION)
+    "mid-hampshire": subsector_detail(MID_HAMPSHIRE_LAS, latest, MID_HAMPSHIRE_RETAINED_FRACTION),
+    "hampshire-solent": subsector_detail(HAMPSHIRE_SOLENT_LAS, latest)
 }
 
 with open("mid_hampshire_emissions.json", "w") as f:
@@ -120,3 +133,4 @@ print("years:", years[0], "-", years[-1])
 print("Mid-Hampshire retained fraction per district:", {la: round(f, 4) for la, f in MID_HAMPSHIRE_RETAINED_FRACTION.items()})
 print("Winchester latest total:", out["regions"]["winchester"]["years"][latest]["total_kt_co2e"], "kt CO2e")
 print("Mid-Hampshire latest total:", out["regions"]["mid-hampshire"]["years"][latest]["total_kt_co2e"], "kt CO2e")
+print("Hampshire and the Solent latest total:", out["regions"]["hampshire-solent"]["years"][latest]["total_kt_co2e"], "kt CO2e")

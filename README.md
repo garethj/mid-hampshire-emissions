@@ -1,6 +1,6 @@
 # Hampshire Emissions Explorer
 
-A small, static, client-side dashboard comparing greenhouse gas emissions for Winchester and the proposed Mid-Hampshire unitary authority (East Hampshire + Winchester + New Forest + Test Valley), built for the Hampshire Local Government Reorganisation working group.
+A small, static, client-side dashboard comparing greenhouse gas emissions for three Hampshire geographies: Winchester (the existing district), the proposed Mid-Hampshire unitary authority (East Hampshire + Winchester + New Forest + Test Valley), and Hampshire and the Solent (the Combined County Authority covering all of Hampshire plus Portsmouth, Southampton and Isle of Wight). Built for the Hampshire Local Government Reorganisation working group.
 
 Live site: hosted on GitHub Pages from this repo's `main` branch, `/` root.
 
@@ -9,6 +9,7 @@ Live site: hosted on GitHub Pages from this repo's `main` branch, `/` root.
 - Plain HTML/CSS/JS, no build step, no framework, no server. Every figure is computed in the browser from a single pre-processed data file, loaded as a plain `<script>` tag (not `fetch`) so it also works when `index.html` is opened directly from disk (`file://`), with no local server needed.
 - Data: [DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2023](https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible) (published 3 July 2025).
 - Mid-Hampshire figures are not official — they're built from the four constituent districts' published figures, each scaled down by its 2021 Census parish population share to exclude the 11 parishes that move to neighbouring unitaries under the same LGR decision (no official sub-district emissions data exists, so this is a proxy, not an exact figure). See the in-app methodology notes (the "i" buttons) for the per-district scaling factors and other caveats.
+- Hampshire and the Solent figures are also not official — they're the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (no parish-level correction needed, since that boundary doesn't depend on which new unitary the 11 parishes end up in).
 
 ## Structure
 
@@ -25,7 +26,7 @@ data/mid_hampshire_emissions.js     same data as above, wrapped as `window.MHE_D
 DESNZ typically publishes a new release each summer. To refresh:
 
 1. Find the new CSV on the [DESNZ collection page](https://www.gov.uk/government/collections/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics) (look for the "Full dataset (csv)" link) and download it somewhere local.
-2. From the `data/` directory, run `python3 process.py /path/to/downloaded.csv`. It filters the CSV to Winchester/East Hampshire/New Forest/Test Valley, sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION` in `process.py`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place.
+2. From the `data/` directory, run `python3 process.py /path/to/downloaded.csv`. It filters the CSV to the 14 local authorities needed across all three regions (Winchester's, Mid-Hampshire's four, and Hampshire and the Solent's fourteen — see `MID_HAMPSHIRE_LAS`/`HAMPSHIRE_SOLENT_LAS` in `process.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, scales each district's contribution to Mid-Hampshire down by its fixed 2021 Census parish-population retained fraction (see `MID_HAMPSHIRE_RETAINED_FRACTION`), and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place.
 3. Commit both updated files. No other changes needed — the app reads whatever years/sectors are in the file. The raw source CSV is not committed to this repo (it's ~80MB); keep it locally or re-download if needed.
 
 ## Local development

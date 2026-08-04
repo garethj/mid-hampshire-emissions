@@ -95,12 +95,12 @@ a { color: var(--brand); }
 main.wrap { padding-top: 24px; padding-bottom: 40px; }
 
 /* ---------- Region toggle ---------- */
-.region-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-.region-toggle { display: inline-flex; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
+.region-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; overflow-x: auto; }
+.region-toggle { display: inline-flex; flex: none; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-btn {
   font: inherit; font-size: 0.95rem; font-weight: 500; padding: 9px 16px;
   background: var(--surface-1); color: var(--text-secondary); border: none; cursor: pointer;
-  border-right: 1px solid var(--gridline);
+  border-right: 1px solid var(--gridline); white-space: nowrap; flex: none;
 }
 .seg-btn:last-child { border-right: none; }
 .seg-btn.is-active { background: var(--brand); color: #fff; font-weight: 700; }

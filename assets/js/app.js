@@ -10,10 +10,16 @@
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let tooltipEl = null;
 
-  const REGION_LABEL = {
-    "winchester": "Winchester",
-    "mid-hampshire": "Mid-Hampshire"
-  };
+  // Region display order for the trend chart, legends and tables — also the source of truth
+  // for which regions exist. Each gets its own series colour slot, distinct from the 1-8 used
+  // for sectors elsewhere (the two charts are never shown side by side, but keeping them
+  // visually distinct avoids implying a relationship that isn't there).
+  const REGIONS = [
+    { key: "winchester", label: "Winchester", legendLabel: "Winchester", colorSlot: 1 },
+    { key: "mid-hampshire", label: "Mid-Hampshire", legendLabel: "Mid-Hampshire (proposed)", colorSlot: 6 },
+    { key: "hampshire-solent", label: "Hampshire and the Solent", legendLabel: "Hampshire and the Solent", colorSlot: 7 }
+  ];
+  const REGION_LABEL = Object.fromEntries(REGIONS.map(r => [r.key, r.label]));
 
   const SECTOR_ORDER = ["Agriculture", "Commercial", "Domestic", "Industry", "LULUCF", "Public Sector", "Transport", "Waste"];
 
@@ -28,7 +34,8 @@
   }
 
   function regionColor(key) {
-    return key === "winchester" ? seriesColor(1) : seriesColor(6);
+    const r = REGIONS.find(r => r.key === key);
+    return seriesColor(r ? r.colorSlot : 1);
   }
 
   function fmtKt(n) {
@@ -334,11 +341,18 @@
   }
 
   function buildTrendChartHistorical(container, years, metric) {
-    const wValues = years.map(y => regionMetricValue("winchester", y, metric));
-    const mValues = years.map(y => regionMetricValue("mid-hampshire", y, metric));
+    const series = REGIONS.map(r => ({
+      key: r.key,
+      label: r.label,
+      legendLabel: r.legendLabel,
+      color: seriesColor(r.colorSlot),
+      values: years.map(y => regionMetricValue(r.key, y, metric))
+    }));
 
     const W = 860, H = 320;
-    const M = { top: 20, right: 128, bottom: 32, left: 56 };
+    // Right margin sized for the longest region name's end-of-line label ("Hampshire and the
+    // Solent"), so it doesn't clip off the edge of the chart.
+    const M = { top: 20, right: 190, bottom: 32, left: 56 };
     const plotW = W - M.left - M.right;
     const plotH = H - M.top - M.bottom;
 
@@ -346,7 +360,7 @@
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
 
-    const maxVal = Math.max(...mValues, ...wValues) * 1.08;
+    const maxVal = Math.max(...series.flatMap(s => s.values)) * 1.08;
     const xScale = i => M.left + (i / (years.length - 1)) * plotW;
     const yScale = v => M.top + plotH - (v / maxVal) * plotH;
 
@@ -371,28 +385,21 @@
 
     el("line", { x1: M.left, x2: M.left + plotW, y1: M.top + plotH, y2: M.top + plotH, stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
 
-    function drawLine(values, color) {
+    series.forEach(s => {
       let d = "";
-      values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
-      el("path", { d: d, fill: "none", stroke: color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
-      const lastX = xScale(values.length - 1), lastY = yScale(values[values.length - 1]);
-      el("circle", { cx: lastX, cy: lastY, r: "5", fill: color, stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
-    }
-
-    drawLine(wValues, seriesColor(1));
-    drawLine(mValues, seriesColor(6));
+      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
+      el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+      const lastX = xScale(s.values.length - 1), lastY = yScale(s.values[s.values.length - 1]);
+      el("circle", { cx: lastX, cy: lastY, r: "5", fill: s.color, stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
+    });
 
     // End-of-line labels: the circle markers stay at their true data position, but the
-    // two-line name/value labels are pushed apart vertically when series end close
-    // together in value, so they don't overlap (e.g. Winchester/Mid-Hampshire per-capita
-    // figures converging by 2023). Colour-coding the name keeps a shifted label
-    // identifiable even once it's no longer level with its marker.
+    // two-line name/value labels are pushed apart vertically as a group when series end
+    // close together in value, so they don't overlap. Colour-coding the name keeps a
+    // shifted label identifiable even once it's no longer level with its marker.
     const lastX = xScale(years.length - 1);
     const MIN_LABEL_GAP = 30;
-    const endLabels = [
-      { values: wValues, color: seriesColor(1), label: "Winchester" },
-      { values: mValues, color: seriesColor(6), label: "Mid-Hampshire" }
-    ].map(s => ({ ...s, y: yScale(s.values[s.values.length - 1]) }))
+    const endLabels = series.map(s => ({ ...s, y: yScale(s.values[s.values.length - 1]) }))
       .sort((a, b) => a.y - b.y);
     for (let i = 1; i < endLabels.length; i++) {
       if (endLabels[i].y - endLabels[i - 1].y < MIN_LABEL_GAP) {
@@ -420,8 +427,9 @@
       crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
       showTooltip(ev.clientX, ev.clientY, (tt) => {
         ttTitle(tt, String(years[idx]));
-        ttRow(tt, seriesColor(1), "Winchester", fmtValue(metric, wValues[idx]) + " " + unitShort(metric));
-        ttRow(tt, seriesColor(6), "Mid-Hampshire", fmtValue(metric, mValues[idx]) + " " + unitShort(metric));
+        series.forEach(s => {
+          ttRow(tt, s.color, s.label, fmtValue(metric, s.values[idx]) + " " + unitShort(metric));
+        });
       });
     });
     hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
@@ -429,18 +437,14 @@
     // legend
     const legendWrap = document.createElement("div");
     legendWrap.className = "legend";
-    legendWrap.appendChild(legendItemLine(seriesColor(1), "Winchester"));
-    legendWrap.appendChild(legendItemLine(seriesColor(6), "Mid-Hampshire (proposed)"));
+    series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.legendLabel)));
     container.appendChild(legendWrap);
 
-    buildTrendTableHistorical(years, wValues, mValues, metric);
+    buildTrendTableHistorical(years, series, metric);
   }
 
   function buildTrendChartLatest(container, ly, metric) {
-    const regions = [
-      { key: "winchester", label: "Winchester", color: seriesColor(1) },
-      { key: "mid-hampshire", label: "Mid-Hampshire", color: seriesColor(6) }
-    ];
+    const regions = REGIONS.map(r => ({ key: r.key, label: r.label, color: seriesColor(r.colorSlot) }));
     const values = regions.map(r => regionMetricValue(r.key, ly, metric));
 
     const W = 860, H = 320;
@@ -522,14 +526,14 @@
     return item;
   }
 
-  function buildTrendTableHistorical(years, wValues, mValues, metric) {
+  function buildTrendTableHistorical(years, series, metric) {
     const wrap = document.getElementById("trend-table");
     clearNode(wrap);
     const table = document.createElement("table");
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Year", "Winchester (" + unitLabel(metric) + ")", "Mid-Hampshire (" + unitLabel(metric) + ")"].forEach(h => {
+    ["Year"].concat(series.map(s => s.label + " (" + unitLabel(metric) + ")")).forEach(h => {
       const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
     });
     thead.appendChild(htr);
@@ -537,9 +541,8 @@
     const tbody = document.createElement("tbody");
     years.forEach((y, i) => {
       const tr = document.createElement("tr");
-      [y, fmtValue(metric, wValues[i]), fmtValue(metric, mValues[i])].forEach(v => {
-        const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
-      });
+      const cells = [y].concat(series.map(s => fmtValue(metric, s.values[i])));
+      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -782,10 +785,11 @@
 
   const INFO_CONTENT = {
     "region-toggle": {
-      title: "Winchester vs Mid-Hampshire",
+      title: "Winchester, Mid-Hampshire & Hampshire and the Solent",
       body: [
         "Winchester is the existing district council. Mid-Hampshire is the proposed new unitary authority, combining East Hampshire, Winchester, New Forest and Test Valley from 1 April 2028, following the Government's Local Government Reorganisation decision of 25 March 2026.",
-        "This decision is subject to a judicial review sought by Hampshire County Council, so the boundary shown here is the current best information, not guaranteed final."
+        "Hampshire and the Solent is the Combined County Authority established 4 June 2026 (SI 2026/595), covering the whole of Hampshire plus Portsmouth, Southampton and the Isle of Wight — the strategic tier sitting above Mid-Hampshire and its neighbouring new unitaries. Unlike Mid-Hampshire, this one already exists; its footprint isn't affected by exactly where the 11 moving parishes end up, since they stay inside it either way.",
+        "The Mid-Hampshire decision is subject to a judicial review sought by Hampshire County Council, so that boundary is the current best information, not guaranteed final."
       ]
     },
     "trend-chart": {
@@ -813,7 +817,8 @@
         ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2023”, published 3 July 2025."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
         ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the 11 parishes moving to neighbouring unitaries (South-West/South-East Hampshire) under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
-        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for Mid-Hampshire (and scaled down per district, as above)."],
+        ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need the parish-level adjustment above, since it doesn't matter which new unitary those parishes end up in)."],
+        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire, as above)."],
         ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 29 July 2026 and is updated manually when a new release lands."],
         ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with Mid-Hampshire district figures scaled down using 2021 Census parish population shares (see the boundary note above) — nothing else here is estimated or modelled."]
       ],
