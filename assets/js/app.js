@@ -371,20 +371,40 @@
 
     el("line", { x1: M.left, x2: M.left + plotW, y1: M.top + plotH, y2: M.top + plotH, stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
 
-    function drawSeries(values, color, label) {
+    function drawLine(values, color) {
       let d = "";
       values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
       el("path", { d: d, fill: "none", stroke: color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
       const lastX = xScale(values.length - 1), lastY = yScale(values[values.length - 1]);
       el("circle", { cx: lastX, cy: lastY, r: "5", fill: color, stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
-      const nameText = el("text", { x: lastX + 10, y: lastY - 2, "font-size": "12", "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      nameText.textContent = label;
-      const valText = el("text", { x: lastX + 10, y: lastY + 13, "font-size": "11", fill: cssVar("--text-secondary") }, svg);
-      valText.textContent = fmtAxisValue(metric, values[values.length - 1]) + " " + unitShort(metric);
     }
 
-    drawSeries(wValues, seriesColor(1), "Winchester");
-    drawSeries(mValues, seriesColor(6), "Mid-Hampshire");
+    drawLine(wValues, seriesColor(1));
+    drawLine(mValues, seriesColor(6));
+
+    // End-of-line labels: the circle markers stay at their true data position, but the
+    // two-line name/value labels are pushed apart vertically when series end close
+    // together in value, so they don't overlap (e.g. Winchester/Mid-Hampshire per-capita
+    // figures converging by 2023). Colour-coding the name keeps a shifted label
+    // identifiable even once it's no longer level with its marker.
+    const lastX = xScale(years.length - 1);
+    const MIN_LABEL_GAP = 30;
+    const endLabels = [
+      { values: wValues, color: seriesColor(1), label: "Winchester" },
+      { values: mValues, color: seriesColor(6), label: "Mid-Hampshire" }
+    ].map(s => ({ ...s, y: yScale(s.values[s.values.length - 1]) }))
+      .sort((a, b) => a.y - b.y);
+    for (let i = 1; i < endLabels.length; i++) {
+      if (endLabels[i].y - endLabels[i - 1].y < MIN_LABEL_GAP) {
+        endLabels[i].y = endLabels[i - 1].y + MIN_LABEL_GAP;
+      }
+    }
+    endLabels.forEach(item => {
+      const nameText = el("text", { x: lastX + 10, y: item.y - 2, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
+      nameText.textContent = item.label;
+      const valText = el("text", { x: lastX + 10, y: item.y + 13, "font-size": "11", fill: cssVar("--text-secondary") }, svg);
+      valText.textContent = fmtAxisValue(metric, item.values[item.values.length - 1]) + " " + unitShort(metric);
+    });
 
     // crosshair + hover
     const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
