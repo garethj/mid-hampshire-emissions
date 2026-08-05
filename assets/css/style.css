@@ -196,12 +196,9 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 .viz-tooltip .tt-subrow .tt-key { color: var(--text-muted); }
 .viz-tooltip .tt-subrow .tt-val { font-weight: 500; color: var(--text-secondary); }
 
-/* ---------- Footnote / footer ---------- */
+/* ---------- Footnote ---------- */
 .footnote { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
 .link-btn { font: inherit; font-size: inherit; color: var(--brand); background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
-.site-footer { border-top: 1px solid var(--gridline); padding: 20px 0 40px; margin-top: 20px; }
-.site-footer p { font-size: 0.78rem; color: var(--text-muted); }
-.site-footer a { color: var(--text-muted); }
 
 /* ---------- Modal ---------- */
 .modal-overlay {
