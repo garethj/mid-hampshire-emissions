@@ -196,7 +196,6 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 .legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
 .legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
 .legend-swatch.line { width: 14px; height: 3px; border-radius: 2px; }
-.chart-note { font-size: 0.78rem; color: var(--text-muted); margin: 8px 0 0; }
 
 /* ---------- Tooltip ---------- */
 .viz-tooltip {
