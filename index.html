@@ -56,12 +56,8 @@
     </div>
 
     <div class="horizon-banner is-hidden" id="horizon-banner">
-      Showing the unofficial <strong>20-year</strong> time horizon (GWP20) — methane-heavy figures (Agriculture, Waste) run higher here than DESNZ's official 100-year figures.
+      <span>Showing the unofficial <strong>20-year</strong> time horizon (GWP20) — methane-heavy figures (Agriculture, Waste) run higher here than DESNZ's official 100-year figures.</span>
       <button class="link-btn" data-info="horizon-toggle">Why?</button>
-    </div>
-
-    <div class="kpi-row" id="kpi-row">
-      <!-- filled by JS -->
     </div>
 
     <div class="card">
@@ -109,26 +105,31 @@
       <div class="table-scroll is-hidden" id="gas-table"></div>
     </div>
 
-    <div class="section-divider">
-      <div class="section-divider-head">
-        <h2>Energy</h2>
-        <button class="info-btn" data-info="energy-kpi" aria-label="About renewable generation vs local demand">i</button>
+    <div class="card">
+      <div class="card-head">
+        <h2 id="generation-chart-title">Winchester renewable electricity generation by technology, 2024</h2>
+        <button class="info-btn" data-info="generation-chart" aria-label="About this chart">i</button>
       </div>
-      <p>Renewable electricity generation and how it compares to local demand &mdash; a separate DESNZ dataset from the emissions figures above, using the same region selector and Latest year / Historical trend view above.</p>
-    </div>
-
-    <div class="kpi-row" id="energy-kpi-row">
-      <!-- filled by JS -->
+      <div class="chart-wrap" id="generation-chart"></div>
+      <p class="chart-note" id="generation-chart-note"></p>
+      <button class="table-toggle" data-target="generation-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="generation-table"></div>
     </div>
 
     <div class="card">
       <div class="card-head">
-        <h2 id="energy-chart-title">Winchester renewable electricity generation by technology, 2024</h2>
-        <button class="info-btn" data-info="energy-chart" aria-label="About this chart">i</button>
+        <h2 id="consumption-chart-title">Winchester energy consumption by fuel, 2024</h2>
+        <button class="info-btn" data-info="consumption-chart" aria-label="About this chart">i</button>
       </div>
-      <div class="chart-wrap" id="energy-chart"></div>
-      <button class="table-toggle" data-target="energy-table">Show as table</button>
-      <div class="table-scroll is-hidden" id="energy-table"></div>
+      <div class="sector-detail-row" id="consumption-detail-row">
+        <label class="detail-toggle">
+          <input type="checkbox" id="consumption-detail-toggle">
+          <span>Show all fuel types</span>
+        </label>
+      </div>
+      <div class="chart-wrap" id="consumption-chart"></div>
+      <button class="table-toggle" data-target="consumption-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="consumption-table"></div>
     </div>
 
     <p class="footnote">

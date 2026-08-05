@@ -133,7 +133,7 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 }
 .horizon-banner.is-hidden { display: none; }
 .horizon-banner strong { color: var(--series-2); }
-body.horizon-gwp20 .kpi-tile, body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
+body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 
 /* ---------- Info button ---------- */
 .info-btn {
@@ -142,24 +142,6 @@ body.horizon-gwp20 .kpi-tile, body.horizon-gwp20 .card { border-top: 3px solid v
   cursor: pointer; flex: none; display: inline-flex; align-items: center; justify-content: center;
 }
 .info-btn:hover, .info-btn:focus-visible { border-color: var(--brand); color: var(--brand); outline: none; }
-
-/* ---------- KPI tiles ---------- */
-.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
-.kpi-tile { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px; padding: 16px 18px; }
-.kpi-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-.kpi-label { font-size: 0.82rem; color: var(--text-secondary); font-weight: 500; }
-.kpi-value { font-size: 2rem; font-weight: 700; margin-top: 6px; font-variant-numeric: proportional-nums; }
-.kpi-unit { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); margin-left: 4px; }
-.kpi-delta { font-size: 0.85rem; margin-top: 4px; font-weight: 500; }
-.kpi-delta.down { color: var(--success-text); }
-.kpi-delta.up { color: var(--series-8); }
-.kpi-delta.flat { color: var(--text-muted); }
-
-/* ---------- Section divider ---------- */
-.section-divider { margin: 32px 0 18px; padding-top: 24px; border-top: 1px solid var(--gridline); }
-.section-divider-head { display: flex; align-items: center; gap: 8px; }
-.section-divider h2 { font-size: 1.15rem; }
-.section-divider p { margin: 4px 0 0; font-size: 0.85rem; color: var(--text-muted); }
 
 /* ---------- Cards ---------- */
 .card { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 12px; padding: 18px 20px 20px; margin-bottom: 20px; }
@@ -240,5 +222,4 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 
 @media (max-width: 480px) {
   .brand-text h1 { font-size: 1.15rem; }
-  .kpi-value { font-size: 1.6rem; }
 }

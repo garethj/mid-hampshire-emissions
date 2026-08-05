@@ -13,14 +13,14 @@ This dashboard deliberately starts small — a few headline figures, built on da
 
 ## Other data
 
-- **Energy consumption by fuel** — DESNZ's sub-national total final energy consumption data splits local-authority consumption by fuel (electricity, gas, other fuels, road transport fuel) and by sector (domestic, industrial/commercial, transport). A chart mirroring the existing sector/gas charts but for consumption instead of emissions would let someone directly compare "what powers this area" against "what it emits" — e.g. gas-heavy consumption vs domestic-sector emissions.
+- **Energy consumption by sector** — The energy section's consumption chart currently splits by fuel (Coal, Oil, Gas, Electricity, Bioenergy & waste). DESNZ's same sub-national total final energy consumption dataset also splits the same consumption by sector (domestic, industrial/commercial, transport) — a second view mirroring the emissions sector chart would let someone directly compare "what powers this area" against "what it emits" by sector, e.g. gas-heavy heating consumption vs domestic-sector emissions.
 - **Housing & retrofit (EPC data)** — Energy Performance Certificate data by district could show housing stock efficiency and retrofit progress, relevant to the large Domestic sector.
 - **Transport specifics** — EV charge-point density, ULEV registrations and active travel mode share — useful given transport is the single largest sector here.
 
 ## Visuals
 
 - **Map view** — A choropleth map of the constituent districts, using free ONS boundary files, showing each district's share of the Mid-Hampshire total.
-- **Consumption-side sankey (fuel → sector)** — DESNZ's sub-national total final energy consumption dataset is structured as a genuine fuel × sector matrix (electricity/gas/other fuels/transport fuel, by domestic/industrial-commercial/transport), so a sankey from fuel type to sector would represent something DESNZ actually measures, not an inference. Deliberately **not** a sankey from local renewable generation to local consumption sectors — that would visually imply a local wind farm powers local homes directly, which the national grid doesn't do (locally generated power is exported/pooled, not routed to local sectors). Keep generation and consumption as separate charts instead.
+- **Consumption-side sankey (fuel → sector)** — Once the sector split above exists, DESNZ's sub-national total final energy consumption dataset is structured as a genuine fuel × sector matrix (Coal/Oil/Gas/Electricity/Bioenergy, by domestic/industrial-commercial/transport), so a sankey from fuel type to sector would represent something DESNZ actually measures, not an inference. Deliberately **not** a sankey from local renewable generation to local consumption sectors — that would visually imply a local wind farm powers local homes directly, which the national grid doesn't do (locally generated power is exported/pooled, not routed to local sectors). Keep generation and consumption-by-fuel as separate charts, as now.
 
 ## Usability
 

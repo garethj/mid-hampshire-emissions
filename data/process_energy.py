@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from collections import defaultdict
 from datetime import date
@@ -12,6 +13,20 @@ TFEC_SRC = sys.argv[2] if len(sys.argv) > 2 else "energy_consumption_source.xlsx
 
 # DUKES/IEA standard conversion, also used by DESNZ itself throughout this dataset family.
 KTOE_TO_MWH = 11630.0
+
+# The TFEC workbook's column headers wrap onto several lines and carry footnote markers that
+# shift year to year (e.g. "Coal:\nTotal\n[Note 2]") — normalize to a stable "Coal: Total" form
+# before matching, rather than relying on the exact (fragile) header text.
+def normalize_header(h):
+    if not h:
+        return h
+    h = re.sub(r"\[.*?\]", "", str(h))
+    return re.sub(r"\s+", " ", h).strip()
+
+
+# DESNZ's own fuel categories (in the "energy sources" chart's "complex" view). No suppression
+# in this dataset (unlike renewable generation above), so these are used as published.
+FUEL_CATEGORIES = ["Coal", "Manufactured fuels", "Petroleum", "Gas", "Electricity", "Bioenergy and wastes"]
 
 # Groups the workbook's 12 raw technology columns into a handful of chart-friendly buckets.
 # Wave/Tidal is folded into "Other" rather than "Wind" since it's a distinct (marine, not wind)
@@ -75,14 +90,18 @@ def read_tfec_year(wb, year):
     for row in ws.iter_rows(values_only=True):
         if header is None:
             if row and row[0] == "Code":
-                header = row
+                header = [normalize_header(h) for h in row]
             continue
         la = row[2]
         if la not in ALL_LAS:
             continue
         cols = {header[i]: row[i] for i in range(len(header)) if header[i]}
-        elec_ktoe = numeric(cols.get("Electricity:\nTotal"))
-        by_la[la] = {"electricity_consumption_mwh": elec_ktoe * KTOE_TO_MWH}
+        fuels_ktoe = {f: numeric(cols.get(f"{f}: Total")) for f in FUEL_CATEGORIES}
+        by_la[la] = {
+            "electricity_consumption_mwh": fuels_ktoe["Electricity"] * KTOE_TO_MWH,
+            "fuels_ktoe": fuels_ktoe,
+            "all_fuels_ktoe": numeric(cols.get("All fuels: Total")),
+        }
     return by_la
 
 
@@ -104,7 +123,16 @@ def build_region_series(per_year_la, la_list, la_weight, value_key):
             out[year] = {"total_mwh": round(total, 3), "by_technology_mwh": groups}
         else:
             total = sum(by_la[la]["electricity_consumption_mwh"] * weight(la) for la in present)
-            out[year] = {"electricity_consumption_mwh": round(total, 3)}
+            fuels = {
+                f: round(sum(by_la[la]["fuels_ktoe"][f] * weight(la) for la in present), 4)
+                for f in FUEL_CATEGORIES
+            }
+            all_fuels = round(sum(by_la[la]["all_fuels_ktoe"] * weight(la) for la in present), 4)
+            out[year] = {
+                "electricity_consumption_mwh": round(total, 3),
+                "fuels_ktoe": fuels,
+                "all_fuels_ktoe": all_fuels,
+            }
     return out
 
 
@@ -143,9 +171,11 @@ def main():
             "generation_years": generation_years,
             "consumption_years": consumption_years,
             "technology_groups": TECH_GROUP_NAMES,
+            "fuel_categories": FUEL_CATEGORIES,
+            "units_consumption": "ktoe (kilotonnes of oil equivalent), except electricity_consumption_mwh which is MWh",
             "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json — see that file's note_boundary for the full explanation.",
-            "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total.",
-            "note_ktoe_conversion": "Electricity consumption is published in ktoe (kilotonnes of oil equivalent) and converted here to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh.",
+            "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",
+            "note_ktoe_conversion": "Energy consumption is published in ktoe (kilotonnes of oil equivalent); electricity_consumption_mwh converts the Electricity fuel category to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh, for comparison against renewable generation (also in MWh). The consumption-by-fuel chart displays all fuels in ktoe, DESNZ's native unit.",
             "generated": date.today().isoformat(),
         },
         "regions": {},
