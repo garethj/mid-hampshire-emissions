@@ -181,14 +181,16 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
   position: absolute; pointer-events: none; background: var(--surface-1);
   border: 1px solid var(--gridline); border-radius: 8px; padding: 8px 10px;
   font-size: 0.8rem; box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 20;
-  opacity: 0; transition: opacity 0.1s; max-width: 220px;
+  opacity: 0; transition: opacity 0.1s; max-width: 320px;
 }
 .viz-tooltip.is-visible { opacity: 1; }
 .viz-tooltip .tt-title { font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
-.viz-tooltip .tt-row { display: flex; align-items: center; gap: 6px; justify-content: space-between; gap: 10px; }
-.viz-tooltip .tt-key { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
-.viz-tooltip .tt-key .stroke { width: 10px; height: 2px; border-radius: 1px; }
-.viz-tooltip .tt-val { font-weight: 700; color: var(--text-primary); }
+.viz-tooltip .tt-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.viz-tooltip .tt-key { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); min-width: 0; }
+.viz-tooltip .tt-key .stroke { width: 10px; height: 2px; border-radius: 1px; flex: none; }
+/* Numbers/units must never break across lines (e.g. "1.08" wrapping away from "t") — the
+   label is what absorbs a width squeeze, wrapping onto a second line if it has to. */
+.viz-tooltip .tt-val { font-weight: 700; color: var(--text-primary); white-space: nowrap; flex: none; text-align: right; }
 .viz-tooltip .tt-subrow { padding-left: 12px; font-size: 0.92em; margin-top: 2px; }
 .viz-tooltip .tt-subrow-first { margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--gridline); }
 .viz-tooltip .tt-subrow .tt-key { color: var(--text-muted); }
