@@ -14,26 +14,29 @@
   let tooltipEl = null;
 
   // Region display order for the trend chart, legends and tables — also the source of truth
-  // for which regions exist. Each gets its own series colour slot, distinct from the 1-8 used
-  // for sectors elsewhere (the two charts are never shown side by side, but keeping them
-  // visually distinct avoids implying a relationship that isn't there).
+  // for which regions exist. Colour comes from CATEGORY_COLOR_SLOT below, keyed by `key`.
   const REGIONS = [
-    { key: "winchester", label: "Winchester", legendLabel: "Winchester", colorSlot: 1 },
-    { key: "mid-hampshire", label: "Mid-Hampshire", legendLabel: "Mid-Hampshire (proposed)", colorSlot: 6 },
-    { key: "hampshire-solent", label: "Hampshire and the Solent", legendLabel: "Hampshire and the Solent", colorSlot: 7 }
+    { key: "winchester", label: "Winchester", legendLabel: "Winchester" },
+    { key: "mid-hampshire", label: "Mid-Hampshire", legendLabel: "Mid-Hampshire (proposed)" },
+    { key: "hampshire-solent", label: "Hampshire and the Solent", legendLabel: "Hampshire and the Solent" }
   ];
   const REGION_LABEL = Object.fromEntries(REGIONS.map(r => [r.key, r.label]));
 
-  const SECTOR_ORDER = ["Agriculture", "Commercial", "Domestic", "Industry", "LULUCF", "Public Sector", "Transport", "Waste"];
+  // This order is not alphabetical — it's chosen so that consecutive sectors always land on a
+  // CVD-safe adjacent pair of colours in the historical (line) chart, which renders sectors in
+  // this exact fixed sequence. See the CVD note in CATEGORY_COLOR_SLOT below; don't reorder this
+  // casually without re-running the palette validator against the new adjacency.
+  const SECTOR_ORDER = ["Transport", "Domestic", "LULUCF", "Waste", "Commercial", "Agriculture", "Public Sector", "Industry"];
 
-  // Gas display order, colour-slotted 1/2/3 (blue/orange/aqua) — separate from the 1-8 sector
-  // slots since the sector and gas charts are never shown side by side.
+  // Gas display order — separate from the 1-8 sector slots since the sector and gas charts are
+  // never shown side by side.
   const GAS_ORDER = ["CO2", "CH4", "N2O"];
   const GAS_LABEL = { CO2: "CO2", CH4: "CH4 (methane)", N2O: "N2O (nitrous oxide)" };
 
-  // Matches ENERGY_DATA.meta.technology_groups (see process_energy.py) — order here controls
-  // display order, colour-slotted 1-5 like sectors/gases (never shown alongside those charts).
-  const ENERGY_TECH_ORDER = ["Solar", "Wind", "Hydro", "Bioenergy & waste", "Other"];
+  // Matches ENERGY_DATA.meta.technology_groups (see process_energy.py). Also not alphabetical —
+  // reordered from the "natural" Solar/Wind/Hydro/Bioenergy/Other grouping for the same
+  // CVD-adjacency reason as SECTOR_ORDER above (the historical chart renders this fixed order).
+  const ENERGY_TECH_ORDER = ["Solar", "Bioenergy & waste", "Wind", "Hydro", "Other"];
 
   // Matches ENERGY_DATA.meta.fuel_categories (see process_energy.py) — DESNZ's own fuel
   // categories, used for the consumption chart's "complex" (all fuel types) view.
@@ -52,6 +55,82 @@
     "Bioenergy & waste": ["Bioenergy and wastes"]
   };
 
+  // ---------------- category colours ----------------
+  // Every named category on this site (sector, gas, technology, fuel, region) gets a *fixed*
+  // colour by identity, not by its position in whatever array or sort order happens to render
+  // it — so "Agriculture" is always the same green whether it's the biggest bar or the
+  // smallest, and whether SECTOR_ORDER gets reordered or not. All colours are drawn from the
+  // same validated 8-hue --series-1..8 categorical palette (assets/css/style.css) — nothing
+  // new is invented here, each category is just pinned to one of those 8 slots by a real-world
+  // association (sun = yellow, water = aqua, farming = green, gas's blue flame, etc.) rather
+  // than left to whatever index it happens to sit at.
+  //
+  // The same slot is deliberately reused across *different* chart families where it reinforces
+  // the same real-world idea (e.g. green for both Agriculture and Bioenergy & waste; violet for
+  // "Other" wherever an "Other" bucket exists) — safe because those charts are never shown side
+  // by side.
+  //
+  // CVD adjacency: for charts that render categories in a *fixed* order (the historical/line
+  // charts — sector, gas, generation, consumption), the sequence in which their category slots
+  // are actually drawn next to each other was checked with this skill's palette validator
+  // (dataviz skill, scripts/validate_palette.js) and passes both light and dark mode. That's why
+  // SECTOR_ORDER and ENERGY_TECH_ORDER above aren't alphabetical, and why a couple of picks below
+  // (CH4, N2O, the "Fossil fuels" simple-view group) aren't the first-choice mnemonic hue — e.g.
+  // red/orange next to each other fails CVD separation, so CH4 couldn't be orange while sitting
+  // next to CO2's red. The *sorted-by-value* bar views (sector/generation/consumption "latest")
+  // can't get the same guarantee, since which categories end up adjacent depends on that year's
+  // data — this was already true before this mapping existed (colour was previously pinned by
+  // array position, not identity, but the sort-driven adjacency risk is unchanged either way).
+  const CATEGORY_COLOR_SLOT = {
+    // Regions (trend chart) — unchanged from the original hand-picked assignment.
+    "winchester": 1,        // blue
+    "mid-hampshire": 6,     // green
+    "hampshire-solent": 7,  // violet
+
+    // Emissions sectors — all 8 slots used once each.
+    "Transport": 1,      // blue
+    "Domestic": 2,       // orange — heating/warmth
+    "LULUCF": 3,          // aqua — land/forestry carbon sink
+    "Waste": 4,           // yellow — recycling-bin yellow
+    "Commercial": 5,      // magenta
+    "Agriculture": 6,     // green — farming/land
+    "Public Sector": 7,   // violet — civic/institutional
+    "Industry": 8,        // red
+
+    // Greenhouse gases — CO2 red (the near-universal "warming" hue). CH4 violet and N2O green
+    // aren't the first-choice mnemonic (CH4 ties more naturally to gas/orange, N2O to
+    // agriculture/orange-ish), but red-orange fails CVD separation, so CH4 couldn't sit next to
+    // CO2 as orange; N2O's green at least echoes its main real-world source (agricultural soils
+    // and manure — the same association as the Agriculture sector's green).
+    "CO2": 8,
+    "CH4": 7,
+    "N2O": 6,
+
+    // Renewable generation technologies.
+    "Solar": 4,               // yellow — the sun
+    "Wind": 1,                // blue — the sky
+    "Hydro": 3,                // aqua — water
+    "Bioenergy & waste": 6,   // green — organic matter (matches the fuel category below)
+    "Other": 7,                // violet — the "everything else" bucket, wherever it appears
+
+    // Energy consumption by fuel — "complex" (all types) view. DESNZ's exact spelling
+    // ("Bioenergy and wastes") differs slightly from the generation chart's "Bioenergy & waste"
+    // but is the same real-world category, so it gets the same green.
+    "Coal": 8,                     // red — combustion
+    "Manufactured fuels": 7,       // violet — coal-derived, grouped near Coal's family
+    "Petroleum": 5,                // magenta
+    "Gas": 1,                      // blue — the iconic blue gas flame
+    "Electricity": 4,              // yellow — the lightning-bolt association
+    "Bioenergy and wastes": 6,     // green
+
+    // Energy consumption by fuel — "simple" (grouped) view. Not real DESNZ categories, so
+    // these get their own slot rather than inheriting one component's colour arbitrarily.
+    // Violet rather than the more obvious orange ("generic fossil" hue) because this group sits
+    // next to Electricity's yellow, and orange-yellow also fails CVD separation.
+    "Fossil fuels": 7   // violet
+    // "Electricity" and "Bioenergy & waste" simple-view groups reuse the slots above directly.
+  };
+
   // ---------------- helpers ----------------
 
   function cssVar(name) {
@@ -62,9 +141,31 @@
     return cssVar("--series-" + slot);
   }
 
+  // Deterministic (not random) fallback for a category this site doesn't know about yet, e.g.
+  // DESNZ adding a 9th sector or a new renewable technology in a future data release. A truly
+  // random colour would change on every reload, defeating the whole point of "consistent" —
+  // hashing the name instead means the same unknown category always lands on the same slot,
+  // for this session and the next. It can still collide with a sibling category in the same
+  // chart (a hash has no way to know what else is on screen); the console warning is there so
+  // a real new category gets a deliberate, non-colliding slot added to CATEGORY_COLOR_SLOT
+  // above rather than being left to chance indefinitely.
+  function hashSlot(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) {
+      h = (h * 31 + name.charCodeAt(i)) | 0;
+    }
+    return (Math.abs(h) % 8) + 1;
+  }
+
+  function categoryColor(name) {
+    const slot = CATEGORY_COLOR_SLOT[name];
+    if (slot) return seriesColor(slot);
+    console.warn("No colour mapping for \"" + name + "\" — using a hash-derived fallback. Add it to CATEGORY_COLOR_SLOT in app.js.");
+    return seriesColor(hashSlot(name));
+  }
+
   function regionColor(key) {
-    const r = REGIONS.find(r => r.key === key);
-    return seriesColor(r ? r.colorSlot : 1);
+    return categoryColor(key);
   }
 
   function fmtKt(n) {
@@ -229,18 +330,22 @@
 
   // Sub-sector detail only exists for the latest year (DATA.subsector_detail_latest_year),
   // grouped by parent sector (in SECTOR_ORDER) and sorted by magnitude within each sector.
+  // Groups sub-sector rows under their parent sector, with sectors ordered by their own total
+  // (descending) — the same order the non-detail view sorts by — so toggling "sub-sector
+  // detail" on doesn't reshuffle which sector sits at the top; it only expands each one in place.
   function sectorSubrows(regionKey, ly, metric) {
     const detailRoot = currentHorizon === "gwp20" ? DATA.subsector_detail_latest_year.gwp20 : DATA.subsector_detail_latest_year;
     const detailBySector = detailRoot[regionKey];
     const population = DATA.regions[regionKey].years[ly].population_thousands;
+    const sectorsByTotal = SECTOR_ORDER.slice()
+      .sort((a, b) => sectorMetricValue(regionKey, ly, b, metric) - sectorMetricValue(regionKey, ly, a, metric));
     const rows = [];
-    SECTOR_ORDER.forEach((sector, i) => {
+    sectorsByTotal.forEach(sector => {
       const subs = detailBySector[sector] || {};
       const subRows = Object.keys(subs).map(name => ({
         name: name,
         sector: sector,
-        value: metric === "total" ? subs[name] : subs[name] / population,
-        slot: i + 1
+        value: metric === "total" ? subs[name] : subs[name] / population
       })).sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
       rows.push(...subRows);
     });
@@ -343,7 +448,7 @@
       key: r.key,
       label: r.label,
       legendLabel: r.legendLabel,
-      color: seriesColor(r.colorSlot),
+      color: categoryColor(r.key),
       targetYear: REGION_TARGET_YEAR[r.key],
       values: years.map(y => regionMetricValue(r.key, y, metric))
     }));
@@ -408,34 +513,35 @@
       const lastX = xScale(lastActualYear), lastY = yScale(s.values[s.values.length - 1]);
       el("circle", { cx: lastX, cy: lastY, r: "5", fill: s.color, stroke: cssVar("--surface-1"), "stroke-width": "2" }, svg);
 
-      // dashed "required pathway" continuation, to this region's own target year
+      // dashed "required pathway" continuation, to this region's own target year — kept light
+      // (low opacity, thin, tight dashes) so it reads as a background guide, not a fourth data
+      // line competing with the actual (solid, full-weight) trend lines above it.
       el("line", {
         x1: lastX, y1: lastY, x2: xScale(s.targetYear), y2: yScale(0),
-        stroke: s.color, "stroke-width": "2", "stroke-dasharray": "5,4", opacity: "0.5"
+        stroke: s.color, "stroke-width": "1.5", "stroke-dasharray": "3,3", opacity: "0.3"
       }, svg);
     });
 
     // Net-zero target markers — one per distinct target year in use (2030 for Winchester's own
     // WCC target, 2050 for the shared HCC/UK Gov target the other two regions fall back to).
+    // Single-line labels (not name+sub-label stacked) to keep this corner of the chart calm.
     const NET_ZERO_MARKERS = [
-      { year: TARGET_WCC_YEAR, label2: "WCC target (Winchester)" },
-      { year: TARGET_NET_ZERO_YEAR, label2: "HCC & UK Gov target" }
+      { year: TARGET_WCC_YEAR, label: "2030: Net zero — WCC (Winchester)" },
+      { year: TARGET_NET_ZERO_YEAR, label: "2050: Net zero — HCC & UK Gov" }
     ];
     NET_ZERO_MARKERS.forEach(m => {
       const nzX = xScale(m.year), nzY = yScale(0);
       el("circle", { cx: nzX, cy: nzY, r: "4", fill: cssVar("--text-muted") }, svg);
-      const nzLabel = el("text", { x: nzX - 8, y: nzY - 10, "text-anchor": "end", "font-size": "11", "font-weight": "700", fill: cssVar("--text-secondary") }, svg);
-      nzLabel.textContent = m.year + ": Net Zero";
-      const nzLabel2 = el("text", { x: nzX - 8, y: nzY + 5, "text-anchor": "end", "font-size": "10", fill: cssVar("--text-muted") }, svg);
-      nzLabel2.textContent = m.label2;
+      const nzLabel = el("text", { x: nzX - 8, y: nzY - 10, "text-anchor": "end", "font-size": "10.5", "font-weight": "700", fill: cssVar("--text-secondary") }, svg);
+      nzLabel.textContent = m.label;
     });
 
-    // End-of-line labels: sit at the latest actual year (not the chart's right edge, which is
-    // now the 2050 target), and are pushed apart vertically as a group when series end close
-    // together in value, so they don't overlap. Colour-coding the name keeps a shifted label
-    // identifiable even once it's no longer level with its marker.
+    // End-of-line labels: a single compact "Name value" line per region (not name + value
+    // stacked across two rows), sitting at the latest actual year and pushed apart vertically
+    // as a group only when series end close together in value, so they don't overlap each
+    // other or the dashed lines fanning out just below them.
     const labelX = xScale(lastActualYear);
-    const MIN_LABEL_GAP = 30;
+    const MIN_LABEL_GAP = 18;
     const endLabels = series.map(s => ({ ...s, y: yScale(s.values[s.values.length - 1]) }))
       .sort((a, b) => a.y - b.y);
     for (let i = 1; i < endLabels.length; i++) {
@@ -444,10 +550,11 @@
       }
     }
     endLabels.forEach(item => {
-      const nameText = el("text", { x: labelX + 10, y: item.y - 2, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
+      const nameText = el("text", { x: labelX + 10, y: item.y + 4, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
       nameText.textContent = item.label;
-      const valText = el("text", { x: labelX + 10, y: item.y + 13, "font-size": "11", fill: cssVar("--text-secondary") }, svg);
-      valText.textContent = fmtAxisValue(metric, item.values[item.values.length - 1]) + " " + unitShort(metric);
+      const valText = el("tspan", { fill: cssVar("--text-secondary"), "font-weight": "500" });
+      valText.textContent = "  " + fmtAxisValue(metric, item.values[item.values.length - 1]) + unitShort(metric);
+      nameText.appendChild(valText);
     });
 
     // crosshair + hover — works across the whole 2005-2050 range; years beyond the latest
@@ -485,17 +592,12 @@
     series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.legendLabel)));
     container.appendChild(legendWrap);
 
-    const note = document.createElement("p");
-    note.className = "chart-note";
-    note.textContent = "Dashed lines: straight-line pathway required to reach net zero from the latest actual figure, by " + TARGET_WCC_YEAR + " for Winchester's own carbon-neutral target and by " + TARGET_NET_ZERO_YEAR + " for Mid-Hampshire and Hampshire and the Solent (no target of their own yet, so shown against the shared HCC/UK Gov date) — not a modelled forecast.";
-    container.appendChild(note);
-
     buildTrendTableHistorical(years, series, metric);
   }
 
   function buildTrendChartLatest(container, ly, metric) {
     const py = DATA.meta.years[DATA.meta.years.length - 2];
-    const regions = REGIONS.map(r => ({ key: r.key, label: r.label, color: seriesColor(r.colorSlot) }));
+    const regions = REGIONS.map(r => ({ key: r.key, label: r.label, color: categoryColor(r.key) }));
     const values = regions.map(r => regionMetricValue(r.key, ly, metric));
     const prevValues = regions.map(r => regionMetricValue(r.key, py, metric));
 
@@ -656,7 +758,7 @@
     const regionTotal = regionMetricValue(regionKey, ly, metric);
     const rows = detail
       ? sectorSubrows(regionKey, ly, metric)
-      : SECTOR_ORDER.map((s, i) => ({ name: s, value: sectorMetricValue(regionKey, ly, s, metric), slot: i + 1 }))
+      : SECTOR_ORDER.map(s => ({ name: s, value: sectorMetricValue(regionKey, ly, s, metric) }))
           .sort((a, b) => b.value - a.value);
 
     const W = 860;
@@ -682,7 +784,7 @@
       const y = M.top + i * (rowH + gap);
       const barW = xScale(r.value);
       const barX = r.value >= 0 ? zeroX : zeroX + barW;
-      const color = seriesColor(r.slot);
+      const color = categoryColor(detail ? r.sector : r.name);
       const barY = y + (rowH - barH) / 2;
 
       const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
@@ -714,9 +816,9 @@
 
   function buildSectorChartHistorical(container, regionKey, metric) {
     const years = DATA.meta.years;
-    const series = SECTOR_ORDER.map((s, i) => ({
+    const series = SECTOR_ORDER.map(s => ({
       name: s,
-      color: seriesColor(i + 1),
+      color: categoryColor(s),
       values: years.map(y => sectorMetricValue(regionKey, y, s, metric))
     }));
 
@@ -862,7 +964,7 @@
   }
 
   function buildGasChartLatest(container, regionKey, ly, metric) {
-    const rows = GAS_ORDER.map((g, i) => ({ key: g, name: GAS_LABEL[g], value: gasMetricValue(regionKey, ly, g, metric), slot: i + 1 }));
+    const rows = GAS_ORDER.map(g => ({ key: g, name: GAS_LABEL[g], value: gasMetricValue(regionKey, ly, g, metric) }));
     const regionTotal = rows.reduce((a, r) => a + r.value, 0) || 1;
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
@@ -880,7 +982,7 @@
     rows.forEach((r, i) => {
       const y = M.top + i * (rowH + gap);
       const barW = xScale(r.value);
-      const color = seriesColor(r.slot);
+      const color = categoryColor(r.key);
       const barY = y + (rowH - barH) / 2;
 
       const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
@@ -907,10 +1009,10 @@
 
   function buildGasChartHistorical(container, regionKey, metric) {
     const years = DATA.meta.years;
-    const series = GAS_ORDER.map((g, i) => ({
+    const series = GAS_ORDER.map(g => ({
       key: g,
       name: GAS_LABEL[g],
-      color: seriesColor(i + 1),
+      color: categoryColor(g),
       values: years.map(y => gasMetricValue(regionKey, y, g, metric))
     }));
 
@@ -1059,7 +1161,7 @@
 
   function buildGenerationChartLatest(container, regionKey, gy) {
     const gen = energyGeneration(regionKey, gy);
-    const rows = ENERGY_TECH_ORDER.map((t, i) => ({ name: t, value: gen.by_technology_mwh[t], slot: i + 1 }))
+    const rows = ENERGY_TECH_ORDER.map(t => ({ name: t, value: gen.by_technology_mwh[t] }))
       .sort((a, b) => b.value - a.value);
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
@@ -1077,7 +1179,7 @@
     rows.forEach((r, i) => {
       const y = M.top + i * (rowH + gap);
       const barW = xScale(r.value);
-      const color = seriesColor(r.slot);
+      const color = categoryColor(r.name);
       const barY = y + (rowH - barH) / 2;
 
       const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
@@ -1103,9 +1205,9 @@
   }
 
   function buildGenerationChartHistorical(container, regionKey, years) {
-    const series = ENERGY_TECH_ORDER.map((t, i) => ({
+    const series = ENERGY_TECH_ORDER.map(t => ({
       name: t,
-      color: seriesColor(i + 1),
+      color: categoryColor(t),
       values: years.map(y => energyGeneration(regionKey, y).by_technology_mwh[t])
     }));
 
@@ -1251,7 +1353,7 @@
   function buildConsumptionChartLatest(container, regionKey, cy, detail) {
     const cats = consumptionCategories(detail);
     const allFuels = energyConsumption(regionKey, cy).all_fuels_ktoe;
-    const rows = cats.map((c, i) => ({ name: c.label, value: consumptionValue(regionKey, cy, c.key, detail), slot: i + 1 }))
+    const rows = cats.map(c => ({ key: c.key, name: c.label, value: consumptionValue(regionKey, cy, c.key, detail) }))
       .sort((a, b) => b.value - a.value);
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
@@ -1269,7 +1371,7 @@
     rows.forEach((r, i) => {
       const y = M.top + i * (rowH + gap);
       const barW = xScale(r.value);
-      const color = seriesColor(r.slot);
+      const color = categoryColor(r.key);
       const barY = y + (rowH - barH) / 2;
 
       const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
@@ -1296,9 +1398,9 @@
 
   function buildConsumptionChartHistorical(container, regionKey, years, detail) {
     const cats = consumptionCategories(detail);
-    const series = cats.map((c, i) => ({
+    const series = cats.map(c => ({
       name: c.label,
-      color: seriesColor(i + 1),
+      color: categoryColor(c.key),
       values: years.map(y => consumptionValue(regionKey, y, c.key, detail))
     }));
 
