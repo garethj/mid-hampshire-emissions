@@ -109,7 +109,9 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 .region-toggle-row {
   display: flex; align-items: center; gap: 10px; overflow-x: auto;
   position: sticky; top: var(--control-panel-h, 60px); z-index: 25;
-  background: var(--page-plane); padding: 10px 0; margin-bottom: 8px;
+  background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px;
+  padding: 10px 16px; margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .region-toggle { display: inline-flex; flex: none; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-btn {
@@ -251,7 +253,7 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
    compact row rather than wrapping to two or three — wrapping would eat a large chunk of a
    phone viewport permanently. Buttons shrink and the row scrolls horizontally instead. */
 @media (max-width: 640px) {
-  .control-panel { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
+  .control-panel, .region-toggle-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
   .control-group { flex: none; }
   .control-panel .seg-btn, .region-toggle-row .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
 }
