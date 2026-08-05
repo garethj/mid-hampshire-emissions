@@ -1339,6 +1339,13 @@
     const view = currentView;
     const detail = currentConsumptionDetail;
 
+    // Browsers restore a checkbox's checked state across a manual refresh independently of the
+    // DOM/JS default, so force it back in line with actual app state on every render (same
+    // pattern as the sector chart's sub-sector-detail toggle below) — otherwise a page refresh
+    // with this ticked leaves the box looking ticked while currentConsumptionDetail (and thus
+    // the chart) has already reset to the simple view.
+    document.getElementById("consumption-detail-toggle").checked = detail;
+
     document.getElementById("consumption-chart-title").textContent =
       REGION_LABEL[regionKey] + " energy consumption by " + (detail ? "fuel type" : "source") + ", " +
       (view === "historical" ? (years[0] + "–" + cy) : cy);
