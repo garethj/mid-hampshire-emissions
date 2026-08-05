@@ -1818,15 +1818,47 @@
 
   // ---------------- wiring ----------------
 
+  // Every chart that should re-render whenever a page-wide control changes (metric, view,
+  // horizon, colour theme) or the app first loads. A new chart added to the page must be added
+  // here (and to REGION_SCOPED_CHARTS below, if it takes a region) — that's the only place a
+  // control-to-chart wiring can now be forgotten, instead of each control handler needing its
+  // own hand-maintained list. Some charts here ignore some controls (generation/consumption
+  // read currentMetric but not currentHorizon, since GWP reweighting doesn't apply to physical
+  // energy volumes) — re-rendering them anyway on every page-wide control is deliberate: it's
+  // cheap, and it means "does chart X react to control Y" is answered by that chart's own code,
+  // not by whether someone remembered to list it under every applicable handler.
+  const PAGE_WIDE_CHARTS = [
+    buildTrendChart,
+    () => buildSectorChart(currentRegion),
+    () => buildGasChart(currentRegion),
+    () => buildGenerationChart(currentRegion),
+    () => buildConsumptionChart(currentRegion)
+  ];
+
+  // The subset of PAGE_WIDE_CHARTS that also needs re-rendering when the region selector
+  // changes — everything except the trend chart, which always plots all three regions at once
+  // and so has no single "current region" to react to.
+  const REGION_SCOPED_CHARTS = [
+    () => buildSectorChart(currentRegion),
+    () => buildGasChart(currentRegion),
+    () => buildGenerationChart(currentRegion),
+    () => buildConsumptionChart(currentRegion)
+  ];
+
+  function renderPageWideCharts() {
+    PAGE_WIDE_CHARTS.forEach(fn => fn());
+  }
+
+  function renderRegionScopedCharts() {
+    REGION_SCOPED_CHARTS.forEach(fn => fn());
+  }
+
   function setRegion(regionKey) {
     currentRegion = regionKey;
     document.querySelectorAll(".region-toggle .seg-btn").forEach(b => {
       b.classList.toggle("is-active", b.dataset.region === regionKey);
     });
-    buildSectorChart(regionKey);
-    buildGasChart(regionKey);
-    buildGenerationChart(regionKey);
-    buildConsumptionChart(regionKey);
+    renderRegionScopedCharts();
   }
 
   function setMetric(metric) {
@@ -1834,11 +1866,7 @@
     document.querySelectorAll("[data-metric]").forEach(b => {
       b.classList.toggle("is-active", b.dataset.metric === metric);
     });
-    buildTrendChart();
-    buildSectorChart(currentRegion);
-    buildGasChart(currentRegion);
-    buildGenerationChart(currentRegion);
-    buildConsumptionChart(currentRegion);
+    renderPageWideCharts();
   }
 
   function setView(view) {
@@ -1846,11 +1874,7 @@
     document.querySelectorAll("[data-view]").forEach(b => {
       b.classList.toggle("is-active", b.dataset.view === view);
     });
-    buildTrendChart();
-    buildSectorChart(currentRegion);
-    buildGasChart(currentRegion);
-    buildGenerationChart(currentRegion);
-    buildConsumptionChart(currentRegion);
+    renderPageWideCharts();
   }
 
   // Horizon is deliberately page-wide (not a per-chart control): it changes which numbers are
@@ -1863,9 +1887,7 @@
     });
     document.body.classList.toggle("horizon-gwp20", horizon === "gwp20");
     document.getElementById("horizon-banner").classList.toggle("is-hidden", horizon !== "gwp20");
-    buildTrendChart();
-    buildSectorChart(currentRegion);
-    buildGasChart(currentRegion);
+    renderPageWideCharts();
   }
 
   // Keeps the sticky region-toggle row pinned directly under the sticky control panel,
@@ -1928,13 +1950,7 @@
     });
 
     if (window.matchMedia) {
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-        buildTrendChart();
-        buildSectorChart(currentRegion);
-        buildGasChart(currentRegion);
-        buildGenerationChart(currentRegion);
-        buildConsumptionChart(currentRegion);
-      });
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderPageWideCharts);
     }
   }
 
@@ -1946,8 +1962,10 @@
     DATA = window.MHE_DATA;
     ENERGY_DATA = window.MHE_ENERGY_DATA || null;
     wireEvents();
-    setRegion("winchester");
-    buildTrendChart();
+    // "winchester" is already marked is-active in the HTML, so no need to route through
+    // setRegion() just to re-toggle a class that's already correct.
+    currentRegion = "winchester";
+    renderPageWideCharts();
   }
 
   document.addEventListener("DOMContentLoaded", init);
