@@ -289,6 +289,29 @@
     parent.appendChild(t);
   }
 
+  // Indented, muted row for a hovered bar's breakdown (e.g. Transport's sub-sectors, or Fossil
+  // fuels' constituent fuel types) — visually distinct from ttRow's main aggregate row without
+  // a colour swatch, since these all share the parent's identity rather than having their own.
+  // groupFirst marks the first row of a breakdown group explicitly (rather than relying on a
+  // CSS :first-of-type, which would only catch the very first .tt-subrow in the whole tooltip —
+  // wrong when more than one hovered row has its own breakdown, e.g. the historical crosshair
+  // showing several series at once).
+  function ttSubRow(parent, label, value, groupFirst) {
+    const row = document.createElement("div");
+    row.className = "tt-row tt-subrow" + (groupFirst ? " tt-subrow-first" : "");
+    const key = document.createElement("div");
+    key.className = "tt-key";
+    const labelSpan = document.createElement("span");
+    labelSpan.textContent = label;
+    key.appendChild(labelSpan);
+    const val = document.createElement("div");
+    val.className = "tt-val";
+    val.textContent = value;
+    row.appendChild(key);
+    row.appendChild(val);
+    parent.appendChild(row);
+  }
+
   // ---------------- data access ----------------
 
   function regionYears(regionKey) {
@@ -333,21 +356,25 @@
   // Groups sub-sector rows under their parent sector, with sectors ordered by their own total
   // (descending) — the same order the non-detail view sorts by — so toggling "sub-sector
   // detail" on doesn't reshuffle which sector sits at the top; it only expands each one in place.
-  function sectorSubrows(regionKey, ly, metric) {
+  // Sub-sector rows for a single sector, sorted by magnitude — the building block both the
+  // full sub-sector detail view and the latest-view tooltip's "breakdown" rows are built from.
+  function sectorSubrowsFor(regionKey, ly, sector, metric) {
     const detailRoot = currentHorizon === "gwp20" ? DATA.subsector_detail_latest_year.gwp20 : DATA.subsector_detail_latest_year;
-    const detailBySector = detailRoot[regionKey];
+    const subs = detailRoot[regionKey][sector] || {};
     const population = DATA.regions[regionKey].years[ly].population_thousands;
+    return Object.keys(subs).map(name => ({
+      name: name,
+      sector: sector,
+      value: metric === "total" ? subs[name] : subs[name] / population
+    })).sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+  }
+
+  function sectorSubrows(regionKey, ly, metric) {
     const sectorsByTotal = SECTOR_ORDER.slice()
       .sort((a, b) => sectorMetricValue(regionKey, ly, b, metric) - sectorMetricValue(regionKey, ly, a, metric));
     const rows = [];
     sectorsByTotal.forEach(sector => {
-      const subs = detailBySector[sector] || {};
-      const subRows = Object.keys(subs).map(name => ({
-        name: name,
-        sector: sector,
-        value: metric === "total" ? subs[name] : subs[name] / population
-      })).sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
-      rows.push(...subRows);
+      rows.push(...sectorSubrowsFor(regionKey, ly, sector, metric));
     });
     return rows;
   }
@@ -398,6 +425,18 @@
     if (!c) return null;
     if (detail) return c.fuels_ktoe[categoryKey];
     return FUEL_SIMPLE_GROUPS[categoryKey].reduce((sum, f) => sum + c.fuels_ktoe[f], 0);
+  }
+
+  // Constituent fuel breakdown for a "simple" group (e.g. "Fossil fuels" -> Coal, Manufactured
+  // fuels, Petroleum, Gas), sorted by magnitude. Null for single-fuel groups (Electricity,
+  // Bioenergy & waste) where a "breakdown" would just repeat the aggregate row.
+  function fuelSimpleBreakdown(regionKey, year, groupKey) {
+    const constituents = FUEL_SIMPLE_GROUPS[groupKey];
+    if (!constituents || constituents.length <= 1) return null;
+    const c = energyConsumption(regionKey, year);
+    if (!c) return null;
+    return constituents.map(f => ({ name: FUEL_LABEL[f], value: c.fuels_ktoe[f] }))
+      .sort((a, b) => b.value - a.value);
   }
 
   // Renewable generation as a % of local electricity demand — not the same as "how much of
@@ -807,6 +846,13 @@
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, detail ? (r.sector + " — " + shortSubsectorLabel(r.sector, r.name)) : r.name);
           ttRow(tt, color, ly + "", fmtValue(metric, r.value) + " " + unitLabel(metric) + " (" + fmtRatioPct(r.value / regionTotal * 100) + " of total)");
+          // Non-detail hover shows this sector's own sub-sector breakdown, so a viewer doesn't
+          // need to tick "Show sub-sector detail" just to see what's inside e.g. Transport.
+          if (!detail) {
+            sectorSubrowsFor(regionKey, ly, r.name, metric).forEach((sub, i) => {
+              ttSubRow(tt, shortSubsectorLabel(sub.sector, sub.name), fmtValue(metric, sub.value) + " " + unitShort(metric), i === 0);
+            });
+          }
         });
       });
     });
@@ -1396,6 +1442,12 @@
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
           ttRow(tt, color, cy + "", fmtKtoe(r.value) + " ktoe (" + fmtRatioPct(r.value / allFuels * 100) + " of total)");
+          if (!detail) {
+            const breakdown = fuelSimpleBreakdown(regionKey, cy, r.key);
+            if (breakdown) {
+              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtKtoe(sub.value) + " ktoe", i === 0));
+            }
+          }
         });
       });
     });
@@ -1406,6 +1458,7 @@
   function buildConsumptionChartHistorical(container, regionKey, years, detail) {
     const cats = consumptionCategories(detail);
     const series = cats.map(c => ({
+      key: c.key,
       name: c.label,
       color: categoryColor(c.key),
       values: years.map(y => consumptionValue(regionKey, y, c.key, detail))
@@ -1465,6 +1518,12 @@
         ttTitle(tt, String(years[idx]));
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
           ttRow(tt, s.color, s.name, fmtKtoe(s.values[idx]) + " ktoe (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
+          if (!detail) {
+            const breakdown = fuelSimpleBreakdown(regionKey, years[idx], s.key);
+            if (breakdown) {
+              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtKtoe(sub.value) + " ktoe", i === 0));
+            }
+          }
         });
       });
     });
