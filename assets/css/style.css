@@ -13,6 +13,8 @@
   --border: rgba(11,11,11,0.10);
   --success-text: #006300;
 
+  --control-panel-h: 60px; /* kept in sync with the real control-panel height via ResizeObserver in app.js */
+
   /* categorical (light) */
   --series-1: #2a78d6; /* blue */
   --series-2: #eb6834; /* orange */
@@ -70,8 +72,12 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; overflow-x: hidden; max-width: 100%; }
+/* overflow-x lives on html only, not body — setting it on both establishes body as its own
+   scroll container that never actually scrolls (the viewport/html does), which silently
+   breaks position: sticky for every descendant (control panel, region toggle). */
+html { margin: 0; padding: 0; overflow-x: hidden; max-width: 100%; }
 body {
+  margin: 0; padding: 0; max-width: 100%;
   font-family: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--page-plane);
   color: var(--text-primary);
@@ -95,7 +101,16 @@ a { color: var(--brand); }
 main.wrap { padding-top: 24px; padding-bottom: 40px; }
 
 /* ---------- Region toggle ---------- */
-.region-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; overflow-x: auto; }
+/* Sticks just below the control panel, but only stays stuck while its own section
+   (this row plus the region-scoped cards below it) is on screen — plain CSS sticky
+   behaviour, since the sticky item stops sticking once its containing block scrolls
+   past. --control-panel-h is kept in sync with the panel's real rendered height by
+   ResizeObserver in app.js, since it wraps to two lines on narrow screens. */
+.region-toggle-row {
+  display: flex; align-items: center; gap: 10px; overflow-x: auto;
+  position: sticky; top: var(--control-panel-h, 60px); z-index: 25;
+  background: var(--page-plane); padding: 10px 0; margin-bottom: 8px;
+}
 .region-toggle { display: inline-flex; flex: none; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-btn {
   font: inherit; font-size: 0.95rem; font-weight: 500; padding: 9px 16px;
@@ -112,13 +127,18 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 .seg-btn:not(.is-active) .pill { background: var(--gridline); color: var(--text-muted); }
 
 /* ---------- Control panel ---------- */
+/* Pinned to the very top of the viewport for the whole page (it governs every chart, not
+   just one section), so it needs to stay reachable while scrolling through a long page of
+   charts. The page title itself is deliberately left non-sticky — it only needs to show
+   while you're at the top of the page. */
 .control-panel {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;
   background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px;
-  padding: 12px 16px; margin-bottom: 22px;
+  padding: 10px 16px; margin-bottom: 22px;
+  position: sticky; top: 0; z-index: 30;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-.control-group { display: flex; align-items: center; gap: 10px; }
-.control-label { font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; }
+.control-group { display: flex; align-items: center; gap: 8px; }
 .seg-toggle { display: inline-flex; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-toggle .seg-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
 
@@ -225,4 +245,13 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 
 @media (max-width: 480px) {
   .brand-text h1 { font-size: 1.15rem; }
+}
+
+/* Both sticky bars stay pinned while scrolling on mobile, so they need to stay a single
+   compact row rather than wrapping to two or three — wrapping would eat a large chunk of a
+   phone viewport permanently. Buttons shrink and the row scrolls horizontally instead. */
+@media (max-width: 640px) {
+  .control-panel { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
+  .control-group { flex: none; }
+  .control-panel .seg-btn, .region-toggle-row .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
 }

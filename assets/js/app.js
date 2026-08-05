@@ -568,11 +568,12 @@
       { year: TARGET_WCC_YEAR, label: "2030: Net zero — WCC (Winchester)" },
       { year: TARGET_NET_ZERO_YEAR, label: "2050: Net zero — HCC & UK Gov" }
     ];
-    NET_ZERO_MARKERS.forEach(m => {
+    const nzLabelEls = NET_ZERO_MARKERS.map(m => {
       const nzX = xScale(m.year), nzY = yScale(0);
       el("circle", { cx: nzX, cy: nzY, r: "4", fill: cssVar("--text-muted") }, svg);
       const nzLabel = el("text", { x: nzX - 8, y: nzY - 10, "text-anchor": "end", "font-size": "10.5", "font-weight": "700", fill: cssVar("--text-secondary") }, svg);
       nzLabel.textContent = m.label;
+      return nzLabel;
     });
 
     // End-of-line labels: a single compact "Name value" line per region (not name + value
@@ -588,12 +589,40 @@
         endLabels[i].y = endLabels[i - 1].y + MIN_LABEL_GAP;
       }
     }
-    endLabels.forEach(item => {
+    const endLabelEls = endLabels.map(item => {
       const nameText = el("text", { x: labelX + 10, y: item.y + 4, "font-size": "12", "font-weight": "700", fill: item.color }, svg);
       nameText.textContent = item.label;
       const valText = el("tspan", { fill: cssVar("--text-secondary"), "font-weight": "500" });
       valText.textContent = "  " + fmtAxisValue(metric, item.values[item.values.length - 1]) + unitShort(metric);
       nameText.appendChild(valText);
+      return nameText;
+    });
+
+    // A net-zero marker's label can land right on top of a region's own end-of-line label —
+    // guaranteed for Winchester, whose 2030 target sits close in x to its 2024 data point, and
+    // whose total emissions are small enough to keep both labels pinned near the zero baseline.
+    // getBBox() gives the actual rendered box (no font-metric guessing needed, since both sets
+    // of labels are already in the DOM), so nudge a colliding marker label up and clear of
+    // whichever end-of-line label(s) it overlaps. Re-measures after each nudge (rather than
+    // computing one offset up front) since clearing one label can push it straight into
+    // another one stacked above it.
+    nzLabelEls.forEach(nzEl => {
+      for (let pass = 0; pass < 6; pass++) {
+        let moved = false;
+        endLabelEls.forEach(endEl => {
+          const nzBox = nzEl.getBBox();
+          const endBox = endEl.getBBox();
+          const overlapsX = nzBox.x < endBox.x + endBox.width && nzBox.x + nzBox.width > endBox.x;
+          const overlapsY = nzBox.y < endBox.y + endBox.height && nzBox.y + nzBox.height > endBox.y;
+          if (overlapsX && overlapsY) {
+            const currentY = parseFloat(nzEl.getAttribute("y"));
+            const shift = endBox.y - (nzBox.y + nzBox.height) - 4;
+            nzEl.setAttribute("y", currentY + shift);
+            moved = true;
+          }
+        });
+        if (!moved) break;
+      }
     });
 
     // crosshair + hover — works across the whole 2005-2050 range; years beyond the latest
@@ -1760,7 +1789,24 @@
     buildGasChart(currentRegion);
   }
 
+  // Keeps the sticky region-toggle row pinned directly under the sticky control panel,
+  // whatever height the panel actually renders at (it wraps to two rows below ~640px wide).
+  function setupStickyOffset() {
+    const panel = document.getElementById("control-panel");
+    const update = () => {
+      document.documentElement.style.setProperty("--control-panel-h", panel.offsetHeight + "px");
+    };
+    update();
+    if (window.ResizeObserver) {
+      new ResizeObserver(update).observe(panel);
+    } else {
+      window.addEventListener("resize", update);
+    }
+  }
+
   function wireEvents() {
+    setupStickyOffset();
+
     document.querySelectorAll(".region-toggle .seg-btn").forEach(btn => {
       btn.addEventListener("click", () => setRegion(btn.dataset.region));
     });

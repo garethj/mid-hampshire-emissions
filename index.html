@@ -31,27 +31,23 @@
 
     <div class="control-panel" id="control-panel">
       <div class="control-group" role="group" aria-label="Choose metric">
-        <span class="control-label">Metric</span>
         <div class="seg-toggle">
           <button class="seg-btn is-active" data-metric="per_capita">Per person</button>
           <button class="seg-btn" data-metric="total">Totals</button>
         </div>
       </div>
       <div class="control-group" role="group" aria-label="Choose view">
-        <span class="control-label">View</span>
         <div class="seg-toggle">
           <button class="seg-btn is-active" data-view="latest">Latest year</button>
           <button class="seg-btn" data-view="historical">Historical trend</button>
         </div>
       </div>
       <div class="control-group" role="group" aria-label="Choose time horizon">
-        <span class="control-label">Time horizon
-          <button class="info-btn" data-info="horizon-toggle" aria-label="About time horizon">i</button>
-        </span>
         <div class="seg-toggle">
           <button class="seg-btn is-active" data-horizon="gwp100">100-year (official)</button>
           <button class="seg-btn" data-horizon="gwp20">20-year</button>
         </div>
+        <button class="info-btn" data-info="horizon-toggle" aria-label="About time horizon">i</button>
       </div>
     </div>
 
@@ -70,6 +66,7 @@
       <div class="table-scroll is-hidden" id="trend-table"></div>
     </div>
 
+    <div class="region-scoped" id="region-scoped">
     <div class="region-toggle-row">
       <div class="region-toggle" role="group" aria-label="Choose region">
         <button class="seg-btn is-active" data-region="winchester">Winchester</button>
@@ -130,6 +127,8 @@
       <div class="chart-wrap" id="consumption-chart"></div>
       <button class="table-toggle" data-target="consumption-table">Show as table</button>
       <div class="table-scroll is-hidden" id="consumption-table"></div>
+    </div>
+
     </div>
 
     <p class="footnote">
