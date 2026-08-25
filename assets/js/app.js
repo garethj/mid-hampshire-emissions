@@ -11,6 +11,12 @@
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let currentConsumptionDetail = false; // show consumption chart as all fuel types instead of simple groups
   let currentHorizon = "gwp100"; // "gwp100" (official DESNZ) | "gwp20"
+  // "context" (self + ancestors up to Hampshire and the Solent, the default) or "constituents"
+  // (all siblings at the nearest level with children — see nearestHub() below) — drives the top
+  // trend chart's region set. Reset to "context" on every region change, since carrying
+  // "constituents" across a region switch would land on a sibling set unrelated to the click
+  // that triggered it.
+  let compareMode = "context";
   let tooltipEl = null;
 
   // Headline "Total renewable generation, 2024: X GWh - equivalent to Y% of demand" sentence,
@@ -19,14 +25,100 @@
   // metric changes don't need a second render path just to keep this one sentence in sync.
   let generationNoteText = "";
 
-  // Region display order for the trend chart, legends and tables — also the source of truth
-  // for which regions exist. Colour comes from CATEGORY_COLOR_SLOT below, keyed by `key`.
-  const REGIONS = [
-    { key: "winchester", label: "Winchester", legendLabel: "Winchester" },
-    { key: "mid-hampshire", label: "Mid-Hampshire", legendLabel: "Mid-Hampshire (proposed)" },
-    { key: "hampshire-solent", label: "Hampshire and the Solent", legendLabel: "Hampshire and the Solent" }
-  ];
-  const REGION_LABEL = Object.fromEntries(REGIONS.map(r => [r.key, r.label]));
+  // Every region this site can show — built from DATA.meta.region_index (see region_index in
+  // process.py) once data loads, rather than hardcoded here, since there are 19 of them across
+  // three tiers (historic districts / current unitaries / proposed 2028 unitaries) plus
+  // Hampshire and the Solent itself. Populated by initRegions() in init(). `group` and `parent`
+  // drive the dropdown grouping and the context-chart hierarchy helpers just below.
+  let REGIONS = [];
+  let REGION_LABEL = {};
+  let REGION_BY_KEY = {};
+
+  function initRegions() {
+    REGIONS = DATA.meta.region_index.map(r => ({
+      key: r.key,
+      label: r.name,
+      legendLabel: r.group === "proposed-unitary" ? r.name + " (proposed)" : r.name,
+      group: r.group,
+      parent: r.parent
+    }));
+    REGION_LABEL = Object.fromEntries(REGIONS.map(r => [r.key, r.label]));
+    REGION_BY_KEY = Object.fromEntries(REGIONS.map(r => [r.key, r]));
+  }
+
+  // ---------------- region hierarchy ----------------
+  // Two distinct rollups exist for a region and shouldn't be conflated: how its own *figures*
+  // are built (which LAs, at what population-weighted share — baked into the data files already,
+  // nothing to do with this section) versus which single region it rolls up to in the *UI*
+  // hierarchy used here — the dropdown's grouping and the context chart's ancestor chain. E.g.
+  // East Hampshire's hierarchy parent is Mid-Hampshire, even though a small population slice of
+  // it is also baked into South East Hampshire's own figures.
+
+  function regionParent(key) {
+    const r = REGION_BY_KEY[key];
+    return r ? r.parent : null;
+  }
+
+  // Self, then parent, then grandparent, ... up to and including Hampshire and the Solent.
+  function regionAncestors(key) {
+    const chain = [];
+    let k = key;
+    while (k) {
+      chain.push(k);
+      k = regionParent(k);
+    }
+    return chain;
+  }
+
+  function regionChildren(key) {
+    return REGIONS.filter(r => r.parent === key).map(r => r.key);
+  }
+
+  // The nearest region (self or an ancestor) that has constituents to show — used by the
+  // "compare all constituents" mode. A region with its own children (e.g. a proposed unitary)
+  // is its own hub; a leaf (a historic district, or a current unitary like Portsmouth) defers to
+  // its parent, so picking a leaf and toggling "constituents" shows its siblings, not itself.
+  function nearestHub(key) {
+    return regionChildren(key).length > 0 ? key : regionParent(key);
+  }
+
+  // Display heading + explicit order for the region select's <optgroup>s. "aggregate"
+  // (Hampshire and the Solent) isn't listed — it renders as a loose top-level option, not inside
+  // a group, since it's the one region that isn't a constituent of anything else on this site.
+  const REGION_GROUP_LABEL = {
+    "historic-district": "Historic districts",
+    "current-unitary": "Current unitaries",
+    "proposed-unitary": "Proposed unitaries (2028)"
+  };
+  const REGION_GROUP_ORDER = ["historic-district", "current-unitary", "proposed-unitary"];
+
+  // Builds the #region-select's <option>/<optgroup> markup from REGIONS — nothing hardcoded in
+  // index.html, so the dropdown always matches whatever region_index the data actually contains.
+  function populateRegionSelect() {
+    const select = document.getElementById("region-select");
+    clearNode(select);
+    REGIONS.filter(r => r.group === "aggregate").forEach(r => {
+      const opt = document.createElement("option");
+      opt.value = r.key; opt.textContent = r.label;
+      select.appendChild(opt);
+    });
+    REGION_GROUP_ORDER.forEach(group => {
+      const members = REGIONS.filter(r => r.group === group);
+      if (!members.length) return;
+      const og = document.createElement("optgroup");
+      og.label = REGION_GROUP_LABEL[group];
+      // Historic districts are alphabetised (11 of them — easier to scan); the unitary groups
+      // keep REGIONS' own order, which already reads sensibly (Isle of Wight, then the two
+      // absorbed cities; North, Mid, South East, South West geographically).
+      const ordered = group === "historic-district" ? [...members].sort((a, b) => a.label.localeCompare(b.label)) : members;
+      ordered.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.key; opt.textContent = r.label;
+        og.appendChild(opt);
+      });
+      select.appendChild(og);
+    });
+  }
 
   // This order is not alphabetical — it's chosen so that consecutive sectors always land on a
   // CVD-safe adjacent pair of colours in the historical (line) chart, which renders sectors in
@@ -87,11 +179,12 @@
   // can't get the same guarantee, since which categories end up adjacent depends on that year's
   // data — this was already true before this mapping existed (colour was previously pinned by
   // array position, not identity, but the sort-driven adjacency risk is unchanged either way).
+  // Regions aren't in CATEGORY_COLOR_SLOT below: with 19 of them and only 8 slots, no fixed
+  // per-region identity colour is possible (or useful — at most ~5 regions are ever on screen
+  // together). See contextRegionColor() near the trend chart for how region colour is assigned
+  // instead: by role (selected region / its parent / Hampshire and the Solent) in "context" mode,
+  // by a fixed validated slot rotation in "constituents" mode.
   const CATEGORY_COLOR_SLOT = {
-    // Regions (trend chart) — unchanged from the original hand-picked assignment.
-    "winchester": 1,        // blue
-    "mid-hampshire": 6,     // green
-    "hampshire-solent": 7,  // violet
 
     // Emissions sectors — all 8 slots used once each.
     "Transport": 1,      // blue
@@ -511,6 +604,49 @@
 
   // ---------------- trend chart (historical line / latest bar) ----------------
 
+  // Which regions the top chart plots: in "context" mode, the selected region and its ancestors
+  // up to Hampshire and the Solent (self first); in "constituents" mode, all siblings at the
+  // nearest level with children (see nearestHub()) — e.g. all historic districts within the
+  // selected region's unitary, or all unitaries within Hampshire and the Solent.
+  function contextRegionKeys() {
+    return compareMode === "constituents"
+      ? regionChildren(nearestHub(currentRegion))
+      : regionAncestors(currentRegion);
+  }
+
+  // Prefix of the same slot order already validated (dataviz skill's palette validator) for
+  // SECTOR_ORDER's 8-category fixed-order chart — a prefix of an adjacency-safe sequence is
+  // still adjacency-safe, and this only ever needs up to 5 (Hampshire and the Solent's 5
+  // constituent unitaries, the largest sibling group in the hierarchy).
+  const CONSTITUENT_SLOT_ORDER = [1, 2, 3, 4, 5, 6, 7, 8];
+
+  // Colour by role, not by fixed per-region identity — with 19 regions and 8 slots, identity
+  // colour isn't possible, and isn't needed since at most ~5 regions render together. In
+  // "context" mode: the selected region is always blue (slot 1, "you are here"), an intermediate
+  // parent (if shown) is always green (slot 6), Hampshire and the Solent is always violet
+  // (slot 7) — same visual language regardless of which specific region is selected. In
+  // "constituents" mode, the originally-selected region keeps its "you are here" blue if it's
+  // one of the siblings shown; everyone else cycles through the remaining validated slots.
+  function contextRegionColors(keys) {
+    if (compareMode === "context") {
+      return keys.map((key, i) => {
+        if (key === "hampshire-solent") return seriesColor(7);
+        return seriesColor(i === 0 ? 1 : 6);
+      });
+    }
+    const selfIdx = keys.indexOf(currentRegion);
+    const slotOrder = selfIdx >= 0 ? CONSTITUENT_SLOT_ORDER.filter(s => s !== 1) : CONSTITUENT_SLOT_ORDER;
+    let cursor = 0;
+    return keys.map((key, i) => (i === selfIdx ? seriesColor(1) : seriesColor(slotOrder[cursor++])));
+  }
+
+  // The regions the top chart should render right now, in display order, with colour attached.
+  function contextRegions() {
+    const keys = contextRegionKeys();
+    const colors = contextRegionColors(keys);
+    return keys.map((key, i) => ({ ...REGION_BY_KEY[key], color: colors[i] }));
+  }
+
   function buildTrendChart() {
     const container = document.getElementById("trend-chart");
     clearNode(container);
@@ -521,8 +657,9 @@
     const ly = latestYear();
 
     const metricLabel = metric === "total" ? "Total emissions" : "Emissions per person";
+    const modeSuffix = compareMode === "constituents" ? " — constituents of " + REGION_LABEL[nearestHub(currentRegion)] : "";
     document.getElementById("trend-chart-title").textContent =
-      metricLabel + ", " + (view === "historical" ? (years[0] + "–" + ly) : ly) + horizonTitleSuffix();
+      metricLabel + ", " + (view === "historical" ? (years[0] + "–" + ly) : ly) + horizonTitleSuffix() + modeSuffix;
 
     if (view === "historical") {
       buildTrendChartHistorical(container, years, metric);
@@ -536,18 +673,18 @@
   // 2005) can't express exactly — they need no baseline figure to plot.
   const TARGET_NET_ZERO_YEAR = 2050; // Hampshire County Council area target, aligned to UK Gov's legally-binding Climate Change Act target
   const TARGET_WCC_YEAR = 2030; // Winchester City Council's own district-wide carbon-neutral target — more ambitious than, and specific to, Winchester alone
-  // Mid-Hampshire and Hampshire and the Solent have no target of their own yet (neither is an
-  // existing council with a published net-zero date), so they fall back to the shared HCC/UK
-  // Gov 2050 goal; only Winchester's own dashed pathway targets its own, earlier, date.
-  const REGION_TARGET_YEAR = { winchester: TARGET_WCC_YEAR, "mid-hampshire": TARGET_NET_ZERO_YEAR, "hampshire-solent": TARGET_NET_ZERO_YEAR };
+  // No other region has a published net-zero date of its own yet, so every region but Winchester
+  // falls back to the shared HCC/UK Gov 2050 goal; only Winchester's own dashed pathway targets
+  // its own, earlier, date.
+  const REGION_TARGET_YEAR = { winchester: TARGET_WCC_YEAR };
 
   function buildTrendChartHistorical(container, years, metric) {
-    const series = REGIONS.map(r => ({
+    const series = contextRegions().map(r => ({
       key: r.key,
       label: r.label,
       legendLabel: r.legendLabel,
-      color: categoryColor(r.key),
-      targetYear: REGION_TARGET_YEAR[r.key],
+      color: r.color,
+      targetYear: REGION_TARGET_YEAR[r.key] || TARGET_NET_ZERO_YEAR,
       values: years.map(y => regionMetricValue(r.key, y, metric))
     }));
 
@@ -724,7 +861,7 @@
 
   function buildTrendChartLatest(container, ly, metric) {
     const py = DATA.meta.years[DATA.meta.years.length - 2];
-    const regions = REGIONS.map(r => ({ key: r.key, label: r.label, color: categoryColor(r.key) }));
+    const regions = contextRegions();
     const values = regions.map(r => regionMetricValue(r.key, ly, metric));
     const prevValues = regions.map(r => regionMetricValue(r.key, py, metric));
 
@@ -1684,11 +1821,13 @@
 
   const INFO_CONTENT = {
     "region-toggle": {
-      title: "Winchester, Mid-Hampshire & Hampshire and the Solent",
+      title: "Choosing a region",
       body: [
-        "Winchester is the existing district council. Mid-Hampshire is the proposed new unitary authority, combining East Hampshire, Winchester, New Forest and Test Valley from 1 April 2028, following the Government's Local Government Reorganisation decision of 25 March 2026.",
-        "Hampshire and the Solent is the Combined County Authority established 4 June 2026 (SI 2026/595), covering the whole of Hampshire plus Portsmouth, Southampton and the Isle of Wight — the strategic tier sitting above Mid-Hampshire and its neighbouring new unitaries. Unlike Mid-Hampshire, this one already exists; its footprint isn't affected by exactly where the 11 moving parishes end up, since they stay inside it either way.",
-        "The Mid-Hampshire decision is subject to a judicial review sought by Hampshire County Council, so that boundary is the current best information, not guaranteed final."
+        "Every current Hampshire local authority and every proposed future unitary is here, in three groups. \"Historic districts\" are the 11 district/borough councils that exist today under Hampshire County Council's two-tier system — Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley and Winchester. \"Current unitaries\" are Portsmouth, Southampton and the Isle of Wight — already unitary authorities today, each covering only its own area. \"Proposed unitaries (2028)\" are the four new unitary authorities that replace all 14 of the above from 1 April 2028, under the Government's Local Government Reorganisation decision of 25 March 2026: North Hampshire, Mid-Hampshire, South East Hampshire and South West Hampshire.",
+        "Isle of Wight is unaffected by the decision and stays exactly as it is. Portsmouth and Southampton, by contrast, don't remain standalone — Portsmouth is absorbed into South East Hampshire, Southampton into South West Hampshire. Three of the four new unitaries also pick up a handful of parishes moving from a Mid-Hampshire district: South East Hampshire gains Clanfield, Horndean and Rowlands Castle from East Hampshire and Newlands from Winchester; South West Hampshire gains Totton and Eling, Marchwood, Hythe and Dibden and Fawley from New Forest, and Chilworth, Nursling and Rownhams and Valley Park from Test Valley. No official sub-district emissions data exists for any of this, so each affected district's contribution is apportioned by 2021 Census parish population share rather than left as a whole-district guess — see \"Full methodology & sources\" below for the exact fractions.",
+        "Hampshire and the Solent is the Combined County Authority established 4 June 2026 (SI 2026/595), covering the whole of Hampshire plus Portsmouth, Southampton and the Isle of Wight — the strategic tier every other region here sits underneath. Unlike the four new unitaries, this one already exists, and its footprint isn't affected by exactly where any moving parish ends up, since they all stay inside it either way.",
+        "The historic districts and current unitaries always show today's whole-district figures — not an LGR-adjusted fragment — even though a few of them also contribute a population-weighted slice to a neighbouring proposed unitary's total.",
+        "The new-unitary decision is subject to a judicial review sought by Hampshire County Council, so these boundaries are the current best information, not guaranteed final."
       ]
     },
     "horizon-toggle": {
@@ -1705,9 +1844,10 @@
       title: "Total emissions over time",
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
+        "This chart plots the selected region in its hierarchy context, not a fixed set of regions: it always shows Hampshire and the Solent, plus the selected region's own line, plus (for a historic district or current unitary) the proposed unitary it rolls up to — e.g. picking Eastleigh shows Eastleigh, South West Hampshire and Hampshire and the Solent. Tick \"Compare all constituents\" to switch instead to every sibling at the nearest useful level — all historic districts within the selected unitary, or all unitaries within Hampshire and the Solent.",
         "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means).",
-        "Winchester is the official district figure, published directly by DESNZ. Mid-Hampshire and Hampshire and the Solent are calculated here by summing the same DESNZ district figures — neither is an official published figure.",
-        "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at its own net-zero target — a straight-line \"required pathway\" showing the average pace of reduction still needed from here. Winchester's own line targets 2030, its more ambitious district-wide carbon-neutral target from its Carbon Neutrality Action Plan; Mid-Hampshire and Hampshire and the Solent have no target of their own yet, so their lines target 2050 instead, the Hampshire County Council area target (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line.",
+        "Historic districts and current unitaries are the official DESNZ district figures, published directly. Every other region here — the four proposed unitaries and Hampshire and the Solent — is calculated by summing those same DESNZ district figures; none of them is an official published figure.",
+        "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at its own net-zero target — a straight-line \"required pathway\" showing the average pace of reduction still needed from here. Winchester's own line targets 2030, its more ambitious district-wide carbon-neutral target from its Carbon Neutrality Action Plan; every other region has no target of its own yet, so its line targets 2050 instead, the Hampshire County Council area target (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024 (published 25 June 2026)."
       ],
       link: { href: "https://assets.publishing.service.gov.uk/media/6a3bacc9d52550a19950f2f5/2005-24-local-authority-ghg-emissions-csv-dataset.csv", label: "Download the source CSV" }
@@ -1763,12 +1903,17 @@
         ["Primary data source", "DESNZ (Department for Energy Security and Net Zero), “UK local authority and regional greenhouse gas emissions statistics, 2005–2024”, published 25 June 2026."],
         ["Basis", "Territorial emissions — what physically happens within the area's boundary — in kt CO2e (thousand tonnes carbon dioxide equivalent), combining CO2, methane (CH4) and nitrous oxide (N2O)."],
         ["Time horizon", "The default (\"100-year\") view is DESNZ's own published figures, which weight CH4 and N2O by their 100-year Global Warming Potential (GWP100, IPCC AR5: CH4=28, N2O=265, CO2=1) — the international reporting standard. The \"20-year\" view, toggled above the charts, is calculated by this site (not DESNZ) by reweighting the same gas quantities using GWP20 instead (IPCC AR5: CH4=84, N2O=264, CO2=1) — methane counts roughly 3x more heavily, which raises Agriculture- and Waste-heavy areas' figures noticeably. See the Time horizon \"i\" button for the full explanation."],
-        ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the 11 parishes moving to neighbouring unitaries (South-West/South-East Hampshire) under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
-        ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need the parish-level adjustment above, since it doesn't matter which new unitary those parishes end up in)."],
-        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire, as above)."],
+        ["Historic districts & current unitaries", "The 11 historic districts (Basingstoke and Deane, East Hampshire, Eastleigh, Fareham, Gosport, Hart, Havant, New Forest, Rushmoor, Test Valley, Winchester) and 3 current unitaries (Portsmouth, Southampton, Isle of Wight) are DESNZ's own published district figures, used whole and unadjusted — each represents the area as it exists today, not an LGR-adjusted fragment."],
+        ["Mid-Hampshire boundary", "East Hampshire + Winchester + New Forest + Test Valley, per the Government's LGR decision of 25 March 2026, each scaled down to exclude the parishes moving to South East/South West Hampshire under the same decision. No official sub-district emissions data exists, so each district's contribution is reduced by its 2021 Census parish population share instead of using the whole district — East Hampshire to 82.0%, Winchester to 97.7%, New Forest to 61.0%, Test Valley to 88.8%. Decision subject to possible judicial review."],
+        ["North Hampshire boundary", "Basingstoke and Deane + Hart + Rushmoor, whole districts — no parishes move in or out of this one, so no population weighting is needed."],
+        ["South East Hampshire boundary", "Fareham + Gosport + Havant + Portsmouth, whole districts, plus the parishes moving in from Mid-Hampshire: 18.0% of East Hampshire (Clanfield, Horndean, Rowlands Castle) and 2.3% of Winchester (Newlands), by the same 2021 Census parish population share method as the Mid-Hampshire boundary above."],
+        ["South West Hampshire boundary", "Eastleigh + Southampton, whole districts, plus the parishes moving in from Mid-Hampshire: 39.0% of New Forest (Totton and Eling, Marchwood, Hythe and Dibden, Fawley) and 11.2% of Test Valley (Chilworth, Nursling and Rownhams, Valley Park), by the same method."],
+        ["Isle of Wight, Portsmouth, Southampton as current unitaries", "Unaffected by the LGR decision as separate regions in their own right — Isle of Wight stays a standalone unitary under the new structure too; Portsmouth and Southampton are absorbed into South East/South West Hampshire respectively from 1 April 2028, but their own figures here are simply today's DESNZ district totals."],
+        ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need any parish-level adjustment, since it doesn't matter which new unitary those parishes end up in — they stay inside Hampshire and the Solent either way). Equivalently, it's the sum of the four proposed unitaries plus Isle of Wight, which this site's own data pipeline checks against directly."],
+        ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire/South East/South West Hampshire, as above)."],
         ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 4 August 2026 and is updated manually when a new release lands."],
-        ["Energy data", "Renewable electricity generation by technology (2014–2024) and energy consumption by fuel (2005–2024), both from DESNZ, at local authority level, aggregated to these three regions the same way as the emissions figures above. See each energy chart's own \"i\" button for category grouping and unit conversions."],
-        ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with Mid-Hampshire district figures scaled down using 2021 Census parish population shares (see the boundary note above) — nothing else here is estimated or modelled."]
+        ["Energy data", "Renewable electricity generation by technology (2014–2024) and energy consumption by fuel (2005–2024), both from DESNZ, at local authority level, aggregated to every region here the same way as the emissions figures above. See each energy chart's own \"i\" button for category grouping and unit conversions."],
+        ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with the affected districts' contributions scaled using 2021 Census parish population shares (see the boundary notes above) — nothing else here is estimated or modelled."]
       ],
       link: { href: "https://www.gov.uk/government/statistics/uk-local-authority-and-regional-greenhouse-gas-emissions-statistics-2005-to-2024/2005-to-2024-uk-local-and-regional-greenhouse-gas-emissions-statistical-release-web-accessible", label: "gov.uk statistical release" }
     }
@@ -1836,9 +1981,11 @@
   ];
 
   // The subset of PAGE_WIDE_CHARTS that also needs re-rendering when the region selector
-  // changes — everything except the trend chart, which always plots all three regions at once
-  // and so has no single "current region" to react to.
+  // changes — now everything, including the trend chart: it used to always plot the same three
+  // regions regardless of selection, but now shows the selected region in its hierarchy context
+  // (see contextRegions() above), so it's as region-scoped as the rest.
   const REGION_SCOPED_CHARTS = [
+    buildTrendChart,
     () => buildSectorChart(currentRegion),
     () => buildGasChart(currentRegion),
     () => buildGenerationChart(currentRegion),
@@ -1853,12 +2000,38 @@
     REGION_SCOPED_CHARTS.forEach(fn => fn());
   }
 
+  // Reflects the current region in the URL as a "?region=" param, so a link can point straight
+  // at any of the 19 regions — the point of promoting this site across every district and
+  // unitary rather than just Winchester's original three geographies. Uses replaceState, not
+  // pushState: switching regions is exploratory, like the other page controls, not something
+  // that should give every click its own back-button stop. "winchester" (the default) is kept
+  // param-free so the plain URL still works exactly as before.
+  function syncUrl(regionKey) {
+    const url = new URL(location.href);
+    if (regionKey === "winchester") {
+      url.searchParams.delete("region");
+    } else {
+      url.searchParams.set("region", regionKey);
+    }
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+  }
+
   function setRegion(regionKey) {
     currentRegion = regionKey;
-    document.querySelectorAll(".region-toggle .seg-btn").forEach(b => {
-      b.classList.toggle("is-active", b.dataset.region === regionKey);
-    });
+    compareMode = "context";
+    document.getElementById("region-select").value = regionKey;
+    const compareToggle = document.getElementById("compare-constituents-toggle");
+    if (compareToggle) compareToggle.checked = false;
+    syncUrl(regionKey);
     renderRegionScopedCharts();
+  }
+
+  // Wired to the trend chart's "Compare all constituents" checkbox — independent of setRegion()
+  // since toggling it shouldn't reset the selected region, only which set of regions the trend
+  // chart plots (see contextRegionKeys()).
+  function setCompareMode(mode) {
+    compareMode = mode;
+    buildTrendChart();
   }
 
   function setMetric(metric) {
@@ -1908,8 +2081,10 @@
   function wireEvents() {
     setupStickyOffset();
 
-    document.querySelectorAll(".region-toggle .seg-btn").forEach(btn => {
-      btn.addEventListener("click", () => setRegion(btn.dataset.region));
+    document.getElementById("region-select").addEventListener("change", (ev) => setRegion(ev.target.value));
+
+    document.getElementById("compare-constituents-toggle").addEventListener("change", (ev) => {
+      setCompareMode(ev.target.checked ? "constituents" : "context");
     });
 
     document.querySelectorAll("[data-metric]").forEach(btn => {
@@ -1961,10 +2136,15 @@
     }
     DATA = window.MHE_DATA;
     ENERGY_DATA = window.MHE_ENERGY_DATA || null;
+    initRegions();
+    populateRegionSelect();
     wireEvents();
-    // "winchester" is already marked is-active in the HTML, so no need to route through
-    // setRegion() just to re-toggle a class that's already correct.
-    currentRegion = "winchester";
+    // Deep link support: "?region=<key>" opens straight into that region instead of the default
+    // Winchester — the point of promoting this site across every district and unitary, not just
+    // Winchester's original three geographies. Falls back to Winchester for a missing/unknown key.
+    const regionParam = new URLSearchParams(location.search).get("region");
+    currentRegion = (regionParam && REGION_BY_KEY[regionParam]) ? regionParam : "winchester";
+    document.getElementById("region-select").value = currentRegion;
     renderPageWideCharts();
   }
 

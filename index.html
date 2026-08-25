@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hampshire Emissions Explorer</title>
-<meta name="description" content="Greenhouse gas emissions for Winchester, the proposed Mid-Hampshire unitary authority, and Hampshire and the Solent, built from official government statistics.">
+<meta name="description" content="Greenhouse gas emissions for every current Hampshire district and unitary, the four proposed new unitary authorities, and Hampshire and the Solent, built from official government statistics.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,24 +56,28 @@
       <button class="link-btn" data-info="horizon-toggle">Why?</button>
     </div>
 
+    <div class="region-scoped" id="region-scoped">
+    <div class="region-toggle-row">
+      <div class="region-select-wrap" role="group" aria-label="Choose region">
+        <select id="region-select" aria-label="Choose region"></select>
+      </div>
+      <button class="info-btn" data-info="region-toggle" aria-label="About this selector">i</button>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <h2 id="trend-chart-title">Emissions per person, 2023</h2>
         <button class="info-btn" data-info="trend-chart" aria-label="About this chart">i</button>
       </div>
+      <div class="sector-detail-row" id="compare-constituents-row">
+        <label class="detail-toggle">
+          <input type="checkbox" id="compare-constituents-toggle" autocomplete="off">
+          <span>Compare all constituents</span>
+        </label>
+      </div>
       <div class="chart-wrap" id="trend-chart"></div>
       <button class="table-toggle" data-target="trend-table">Show as table</button>
       <div class="table-scroll is-hidden" id="trend-table"></div>
-    </div>
-
-    <div class="region-scoped" id="region-scoped">
-    <div class="region-toggle-row">
-      <div class="region-toggle" role="group" aria-label="Choose region">
-        <button class="seg-btn is-active" data-region="winchester">Winchester</button>
-        <button class="seg-btn" data-region="mid-hampshire">Mid-Hampshire <span class="pill">proposed</span></button>
-        <button class="seg-btn" data-region="hampshire-solent">Hampshire and the Solent</button>
-      </div>
-      <button class="info-btn" data-info="region-toggle" aria-label="About this selector">i</button>
     </div>
 
     <div class="card">

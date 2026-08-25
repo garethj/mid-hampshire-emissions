@@ -4,7 +4,6 @@ This dashboard deliberately starts small — a few headline figures, built on da
 
 ## More regions
 
-- **All five new Hampshire unitaries** — Add North, Southwest and Southeast Hampshire and Isle of Wight so Mid-Hampshire can be compared against its neighbours, not just its own history.
 - **Build-your-own region** — Let anyone tick any combination of current districts and get an instant combined chart — useful if boundaries change again, or to test other groupings.
 
 ## Targets

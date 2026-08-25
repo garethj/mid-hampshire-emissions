@@ -113,7 +113,6 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
   padding: 10px 16px; margin-bottom: 22px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-.region-toggle { display: inline-flex; flex: none; border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; }
 .seg-btn {
   font: inherit; font-size: 0.95rem; font-weight: 500; padding: 9px 16px;
   background: var(--surface-1); color: var(--text-secondary); border: none; cursor: pointer;
@@ -121,12 +120,20 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 }
 .seg-btn:last-child { border-right: none; }
 .seg-btn.is-active { background: var(--brand); color: #fff; font-weight: 700; }
-.pill {
-  font-size: 0.68rem; font-weight: 500; background: rgba(255,255,255,0.25);
-  padding: 1px 6px; border-radius: 10px; margin-left: 6px; text-transform: uppercase;
-  letter-spacing: 0.02em;
+
+/* Region select — a native <select> rather than a button row, since there are 19 regions
+   across three tiers (grouped via <optgroup>, populated from data in app.js). Styled to sit in
+   the same card-like shell the old button row used, rather than the browser's bare default. */
+.region-select-wrap { flex: 1 1 auto; min-width: 0; }
+#region-select {
+  font: inherit; font-size: 0.95rem; font-weight: 500; width: 100%;
+  background: var(--surface-1); color: var(--text-primary);
+  border: 1px solid var(--gridline); border-radius: 8px; padding: 9px 34px 9px 12px;
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23898781' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
 }
-.seg-btn:not(.is-active) .pill { background: var(--gridline); color: var(--text-muted); }
+#region-select:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 
 /* ---------- Control panel ---------- */
 /* Pinned to the very top of the viewport for the whole page (it governs every chart, not
@@ -254,5 +261,6 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
 @media (max-width: 640px) {
   .control-panel, .region-toggle-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
   .control-group { flex: none; }
-  .control-panel .seg-btn, .region-toggle-row .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
+  .control-panel .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
+  #region-select { padding: 7px 30px 7px 10px; font-size: 0.88rem; }
 }
