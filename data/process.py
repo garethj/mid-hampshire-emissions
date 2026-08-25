@@ -4,7 +4,7 @@ import sys
 from collections import defaultdict
 from datetime import date
 
-from la_config import ALL_LAS, HAMPSHIRE_SOLENT_LAS, MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION
+from la_config import ALL_LAS, MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION, REGION_DEFS
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else "emissions_source.csv"
 
@@ -66,6 +66,8 @@ out = {
         "note_boundary": "Mid-Hampshire (proposed unitary, decision 25 March 2026) = East Hampshire + Winchester + New Forest + Test Valley, adjusted to exclude the 11 parishes moving to South-West/South-East Hampshire under the same decision (Clanfield, Horndean, Rowlands Castle from East Hampshire; Newlands from Winchester; Totton and Eling, Marchwood, Hythe and Dibden, Fawley from New Forest; Chilworth, Nursling and Rownhams, Valley Park from Test Valley). No official sub-district emissions data exists, so each district's contribution is scaled down by its 2021 Census parish population share instead of using the whole district — see mid_hampshire_retained_fraction.",
         "mid_hampshire_retained_fraction": {la: round(f, 4) for la, f in MID_HAMPSHIRE_RETAINED_FRACTION.items()},
         "note_hampshire_solent": "Hampshire and the Solent Combined County Authority (established 4 June 2026 under SI 2026/595) = Hampshire County Council + Portsmouth City Council + Southampton City Council + Isle of Wight Council. Modelled here as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight (Hampshire CC itself isn't a DESNZ-reporting unit). This total isn't affected by the 11-parish boundary change above, since those parishes stay within the CCA regardless of which new unitary they land in.",
+        "note_other_unitaries": "The 25 March 2026 decision creates three further new unitaries alongside Mid-Hampshire, all effective from 1 April 2028: North Hampshire (Basingstoke and Deane + Hart + Rushmoor, no parish split) and South-East/South-West Hampshire (each combining whole neighbouring districts with the moving-parish fraction of a Mid-Hampshire district that joins them instead — see note_boundary above for which parishes). Isle of Wight is unaffected and remains standalone. Portsmouth and Southampton do NOT remain standalone unitaries — they're absorbed into South-East and South-West Hampshire respectively. Sourced/cross-checked against two independent, mutually consistent accounts of the decision (Winchester Action on Climate Crisis and Hart District Council), since this was decided after this site's data sources were last updated: https://www.winacc.org.uk/new-unitary-councils-in-hampshire-and-the-solent/ and https://www.hart.gov.uk/local-government-reorganisation/what-happening-across-hampshire. Like the Mid-Hampshire decision, this is subject to a judicial review sought by Hampshire County Council, so these boundaries are the current best information, not guaranteed final.",
+        "region_index": [{"key": r["key"], "name": r["name"], "group": r["group"], "parent": r["parent"]} for r in REGION_DEFS],
         "note_gwp20": "DESNZ's published figures (everything outside the 'gwp20' keys below) use 100-year Global Warming Potentials (GWP100), the international reporting standard, converting CH4 and N2O to CO2e using IPCC AR5 values. This site additionally computes an unofficial 20-year-horizon view (GWP20, same AR5 table) by rescaling each gas's already-published CO2e contribution by GWP20/GWP100 for that gas — methane is ~3x more potent on a 20-year view than on the standard 100-year one, so this shifts sectors, gases and regions with more Agriculture (livestock) and Waste (landfill) noticeably higher relative to their official figure. Nested 'gwp20' objects mirror the shape of their parent (same keys: total_kt_co2e, per_capita_t_co2e, sectors_kt_co2e, gases_kt_co2e).",
         "gwp100_factors": {"CO2": GWP100["CO2"], "CH4": GWP100["CH4"], "N2O": GWP100["N2O"]},
         "gwp20_factors": {"CO2": GWP20["CO2"], "CH4": GWP20["CH4"], "N2O": GWP20["N2O"]},
@@ -112,9 +114,8 @@ def build_region(name, la_list, la_weight=None):
         }
     return r
 
-out["regions"]["winchester"] = build_region("Winchester", ["Winchester"])
-out["regions"]["mid-hampshire"] = build_region("Mid-Hampshire (proposed)", MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION)
-out["regions"]["hampshire-solent"] = build_region("Hampshire and the Solent", HAMPSHIRE_SOLENT_LAS)
+for r in REGION_DEFS:
+    out["regions"][r["key"]] = build_region(r["name"], r["las"], r["weight"])
 
 latest = years[-1]
 def subsector_detail(detail_map, la_list, year, la_weight=None):
@@ -128,14 +129,8 @@ def subsector_detail(detail_map, la_list, year, la_weight=None):
 
 out["subsector_detail_latest_year"] = {
     "year": latest,
-    "winchester": subsector_detail(detail, ["Winchester"], latest),
-    "mid-hampshire": subsector_detail(detail, MID_HAMPSHIRE_LAS, latest, MID_HAMPSHIRE_RETAINED_FRACTION),
-    "hampshire-solent": subsector_detail(detail, HAMPSHIRE_SOLENT_LAS, latest),
-    "gwp20": {
-        "winchester": subsector_detail(detail_gwp20, ["Winchester"], latest),
-        "mid-hampshire": subsector_detail(detail_gwp20, MID_HAMPSHIRE_LAS, latest, MID_HAMPSHIRE_RETAINED_FRACTION),
-        "hampshire-solent": subsector_detail(detail_gwp20, HAMPSHIRE_SOLENT_LAS, latest)
-    }
+    **{r["key"]: subsector_detail(detail, r["las"], latest, r["weight"]) for r in REGION_DEFS},
+    "gwp20": {r["key"]: subsector_detail(detail_gwp20, r["las"], latest, r["weight"]) for r in REGION_DEFS}
 }
 
 with open("mid_hampshire_emissions.json", "w") as f:
@@ -147,7 +142,22 @@ with open("mid_hampshire_emissions.js", "w") as f:
     f.write(";\n")
 
 print("years:", years[0], "-", years[-1])
+print("regions built:", len(REGION_DEFS))
 print("Mid-Hampshire retained fraction per district:", {la: round(f, 4) for la, f in MID_HAMPSHIRE_RETAINED_FRACTION.items()})
 print("Winchester latest total:", out["regions"]["winchester"]["years"][latest]["total_kt_co2e"], "kt CO2e")
 print("Mid-Hampshire latest total:", out["regions"]["mid-hampshire"]["years"][latest]["total_kt_co2e"], "kt CO2e")
 print("Hampshire and the Solent latest total:", out["regions"]["hampshire-solent"]["years"][latest]["total_kt_co2e"], "kt CO2e")
+
+# Sanity check: the four proposed unitaries + Isle of Wight should sum to exactly the same total
+# as Hampshire and the Solent (they're built from the same 14 local authorities, just regrouped),
+# modulo rounding. A mismatch here would mean a local authority is missing or double-counted
+# somewhere in REGION_DEFS.
+future_split_total = sum(
+    out["regions"][k]["years"][latest]["total_kt_co2e"]
+    for k in ["north-hampshire", "mid-hampshire", "south-east-hampshire", "south-west-hampshire", "isle-of-wight"]
+)
+solent_total = out["regions"]["hampshire-solent"]["years"][latest]["total_kt_co2e"]
+assert abs(future_split_total - solent_total) < 0.5, \
+    f"Future unitaries ({future_split_total}) don't sum to Hampshire and the Solent ({solent_total}) — check REGION_DEFS"
+print(f"Cross-check OK: North + Mid + South-East + South-West Hampshire + Isle of Wight = {future_split_total:.1f} kt CO2e "
+      f"vs Hampshire and the Solent = {solent_total:.1f} kt CO2e")

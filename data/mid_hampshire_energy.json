@@ -59,9 +59,2865 @@
   "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json \u2014 see that file's note_boundary for the full explanation.",
   "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",
   "note_ktoe_conversion": "Energy consumption is published in ktoe (kilotonnes of oil equivalent); electricity_consumption_mwh converts the Electricity fuel category to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh, for comparison against renewable generation (also in MWh). The consumption-by-fuel chart displays all fuels in ktoe, DESNZ's native unit.",
-  "generated": "2026-08-05"
+  "generated": "2026-08-25"
  },
  "regions": {
+  "hampshire-solent": {
+   "name": "Hampshire and the Solent",
+   "generation": {
+    "2014": {
+     "total_mwh": 385639.062,
+     "by_technology_mwh": {
+      "Solar": 223204.421,
+      "Wind": 3385.869,
+      "Hydro": 37.891,
+      "Bioenergy & waste": 159010.881,
+      "Other": 0.001
+     }
+    },
+    "2015": {
+     "total_mwh": 663603.822,
+     "by_technology_mwh": {
+      "Solar": 336014.493,
+      "Wind": 3013.403,
+      "Hydro": 41.834,
+      "Bioenergy & waste": 324534.09,
+      "Other": 0.003
+     }
+    },
+    "2016": {
+     "total_mwh": 639373.277,
+     "by_technology_mwh": {
+      "Solar": 496036.599,
+      "Wind": 174.333,
+      "Hydro": 86.361,
+      "Bioenergy & waste": 143075.983,
+      "Other": 0.002
+     }
+    },
+    "2017": {
+     "total_mwh": 672482.034,
+     "by_technology_mwh": {
+      "Solar": 532016.554,
+      "Wind": 194.855,
+      "Hydro": 118.568,
+      "Bioenergy & waste": 140152.056,
+      "Other": 0.002
+     }
+    },
+    "2018": {
+     "total_mwh": 747954.461,
+     "by_technology_mwh": {
+      "Solar": 593471.222,
+      "Wind": 1969.338,
+      "Hydro": 125.598,
+      "Bioenergy & waste": 152388.302,
+      "Other": 0.002
+     }
+    },
+    "2019": {
+     "total_mwh": 656305.727,
+     "by_technology_mwh": {
+      "Solar": 587182.299,
+      "Wind": 65.21,
+      "Hydro": 135.116,
+      "Bioenergy & waste": 68923.103,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 668274.993,
+     "by_technology_mwh": {
+      "Solar": 600129.134,
+      "Wind": 77.229,
+      "Hydro": 147.128,
+      "Bioenergy & waste": 67921.504,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 625932.778,
+     "by_technology_mwh": {
+      "Solar": 556067.591,
+      "Wind": 58.865,
+      "Hydro": 118.791,
+      "Bioenergy & waste": 69687.534,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 686697.53,
+     "by_technology_mwh": {
+      "Solar": 620452.097,
+      "Wind": 45.139,
+      "Hydro": 85.245,
+      "Bioenergy & waste": 66115.049,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 692970.008,
+     "by_technology_mwh": {
+      "Solar": 620829.33,
+      "Wind": 48.566,
+      "Hydro": 111.35,
+      "Bioenergy & waste": 71980.762,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 693115.841,
+     "by_technology_mwh": {
+      "Solar": 624294.48,
+      "Wind": 47.253,
+      "Hydro": 134.296,
+      "Bioenergy & waste": 68639.812,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 9255223.78,
+     "fuels_ktoe": {
+      "Coal": 28.7977,
+      "Manufactured fuels": 216.5456,
+      "Petroleum": 2884.2466,
+      "Gas": 1473.953,
+      "Electricity": 795.806,
+      "Bioenergy and wastes": 32.843
+     },
+     "all_fuels_ktoe": 5432.1919
+    },
+    "2006": {
+     "electricity_consumption_mwh": 9052024.42,
+     "fuels_ktoe": {
+      "Coal": 26.2453,
+      "Manufactured fuels": 204.8811,
+      "Petroleum": 2753.7937,
+      "Gas": 1377.012,
+      "Electricity": 778.334,
+      "Bioenergy and wastes": 41.8882
+     },
+     "all_fuels_ktoe": 5182.1514
+    },
+    "2007": {
+     "electricity_consumption_mwh": 8762530.46,
+     "fuels_ktoe": {
+      "Coal": 26.0795,
+      "Manufactured fuels": 214.0911,
+      "Petroleum": 2720.2112,
+      "Gas": 1344.987,
+      "Electricity": 753.442,
+      "Bioenergy and wastes": 40.084
+     },
+     "all_fuels_ktoe": 5098.8938
+    },
+    "2008": {
+     "electricity_consumption_mwh": 8833985.18,
+     "fuels_ktoe": {
+      "Coal": 29.4561,
+      "Manufactured fuels": 226.7778,
+      "Petroleum": 2465.3388,
+      "Gas": 1272.599,
+      "Electricity": 759.586,
+      "Bioenergy and wastes": 54.0588
+     },
+     "all_fuels_ktoe": 4807.8166
+    },
+    "2009": {
+     "electricity_consumption_mwh": 8626635.268,
+     "fuels_ktoe": {
+      "Coal": 31.6935,
+      "Manufactured fuels": 205.2785,
+      "Petroleum": 2599.2986,
+      "Gas": 1163.5425,
+      "Electricity": 741.7571,
+      "Bioenergy and wastes": 58.1061
+     },
+     "all_fuels_ktoe": 4799.6783
+    },
+    "2010": {
+     "electricity_consumption_mwh": 8574891.22,
+     "fuels_ktoe": {
+      "Coal": 36.3893,
+      "Manufactured fuels": 215.8305,
+      "Petroleum": 2556.8335,
+      "Gas": 1174.9549,
+      "Electricity": 737.3079,
+      "Bioenergy and wastes": 68.4846
+     },
+     "all_fuels_ktoe": 4789.8008
+    },
+    "2011": {
+     "electricity_consumption_mwh": 8389843.626,
+     "fuels_ktoe": {
+      "Coal": 35.3197,
+      "Manufactured fuels": 317.3115,
+      "Petroleum": 2344.8047,
+      "Gas": 1104.2815,
+      "Electricity": 721.3967,
+      "Bioenergy and wastes": 65.6128
+     },
+     "all_fuels_ktoe": 4588.7269
+    },
+    "2012": {
+     "electricity_consumption_mwh": 8340590.338,
+     "fuels_ktoe": {
+      "Coal": 35.5248,
+      "Manufactured fuels": 263.6725,
+      "Petroleum": 2339.9199,
+      "Gas": 1103.1744,
+      "Electricity": 717.1617,
+      "Bioenergy and wastes": 65.04
+     },
+     "all_fuels_ktoe": 4524.4932
+    },
+    "2013": {
+     "electricity_consumption_mwh": 8232940.728,
+     "fuels_ktoe": {
+      "Coal": 39.96,
+      "Manufactured fuels": 233.6753,
+      "Petroleum": 2431.8016,
+      "Gas": 1069.9061,
+      "Electricity": 707.9055,
+      "Bioenergy and wastes": 71.1049
+     },
+     "all_fuels_ktoe": 4554.3534
+    },
+    "2014": {
+     "electricity_consumption_mwh": 8300756.745,
+     "fuels_ktoe": {
+      "Coal": 35.9748,
+      "Manufactured fuels": 225.0332,
+      "Petroleum": 2396.9115,
+      "Gas": 1071.2992,
+      "Electricity": 713.7366,
+      "Bioenergy and wastes": 77.7637
+     },
+     "all_fuels_ktoe": 4520.7191
+    },
+    "2015": {
+     "electricity_consumption_mwh": 8183262.97,
+     "fuels_ktoe": {
+      "Coal": 28.8226,
+      "Manufactured fuels": 216.4989,
+      "Petroleum": 2450.6657,
+      "Gas": 1064.9601,
+      "Electricity": 703.634,
+      "Bioenergy and wastes": 72.9595
+     },
+     "all_fuels_ktoe": 4537.5407
+    },
+    "2016": {
+     "electricity_consumption_mwh": 7930891.357,
+     "fuels_ktoe": {
+      "Coal": 28.4108,
+      "Manufactured fuels": 211.0169,
+      "Petroleum": 2430.7459,
+      "Gas": 1057.8199,
+      "Electricity": 681.9339,
+      "Bioenergy and wastes": 80.0749
+     },
+     "all_fuels_ktoe": 4490.0023
+    },
+    "2017": {
+     "electricity_consumption_mwh": 7966638.489,
+     "fuels_ktoe": {
+      "Coal": 25.1412,
+      "Manufactured fuels": 210.1262,
+      "Petroleum": 2418.7676,
+      "Gas": 1059.8221,
+      "Electricity": 685.0076,
+      "Bioenergy and wastes": 82.684
+     },
+     "all_fuels_ktoe": 4481.5487
+    },
+    "2018": {
+     "electricity_consumption_mwh": 7968113.373,
+     "fuels_ktoe": {
+      "Coal": 23.6048,
+      "Manufactured fuels": 170.5181,
+      "Petroleum": 2414.2117,
+      "Gas": 1095.135,
+      "Electricity": 685.1344,
+      "Bioenergy and wastes": 103.8495
+     },
+     "all_fuels_ktoe": 4492.4534
+    },
+    "2019": {
+     "electricity_consumption_mwh": 7829549.988,
+     "fuels_ktoe": {
+      "Coal": 19.5951,
+      "Manufactured fuels": 225.8273,
+      "Petroleum": 2345.3727,
+      "Gas": 1086.2434,
+      "Electricity": 673.2201,
+      "Bioenergy and wastes": 119.5998
+     },
+     "all_fuels_ktoe": 4469.8585
+    },
+    "2020": {
+     "electricity_consumption_mwh": 7448746.857,
+     "fuels_ktoe": {
+      "Coal": 18.142,
+      "Manufactured fuels": 190.4108,
+      "Petroleum": 1924.7956,
+      "Gas": 1122.9407,
+      "Electricity": 640.4769,
+      "Bioenergy and wastes": 119.019
+     },
+     "all_fuels_ktoe": 4015.7851
+    },
+    "2021": {
+     "electricity_consumption_mwh": 7408406.509,
+     "fuels_ktoe": {
+      "Coal": 17.7355,
+      "Manufactured fuels": 188.0583,
+      "Petroleum": 2115.6197,
+      "Gas": 1078.0027,
+      "Electricity": 637.0083,
+      "Bioenergy and wastes": 118.4327
+     },
+     "all_fuels_ktoe": 4154.8573
+    },
+    "2022": {
+     "electricity_consumption_mwh": 7106704.803,
+     "fuels_ktoe": {
+      "Coal": 15.9442,
+      "Manufactured fuels": 200.3505,
+      "Petroleum": 2231.5559,
+      "Gas": 956.2989,
+      "Electricity": 611.0666,
+      "Bioenergy and wastes": 135.1351
+     },
+     "all_fuels_ktoe": 4150.3512
+    },
+    "2023": {
+     "electricity_consumption_mwh": 7096526.398,
+     "fuels_ktoe": {
+      "Coal": 11.3781,
+      "Manufactured fuels": 194.3292,
+      "Petroleum": 2187.1653,
+      "Gas": 942.2636,
+      "Electricity": 610.1914,
+      "Bioenergy and wastes": 147.5097
+     },
+     "all_fuels_ktoe": 4092.8373
+    },
+    "2024": {
+     "electricity_consumption_mwh": 7088445.74,
+     "fuels_ktoe": {
+      "Coal": 5.2528,
+      "Manufactured fuels": 177.3518,
+      "Petroleum": 2218.9442,
+      "Gas": 931.3591,
+      "Electricity": 609.4966,
+      "Bioenergy and wastes": 145.9048
+     },
+     "all_fuels_ktoe": 4088.3093
+    }
+   }
+  },
+  "north-hampshire": {
+   "name": "North Hampshire",
+   "generation": {
+    "2014": {
+     "total_mwh": 43770.693,
+     "by_technology_mwh": {
+      "Solar": 17059.546,
+      "Wind": 2092.584,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 24618.564,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 91079.46,
+     "by_technology_mwh": {
+      "Solar": 28874.57,
+      "Wind": 2789.863,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 59415.027,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 73409.469,
+     "by_technology_mwh": {
+      "Solar": 44681.412,
+      "Wind": 9.947,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 28718.109,
+      "Other": 0.001
+     }
+    },
+    "2017": {
+     "total_mwh": 83094.774,
+     "by_technology_mwh": {
+      "Solar": 48209.621,
+      "Wind": 11.118,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 34874.036,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 91044.897,
+     "by_technology_mwh": {
+      "Solar": 52659.109,
+      "Wind": 1786.143,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 36599.645,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 72939.773,
+     "by_technology_mwh": {
+      "Solar": 52073.699,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 20866.074,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 72543.938,
+     "by_technology_mwh": {
+      "Solar": 51592.517,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 20951.421,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 74309.807,
+     "by_technology_mwh": {
+      "Solar": 49806.378,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 24503.43,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 87443.304,
+     "by_technology_mwh": {
+      "Solar": 60047.445,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 27395.859,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 95648.522,
+     "by_technology_mwh": {
+      "Solar": 61925.704,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33722.818,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 92049.687,
+     "by_technology_mwh": {
+      "Solar": 58096.237,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33953.45,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 1758269.92,
+     "fuels_ktoe": {
+      "Coal": 5.8469,
+      "Manufactured fuels": 1.9674,
+      "Petroleum": 364.8087,
+      "Gas": 297.86,
+      "Electricity": 151.184,
+      "Bioenergy and wastes": 7.2585
+     },
+     "all_fuels_ktoe": 828.9255
+    },
+    "2006": {
+     "electricity_consumption_mwh": 1772865.57,
+     "fuels_ktoe": {
+      "Coal": 5.2077,
+      "Manufactured fuels": 1.895,
+      "Petroleum": 371.2234,
+      "Gas": 282.04,
+      "Electricity": 152.439,
+      "Bioenergy and wastes": 9.0609
+     },
+     "all_fuels_ktoe": 821.867
+    },
+    "2007": {
+     "electricity_consumption_mwh": 1730171.84,
+     "fuels_ktoe": {
+      "Coal": 5.4779,
+      "Manufactured fuels": 1.7528,
+      "Petroleum": 370.6048,
+      "Gas": 279.407,
+      "Electricity": 148.768,
+      "Bioenergy and wastes": 8.6148
+     },
+     "all_fuels_ktoe": 814.6254
+    },
+    "2008": {
+     "electricity_consumption_mwh": 1739813.11,
+     "fuels_ktoe": {
+      "Coal": 5.8021,
+      "Manufactured fuels": 2.0361,
+      "Petroleum": 361.3644,
+      "Gas": 267.219,
+      "Electricity": 149.597,
+      "Bioenergy and wastes": 11.8744
+     },
+     "all_fuels_ktoe": 797.8931
+    },
+    "2009": {
+     "electricity_consumption_mwh": 1722563.75,
+     "fuels_ktoe": {
+      "Coal": 5.9303,
+      "Manufactured fuels": 1.3578,
+      "Petroleum": 346.7119,
+      "Gas": 242.8063,
+      "Electricity": 148.1138,
+      "Bioenergy and wastes": 12.6906
+     },
+     "all_fuels_ktoe": 757.6118
+    },
+    "2010": {
+     "electricity_consumption_mwh": 1695164.624,
+     "fuels_ktoe": {
+      "Coal": 7.0379,
+      "Manufactured fuels": 1.635,
+      "Petroleum": 348.0221,
+      "Gas": 243.2686,
+      "Electricity": 145.7579,
+      "Bioenergy and wastes": 14.7962
+     },
+     "all_fuels_ktoe": 760.5177
+    },
+    "2011": {
+     "electricity_consumption_mwh": 1681205.849,
+     "fuels_ktoe": {
+      "Coal": 6.9421,
+      "Manufactured fuels": 1.4114,
+      "Petroleum": 336.1725,
+      "Gas": 227.6542,
+      "Electricity": 144.5577,
+      "Bioenergy and wastes": 14.1298
+     },
+     "all_fuels_ktoe": 730.8676
+    },
+    "2012": {
+     "electricity_consumption_mwh": 1623519.146,
+     "fuels_ktoe": {
+      "Coal": 6.5025,
+      "Manufactured fuels": 1.5654,
+      "Petroleum": 333.7235,
+      "Gas": 228.1856,
+      "Electricity": 139.5975,
+      "Bioenergy and wastes": 13.6452
+     },
+     "all_fuels_ktoe": 723.2197
+    },
+    "2013": {
+     "electricity_consumption_mwh": 1586488.258,
+     "fuels_ktoe": {
+      "Coal": 7.1415,
+      "Manufactured fuels": 1.9227,
+      "Petroleum": 331.5886,
+      "Gas": 223.0792,
+      "Electricity": 136.4134,
+      "Bioenergy and wastes": 14.9948
+     },
+     "all_fuels_ktoe": 715.1402
+    },
+    "2014": {
+     "electricity_consumption_mwh": 1613230.845,
+     "fuels_ktoe": {
+      "Coal": 6.6637,
+      "Manufactured fuels": 1.6109,
+      "Petroleum": 336.1915,
+      "Gas": 225.6629,
+      "Electricity": 138.7129,
+      "Bioenergy and wastes": 16.8262
+     },
+     "all_fuels_ktoe": 725.6681
+    },
+    "2015": {
+     "electricity_consumption_mwh": 1629755.829,
+     "fuels_ktoe": {
+      "Coal": 5.2668,
+      "Manufactured fuels": 1.4369,
+      "Petroleum": 345.7509,
+      "Gas": 223.2104,
+      "Electricity": 140.1338,
+      "Bioenergy and wastes": 15.7109
+     },
+     "all_fuels_ktoe": 731.5097
+    },
+    "2016": {
+     "electricity_consumption_mwh": 1596217.499,
+     "fuels_ktoe": {
+      "Coal": 5.291,
+      "Manufactured fuels": 1.4103,
+      "Petroleum": 349.1437,
+      "Gas": 219.3191,
+      "Electricity": 137.25,
+      "Bioenergy and wastes": 17.7317
+     },
+     "all_fuels_ktoe": 730.1459
+    },
+    "2017": {
+     "electricity_consumption_mwh": 1598589.203,
+     "fuels_ktoe": {
+      "Coal": 5.0113,
+      "Manufactured fuels": 1.5557,
+      "Petroleum": 349.9371,
+      "Gas": 211.4509,
+      "Electricity": 137.4539,
+      "Bioenergy and wastes": 18.1862
+     },
+     "all_fuels_ktoe": 723.5952
+    },
+    "2018": {
+     "electricity_consumption_mwh": 1605997.65,
+     "fuels_ktoe": {
+      "Coal": 4.736,
+      "Manufactured fuels": 1.5726,
+      "Petroleum": 345.4104,
+      "Gas": 224.3067,
+      "Electricity": 138.0909,
+      "Bioenergy and wastes": 22.5262
+     },
+     "all_fuels_ktoe": 736.643
+    },
+    "2019": {
+     "electricity_consumption_mwh": 1602154.572,
+     "fuels_ktoe": {
+      "Coal": 3.0431,
+      "Manufactured fuels": 1.5182,
+      "Petroleum": 343.6858,
+      "Gas": 225.7181,
+      "Electricity": 137.7605,
+      "Bioenergy and wastes": 25.679
+     },
+     "all_fuels_ktoe": 737.4047
+    },
+    "2020": {
+     "electricity_consumption_mwh": 1571371.124,
+     "fuels_ktoe": {
+      "Coal": 2.9001,
+      "Manufactured fuels": 1.3921,
+      "Petroleum": 274.5147,
+      "Gas": 228.9745,
+      "Electricity": 135.1136,
+      "Bioenergy and wastes": 24.654
+     },
+     "all_fuels_ktoe": 667.549
+    },
+    "2021": {
+     "electricity_consumption_mwh": 1564823.761,
+     "fuels_ktoe": {
+      "Coal": 2.9195,
+      "Manufactured fuels": 1.3439,
+      "Petroleum": 301.4595,
+      "Gas": 220.3215,
+      "Electricity": 134.5506,
+      "Bioenergy and wastes": 23.5365
+     },
+     "all_fuels_ktoe": 684.1314
+    },
+    "2022": {
+     "electricity_consumption_mwh": 1492604.736,
+     "fuels_ktoe": {
+      "Coal": 2.6996,
+      "Manufactured fuels": 1.5914,
+      "Petroleum": 301.1757,
+      "Gas": 188.3868,
+      "Electricity": 128.3409,
+      "Bioenergy and wastes": 27.2704
+     },
+     "all_fuels_ktoe": 649.4648
+    },
+    "2023": {
+     "electricity_consumption_mwh": 1477601.685,
+     "fuels_ktoe": {
+      "Coal": 1.7255,
+      "Manufactured fuels": 1.5413,
+      "Petroleum": 301.9631,
+      "Gas": 181.8916,
+      "Electricity": 127.0509,
+      "Bioenergy and wastes": 29.8636
+     },
+     "all_fuels_ktoe": 644.0359
+    },
+    "2024": {
+     "electricity_consumption_mwh": 1504053.589,
+     "fuels_ktoe": {
+      "Coal": 0.6746,
+      "Manufactured fuels": 1.5678,
+      "Petroleum": 304.5311,
+      "Gas": 182.4293,
+      "Electricity": 129.3253,
+      "Bioenergy and wastes": 29.1689
+     },
+     "all_fuels_ktoe": 647.6971
+    }
+   }
+  },
+  "mid-hampshire": {
+   "name": "Mid-Hampshire",
+   "generation": {
+    "2014": {
+     "total_mwh": 128723.237,
+     "by_technology_mwh": {
+      "Solar": 89479.382,
+      "Wind": 1122.79,
+      "Hydro": 36.114,
+      "Bioenergy & waste": 38084.95,
+      "Other": 0.001
+     }
+    },
+    "2015": {
+     "total_mwh": 241243.017,
+     "by_technology_mwh": {
+      "Solar": 160093.268,
+      "Wind": 168.549,
+      "Hydro": 40.013,
+      "Bioenergy & waste": 80941.184,
+      "Other": 0.002
+     }
+    },
+    "2016": {
+     "total_mwh": 298727.903,
+     "by_technology_mwh": {
+      "Solar": 265792.944,
+      "Wind": 133.931,
+      "Hydro": 83.53,
+      "Bioenergy & waste": 32717.498,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 323526.245,
+     "by_technology_mwh": {
+      "Solar": 294098.117,
+      "Wind": 149.697,
+      "Hydro": 114.843,
+      "Bioenergy & waste": 29163.587,
+      "Other": 0.001
+     }
+    },
+    "2018": {
+     "total_mwh": 356891.423,
+     "by_technology_mwh": {
+      "Solar": 322943.06,
+      "Wind": 140.576,
+      "Hydro": 121.792,
+      "Bioenergy & waste": 33685.996,
+      "Other": 0.001
+     }
+    },
+    "2019": {
+     "total_mwh": 338322.567,
+     "by_technology_mwh": {
+      "Solar": 316928.289,
+      "Wind": 42.475,
+      "Hydro": 132.042,
+      "Bioenergy & waste": 21219.76,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 347207.061,
+     "by_technology_mwh": {
+      "Solar": 325790.7,
+      "Wind": 50.304,
+      "Hydro": 143.781,
+      "Bioenergy & waste": 21222.277,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 318177.942,
+     "by_technology_mwh": {
+      "Solar": 297864.443,
+      "Wind": 38.342,
+      "Hydro": 116.089,
+      "Bioenergy & waste": 20159.069,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 341147.789,
+     "by_technology_mwh": {
+      "Solar": 323559.22,
+      "Wind": 29.402,
+      "Hydro": 83.306,
+      "Bioenergy & waste": 17475.861,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 335736.123,
+     "by_technology_mwh": {
+      "Solar": 317985.055,
+      "Wind": 31.634,
+      "Hydro": 108.817,
+      "Bioenergy & waste": 17610.616,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 350924.164,
+     "by_technology_mwh": {
+      "Solar": 335193.255,
+      "Wind": 30.779,
+      "Hydro": 131.242,
+      "Bioenergy & waste": 15568.888,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 2095489.603,
+     "fuels_ktoe": {
+      "Coal": 7.5799,
+      "Manufactured fuels": 128.3163,
+      "Petroleum": 1306.4716,
+      "Gas": 323.7354,
+      "Electricity": 180.1797,
+      "Bioenergy and wastes": 8.5442
+     },
+     "all_fuels_ktoe": 1954.827
+    },
+    "2006": {
+     "electricity_consumption_mwh": 2041739.948,
+     "fuels_ktoe": {
+      "Coal": 7.1037,
+      "Manufactured fuels": 121.1903,
+      "Petroleum": 1220.2816,
+      "Gas": 296.3962,
+      "Electricity": 175.558,
+      "Bioenergy and wastes": 11.0997
+     },
+     "all_fuels_ktoe": 1831.629
+    },
+    "2007": {
+     "electricity_consumption_mwh": 2018206.514,
+     "fuels_ktoe": {
+      "Coal": 6.9735,
+      "Manufactured fuels": 127.1093,
+      "Petroleum": 1204.6396,
+      "Gas": 286.4799,
+      "Electricity": 173.5345,
+      "Bioenergy and wastes": 11.6592
+     },
+     "all_fuels_ktoe": 1810.3952
+    },
+    "2008": {
+     "electricity_consumption_mwh": 2021237.61,
+     "fuels_ktoe": {
+      "Coal": 7.7243,
+      "Manufactured fuels": 134.3063,
+      "Petroleum": 1076.7582,
+      "Gas": 271.2702,
+      "Electricity": 173.7952,
+      "Bioenergy and wastes": 16.82
+     },
+     "all_fuels_ktoe": 1680.6728
+    },
+    "2009": {
+     "electricity_consumption_mwh": 2012985.608,
+     "fuels_ktoe": {
+      "Coal": 8.4379,
+      "Manufactured fuels": 122.5006,
+      "Petroleum": 1170.992,
+      "Gas": 250.4369,
+      "Electricity": 173.0856,
+      "Bioenergy and wastes": 18.5799
+     },
+     "all_fuels_ktoe": 1744.0316
+    },
+    "2010": {
+     "electricity_consumption_mwh": 2014748.504,
+     "fuels_ktoe": {
+      "Coal": 9.1068,
+      "Manufactured fuels": 128.2742,
+      "Petroleum": 1144.7666,
+      "Gas": 249.5563,
+      "Electricity": 173.2372,
+      "Bioenergy and wastes": 21.733
+     },
+     "all_fuels_ktoe": 1726.6741
+    },
+    "2011": {
+     "electricity_consumption_mwh": 1991237.648,
+     "fuels_ktoe": {
+      "Coal": 9.081,
+      "Manufactured fuels": 190.6685,
+      "Petroleum": 1022.673,
+      "Gas": 237.2705,
+      "Electricity": 171.2156,
+      "Bioenergy and wastes": 20.8767
+     },
+     "all_fuels_ktoe": 1651.7853
+    },
+    "2012": {
+     "electricity_consumption_mwh": 1994808.373,
+     "fuels_ktoe": {
+      "Coal": 8.9053,
+      "Manufactured fuels": 157.6498,
+      "Petroleum": 1024.4401,
+      "Gas": 239.7387,
+      "Electricity": 171.5226,
+      "Bioenergy and wastes": 20.4236
+     },
+     "all_fuels_ktoe": 1622.6801
+    },
+    "2013": {
+     "electricity_consumption_mwh": 1984468.426,
+     "fuels_ktoe": {
+      "Coal": 9.3815,
+      "Manufactured fuels": 138.5249,
+      "Petroleum": 1087.781,
+      "Gas": 237.9391,
+      "Electricity": 170.6336,
+      "Bioenergy and wastes": 22.621
+     },
+     "all_fuels_ktoe": 1666.881
+    },
+    "2014": {
+     "electricity_consumption_mwh": 1995127.439,
+     "fuels_ktoe": {
+      "Coal": 8.0184,
+      "Manufactured fuels": 134.0668,
+      "Petroleum": 1058.2449,
+      "Gas": 236.8621,
+      "Electricity": 171.5501,
+      "Bioenergy and wastes": 24.6712
+     },
+     "all_fuels_ktoe": 1633.4134
+    },
+    "2015": {
+     "electricity_consumption_mwh": 1949730.509,
+     "fuels_ktoe": {
+      "Coal": 6.4096,
+      "Manufactured fuels": 129.3097,
+      "Petroleum": 1083.5196,
+      "Gas": 232.5618,
+      "Electricity": 167.6466,
+      "Bioenergy and wastes": 22.8506
+     },
+     "all_fuels_ktoe": 1642.298
+    },
+    "2016": {
+     "electricity_consumption_mwh": 1884209.483,
+     "fuels_ktoe": {
+      "Coal": 6.2169,
+      "Manufactured fuels": 126.0334,
+      "Petroleum": 1072.706,
+      "Gas": 233.1407,
+      "Electricity": 162.0129,
+      "Bioenergy and wastes": 24.7339
+     },
+     "all_fuels_ktoe": 1624.8437
+    },
+    "2017": {
+     "electricity_consumption_mwh": 1913845.892,
+     "fuels_ktoe": {
+      "Coal": 5.3465,
+      "Manufactured fuels": 125.2394,
+      "Petroleum": 1071.5729,
+      "Gas": 232.4126,
+      "Electricity": 164.5611,
+      "Bioenergy and wastes": 25.3715
+     },
+     "all_fuels_ktoe": 1624.5041
+    },
+    "2018": {
+     "electricity_consumption_mwh": 1904055.136,
+     "fuels_ktoe": {
+      "Coal": 5.3085,
+      "Manufactured fuels": 100.9797,
+      "Petroleum": 1077.4299,
+      "Gas": 247.0134,
+      "Electricity": 163.7193,
+      "Bioenergy and wastes": 31.8546
+     },
+     "all_fuels_ktoe": 1626.3055
+    },
+    "2019": {
+     "electricity_consumption_mwh": 1875684.049,
+     "fuels_ktoe": {
+      "Coal": 4.9048,
+      "Manufactured fuels": 134.8133,
+      "Petroleum": 1043.1131,
+      "Gas": 240.2332,
+      "Electricity": 161.2798,
+      "Bioenergy and wastes": 37.7292
+     },
+     "all_fuels_ktoe": 1622.0733
+    },
+    "2020": {
+     "electricity_consumption_mwh": 1817222.778,
+     "fuels_ktoe": {
+      "Coal": 4.6157,
+      "Manufactured fuels": 113.4117,
+      "Petroleum": 865.6487,
+      "Gas": 244.6124,
+      "Electricity": 156.253,
+      "Bioenergy and wastes": 37.3275
+     },
+     "all_fuels_ktoe": 1421.869
+    },
+    "2021": {
+     "electricity_consumption_mwh": 1812714.164,
+     "fuels_ktoe": {
+      "Coal": 4.9152,
+      "Manufactured fuels": 112.1208,
+      "Petroleum": 960.1782,
+      "Gas": 236.0219,
+      "Electricity": 155.8654,
+      "Bioenergy and wastes": 37.8704
+     },
+     "all_fuels_ktoe": 1506.9718
+    },
+    "2022": {
+     "electricity_consumption_mwh": 1742975.835,
+     "fuels_ktoe": {
+      "Coal": 4.5392,
+      "Manufactured fuels": 119.1447,
+      "Petroleum": 1024.8909,
+      "Gas": 210.7164,
+      "Electricity": 149.8689,
+      "Bioenergy and wastes": 44.2313
+     },
+     "all_fuels_ktoe": 1553.3914
+    },
+    "2023": {
+     "electricity_consumption_mwh": 1740820.142,
+     "fuels_ktoe": {
+      "Coal": 3.4105,
+      "Manufactured fuels": 115.6259,
+      "Petroleum": 1000.7179,
+      "Gas": 208.2572,
+      "Electricity": 149.6836,
+      "Bioenergy and wastes": 48.079
+     },
+     "all_fuels_ktoe": 1525.7742
+    },
+    "2024": {
+     "electricity_consumption_mwh": 1729274.043,
+     "fuels_ktoe": {
+      "Coal": 1.6122,
+      "Manufactured fuels": 105.2795,
+      "Petroleum": 1022.5214,
+      "Gas": 208.6508,
+      "Electricity": 148.6908,
+      "Bioenergy and wastes": 45.3695
+     },
+     "all_fuels_ktoe": 1532.1242
+    }
+   }
+  },
+  "south-east-hampshire": {
+   "name": "South East Hampshire",
+   "generation": {
+    "2014": {
+     "total_mwh": 70620.016,
+     "by_technology_mwh": {
+      "Solar": 34865.967,
+      "Wind": 6.554,
+      "Hydro": 0.629,
+      "Bioenergy & waste": 35746.866,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 143337.048,
+     "by_technology_mwh": {
+      "Solar": 46291.686,
+      "Wind": 7.472,
+      "Hydro": 0.73,
+      "Bioenergy & waste": 97037.16,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 75857.273,
+     "by_technology_mwh": {
+      "Solar": 50552.592,
+      "Wind": 5.937,
+      "Hydro": 1.743,
+      "Bioenergy & waste": 25297.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 76727.818,
+     "by_technology_mwh": {
+      "Solar": 52039.311,
+      "Wind": 6.636,
+      "Hydro": 2.435,
+      "Bioenergy & waste": 24679.435,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 84063.465,
+     "by_technology_mwh": {
+      "Solar": 58964.364,
+      "Wind": 6.232,
+      "Hydro": 2.615,
+      "Bioenergy & waste": 25090.254,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 60538.233,
+     "by_technology_mwh": {
+      "Solar": 60535.16,
+      "Wind": 0.0,
+      "Hydro": 3.074,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 61772.369,
+     "by_technology_mwh": {
+      "Solar": 61769.022,
+      "Wind": 0.0,
+      "Hydro": 3.347,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 59490.653,
+     "by_technology_mwh": {
+      "Solar": 59487.951,
+      "Wind": 0.0,
+      "Hydro": 2.702,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 71002.464,
+     "by_technology_mwh": {
+      "Solar": 71000.525,
+      "Wind": 0.0,
+      "Hydro": 1.939,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 73937.109,
+     "by_technology_mwh": {
+      "Solar": 73934.576,
+      "Wind": 0.0,
+      "Hydro": 2.533,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 70792.565,
+     "by_technology_mwh": {
+      "Solar": 70789.511,
+      "Wind": 0.0,
+      "Hydro": 3.055,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 2553433.649,
+     "fuels_ktoe": {
+      "Coal": 8.6407,
+      "Manufactured fuels": 3.064,
+      "Petroleum": 339.5288,
+      "Gas": 391.9418,
+      "Electricity": 219.5558,
+      "Bioenergy and wastes": 8.2941
+     },
+     "all_fuels_ktoe": 971.0252
+    },
+    "2006": {
+     "electricity_consumption_mwh": 2486348.298,
+     "fuels_ktoe": {
+      "Coal": 7.9606,
+      "Manufactured fuels": 3.0855,
+      "Petroleum": 339.1307,
+      "Gas": 376.4287,
+      "Electricity": 213.7875,
+      "Bioenergy and wastes": 11.0615
+     },
+     "all_fuels_ktoe": 951.4534
+    },
+    "2007": {
+     "electricity_consumption_mwh": 2390511.907,
+     "fuels_ktoe": {
+      "Coal": 7.7328,
+      "Manufactured fuels": 2.8774,
+      "Petroleum": 338.5681,
+      "Gas": 364.2177,
+      "Electricity": 205.547,
+      "Bioenergy and wastes": 9.4453
+     },
+     "all_fuels_ktoe": 928.3881
+    },
+    "2008": {
+     "electricity_consumption_mwh": 2411006.753,
+     "fuels_ktoe": {
+      "Coal": 9.2596,
+      "Manufactured fuels": 3.2838,
+      "Petroleum": 317.4539,
+      "Gas": 350.3821,
+      "Electricity": 207.3093,
+      "Bioenergy and wastes": 12.178
+     },
+     "all_fuels_ktoe": 899.8693
+    },
+    "2009": {
+     "electricity_consumption_mwh": 2327025.987,
+     "fuels_ktoe": {
+      "Coal": 10.0184,
+      "Manufactured fuels": 2.2206,
+      "Petroleum": 309.5435,
+      "Gas": 319.3443,
+      "Electricity": 200.0882,
+      "Bioenergy and wastes": 12.494
+     },
+     "all_fuels_ktoe": 853.71
+    },
+    "2010": {
+     "electricity_consumption_mwh": 2337155.774,
+     "fuels_ktoe": {
+      "Coal": 12.5034,
+      "Manufactured fuels": 2.8434,
+      "Petroleum": 308.8621,
+      "Gas": 317.3499,
+      "Electricity": 200.9592,
+      "Bioenergy and wastes": 15.0623
+     },
+     "all_fuels_ktoe": 857.5803
+    },
+    "2011": {
+     "electricity_consumption_mwh": 2262002.081,
+     "fuels_ktoe": {
+      "Coal": 11.7489,
+      "Manufactured fuels": 2.3083,
+      "Petroleum": 305.0579,
+      "Gas": 297.485,
+      "Electricity": 194.4972,
+      "Bioenergy and wastes": 14.4525
+     },
+     "all_fuels_ktoe": 825.5499
+    },
+    "2012": {
+     "electricity_consumption_mwh": 2254321.602,
+     "fuels_ktoe": {
+      "Coal": 12.5252,
+      "Manufactured fuels": 2.6992,
+      "Petroleum": 306.3729,
+      "Gas": 293.435,
+      "Electricity": 193.8368,
+      "Bioenergy and wastes": 14.7867
+     },
+     "all_fuels_ktoe": 823.6558
+    },
+    "2013": {
+     "electricity_consumption_mwh": 2242911.286,
+     "fuels_ktoe": {
+      "Coal": 15.2472,
+      "Manufactured fuels": 3.5911,
+      "Petroleum": 301.5618,
+      "Gas": 286.9685,
+      "Electricity": 192.8557,
+      "Bioenergy and wastes": 15.8375
+     },
+     "all_fuels_ktoe": 816.0617
+    },
+    "2014": {
+     "electricity_consumption_mwh": 2245077.426,
+     "fuels_ktoe": {
+      "Coal": 14.0967,
+      "Manufactured fuels": 2.7018,
+      "Petroleum": 305.3464,
+      "Gas": 282.9598,
+      "Electricity": 193.0419,
+      "Bioenergy and wastes": 17.53
+     },
+     "all_fuels_ktoe": 815.6766
+    },
+    "2015": {
+     "electricity_consumption_mwh": 2210501.01,
+     "fuels_ktoe": {
+      "Coal": 11.1767,
+      "Manufactured fuels": 2.2156,
+      "Petroleum": 312.7064,
+      "Gas": 279.6221,
+      "Electricity": 190.0689,
+      "Bioenergy and wastes": 16.5657
+     },
+     "all_fuels_ktoe": 812.3553
+    },
+    "2016": {
+     "electricity_consumption_mwh": 2133069.353,
+     "fuels_ktoe": {
+      "Coal": 10.9793,
+      "Manufactured fuels": 2.1634,
+      "Petroleum": 312.344,
+      "Gas": 278.8129,
+      "Electricity": 183.411,
+      "Bioenergy and wastes": 18.4701
+     },
+     "all_fuels_ktoe": 806.1805
+    },
+    "2017": {
+     "electricity_consumption_mwh": 2108486.158,
+     "fuels_ktoe": {
+      "Coal": 9.5872,
+      "Manufactured fuels": 2.3884,
+      "Petroleum": 307.6869,
+      "Gas": 286.3106,
+      "Electricity": 181.2972,
+      "Bioenergy and wastes": 19.653
+     },
+     "all_fuels_ktoe": 806.9233
+    },
+    "2018": {
+     "electricity_consumption_mwh": 2108728.574,
+     "fuels_ktoe": {
+      "Coal": 8.6047,
+      "Manufactured fuels": 2.4185,
+      "Petroleum": 299.329,
+      "Gas": 293.0589,
+      "Electricity": 181.318,
+      "Bioenergy and wastes": 25.8858
+     },
+     "all_fuels_ktoe": 810.615
+    },
+    "2019": {
+     "electricity_consumption_mwh": 2055190.332,
+     "fuels_ktoe": {
+      "Coal": 7.0595,
+      "Manufactured fuels": 2.3775,
+      "Petroleum": 294.9782,
+      "Gas": 289.0139,
+      "Electricity": 176.7146,
+      "Bioenergy and wastes": 28.9542
+     },
+     "all_fuels_ktoe": 799.0979
+    },
+    "2020": {
+     "electricity_consumption_mwh": 1898714.727,
+     "fuels_ktoe": {
+      "Coal": 6.3121,
+      "Manufactured fuels": 2.2514,
+      "Petroleum": 236.6806,
+      "Gas": 306.7721,
+      "Electricity": 163.2601,
+      "Bioenergy and wastes": 30.1181
+     },
+     "all_fuels_ktoe": 745.3945
+    },
+    "2021": {
+     "electricity_consumption_mwh": 1876120.008,
+     "fuels_ktoe": {
+      "Coal": 5.0441,
+      "Manufactured fuels": 2.1036,
+      "Petroleum": 254.8604,
+      "Gas": 291.3134,
+      "Electricity": 161.3173,
+      "Bioenergy and wastes": 27.7803
+     },
+     "all_fuels_ktoe": 742.419
+    },
+    "2022": {
+     "electricity_consumption_mwh": 1798331.273,
+     "fuels_ktoe": {
+      "Coal": 4.4507,
+      "Manufactured fuels": 2.4472,
+      "Petroleum": 261.8139,
+      "Gas": 257.0377,
+      "Electricity": 154.6287,
+      "Bioenergy and wastes": 30.9328
+     },
+     "all_fuels_ktoe": 711.3109
+    },
+    "2023": {
+     "electricity_consumption_mwh": 1800702.287,
+     "fuels_ktoe": {
+      "Coal": 3.257,
+      "Manufactured fuels": 2.3177,
+      "Petroleum": 257.9102,
+      "Gas": 255.2586,
+      "Electricity": 154.8325,
+      "Bioenergy and wastes": 33.7694
+     },
+     "all_fuels_ktoe": 707.3455
+    },
+    "2024": {
+     "electricity_consumption_mwh": 1783583.608,
+     "fuels_ktoe": {
+      "Coal": 1.513,
+      "Manufactured fuels": 2.2667,
+      "Petroleum": 254.3604,
+      "Gas": 251.5444,
+      "Electricity": 153.3606,
+      "Bioenergy and wastes": 33.9569
+     },
+     "all_fuels_ktoe": 697.002
+    }
+   }
+  },
+  "south-west-hampshire": {
+   "name": "South West Hampshire",
+   "generation": {
+    "2014": {
+     "total_mwh": 81913.959,
+     "by_technology_mwh": {
+      "Solar": 32535.569,
+      "Wind": 147.188,
+      "Hydro": 1.148,
+      "Bioenergy & waste": 49230.053,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 112889.334,
+     "by_technology_mwh": {
+      "Solar": 39048.174,
+      "Wind": 28.416,
+      "Hydro": 1.091,
+      "Bioenergy & waste": 73811.653,
+      "Other": 0.001
+     }
+    },
+    "2016": {
+     "total_mwh": 94613.766,
+     "by_technology_mwh": {
+      "Solar": 51967.241,
+      "Wind": 9.338,
+      "Hydro": 1.088,
+      "Bioenergy & waste": 42636.098,
+      "Other": 0.001
+     }
+    },
+    "2017": {
+     "total_mwh": 92333.543,
+     "by_technology_mwh": {
+      "Solar": 54712.19,
+      "Wind": 10.437,
+      "Hydro": 1.29,
+      "Bioenergy & waste": 37609.627,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 103606.344,
+     "by_technology_mwh": {
+      "Solar": 66382.917,
+      "Wind": 20.455,
+      "Hydro": 1.191,
+      "Bioenergy & waste": 37201.78,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 93762.114,
+     "by_technology_mwh": {
+      "Solar": 66919.49,
+      "Wind": 5.356,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 26837.269,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 95550.36,
+     "by_technology_mwh": {
+      "Solar": 69796.212,
+      "Wind": 6.343,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 25747.806,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 90226.245,
+     "by_technology_mwh": {
+      "Solar": 65196.376,
+      "Wind": 4.835,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 25025.035,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 94516.272,
+     "by_technology_mwh": {
+      "Solar": 73269.235,
+      "Wind": 3.707,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 21243.329,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 96322.862,
+     "by_technology_mwh": {
+      "Solar": 75671.546,
+      "Wind": 3.989,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 20647.327,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 97194.771,
+     "by_technology_mwh": {
+      "Solar": 78073.417,
+      "Wind": 3.881,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 19117.473,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 2222662.248,
+     "fuels_ktoe": {
+      "Coal": 4.7649,
+      "Manufactured fuels": 82.3459,
+      "Petroleum": 808.8312,
+      "Gas": 341.6948,
+      "Electricity": 191.1146,
+      "Bioenergy and wastes": 6.6586
+     },
+     "all_fuels_ktoe": 1435.4099
+    },
+    "2006": {
+     "electricity_consumption_mwh": 2149334.404,
+     "fuels_ktoe": {
+      "Coal": 4.2257,
+      "Manufactured fuels": 77.9075,
+      "Petroleum": 757.4646,
+      "Gas": 311.1711,
+      "Electricity": 184.8095,
+      "Bioenergy and wastes": 8.0793
+     },
+     "all_fuels_ktoe": 1343.6554
+    },
+    "2007": {
+     "electricity_consumption_mwh": 2048094.759,
+     "fuels_ktoe": {
+      "Coal": 4.2508,
+      "Manufactured fuels": 81.6144,
+      "Petroleum": 742.0527,
+      "Gas": 305.1184,
+      "Electricity": 176.1045,
+      "Bioenergy and wastes": 7.8983
+     },
+     "all_fuels_ktoe": 1317.039
+    },
+    "2008": {
+     "electricity_consumption_mwh": 2073984.687,
+     "fuels_ktoe": {
+      "Coal": 4.7029,
+      "Manufactured fuels": 86.2879,
+      "Petroleum": 648.6138,
+      "Gas": 284.0607,
+      "Electricity": 178.3306,
+      "Bioenergy and wastes": 10.3571
+     },
+     "all_fuels_ktoe": 1212.3515
+    },
+    "2009": {
+     "electricity_consumption_mwh": 1995489.327,
+     "fuels_ktoe": {
+      "Coal": 5.0493,
+      "Manufactured fuels": 78.6243,
+      "Petroleum": 713.0382,
+      "Gas": 264.7244,
+      "Electricity": 171.5812,
+      "Bioenergy and wastes": 11.3608
+     },
+     "all_fuels_ktoe": 1244.3785
+    },
+    "2010": {
+     "electricity_consumption_mwh": 1954264.238,
+     "fuels_ktoe": {
+      "Coal": 5.3611,
+      "Manufactured fuels": 82.3897,
+      "Petroleum": 694.9457,
+      "Gas": 260.8494,
+      "Electricity": 168.0365,
+      "Bioenergy and wastes": 13.3494
+     },
+     "all_fuels_ktoe": 1224.9318
+    },
+    "2011": {
+     "electricity_consumption_mwh": 1914724.279,
+     "fuels_ktoe": {
+      "Coal": 5.2137,
+      "Manufactured fuels": 122.3303,
+      "Petroleum": 622.2501,
+      "Gas": 243.8029,
+      "Electricity": 164.6367,
+      "Bioenergy and wastes": 12.769
+     },
+     "all_fuels_ktoe": 1171.0028
+    },
+    "2012": {
+     "electricity_consumption_mwh": 1912214.025,
+     "fuels_ktoe": {
+      "Coal": 5.0904,
+      "Manufactured fuels": 101.0543,
+      "Petroleum": 618.1587,
+      "Gas": 245.8383,
+      "Electricity": 164.4208,
+      "Bioenergy and wastes": 12.5843
+     },
+     "all_fuels_ktoe": 1147.1468
+    },
+    "2013": {
+     "electricity_consumption_mwh": 1873270.024,
+     "fuels_ktoe": {
+      "Coal": 5.423,
+      "Manufactured fuels": 88.7681,
+      "Petroleum": 653.9703,
+      "Gas": 233.6818,
+      "Electricity": 161.0722,
+      "Bioenergy and wastes": 13.7853
+     },
+     "all_fuels_ktoe": 1156.7007
+    },
+    "2014": {
+     "electricity_consumption_mwh": 1882955.677,
+     "fuels_ktoe": {
+      "Coal": 4.8711,
+      "Manufactured fuels": 85.9655,
+      "Petroleum": 640.0459,
+      "Gas": 234.7313,
+      "Electricity": 161.905,
+      "Bioenergy and wastes": 14.7961
+     },
+     "all_fuels_ktoe": 1142.315
+    },
+    "2015": {
+     "electricity_consumption_mwh": 1839202.258,
+     "fuels_ktoe": {
+      "Coal": 4.0188,
+      "Manufactured fuels": 82.9134,
+      "Petroleum": 649.3255,
+      "Gas": 234.6352,
+      "Electricity": 158.1429,
+      "Bioenergy and wastes": 13.9076
+     },
+     "all_fuels_ktoe": 1142.9434
+    },
+    "2016": {
+     "electricity_consumption_mwh": 1772961.368,
+     "fuels_ktoe": {
+      "Coal": 4.0477,
+      "Manufactured fuels": 80.7971,
+      "Petroleum": 637.8968,
+      "Gas": 231.0597,
+      "Electricity": 152.4472,
+      "Bioenergy and wastes": 15.0086
+     },
+     "all_fuels_ktoe": 1121.2572
+    },
+    "2017": {
+     "electricity_consumption_mwh": 1798606.335,
+     "fuels_ktoe": {
+      "Coal": 3.6782,
+      "Manufactured fuels": 80.2679,
+      "Petroleum": 632.8642,
+      "Gas": 234.3702,
+      "Electricity": 154.6523,
+      "Bioenergy and wastes": 15.1506
+     },
+     "all_fuels_ktoe": 1120.9834
+    },
+    "2018": {
+     "electricity_consumption_mwh": 1804439.862,
+     "fuels_ktoe": {
+      "Coal": 3.4499,
+      "Manufactured fuels": 64.8568,
+      "Petroleum": 635.4247,
+      "Gas": 237.3959,
+      "Electricity": 155.1539,
+      "Bioenergy and wastes": 18.488
+     },
+     "all_fuels_ktoe": 1114.7692
+    },
+    "2019": {
+     "electricity_consumption_mwh": 1761115.456,
+     "fuels_ktoe": {
+      "Coal": 3.1814,
+      "Manufactured fuels": 86.427,
+      "Petroleum": 608.6614,
+      "Gas": 238.9729,
+      "Electricity": 151.4287,
+      "Bioenergy and wastes": 21.3695
+     },
+     "all_fuels_ktoe": 1110.0409
+    },
+    "2020": {
+     "electricity_consumption_mwh": 1656363.856,
+     "fuels_ktoe": {
+      "Coal": 3.0183,
+      "Manufactured fuels": 72.723,
+      "Petroleum": 502.4755,
+      "Gas": 246.797,
+      "Electricity": 142.4217,
+      "Bioenergy and wastes": 21.051
+     },
+     "all_fuels_ktoe": 988.4865
+    },
+    "2021": {
+     "electricity_consumption_mwh": 1649885.937,
+     "fuels_ktoe": {
+      "Coal": 3.5035,
+      "Manufactured fuels": 71.8897,
+      "Petroleum": 549.6704,
+      "Gas": 236.7424,
+      "Electricity": 141.8647,
+      "Bioenergy and wastes": 22.5758
+     },
+     "all_fuels_ktoe": 1026.2465
+    },
+    "2022": {
+     "electricity_consumption_mwh": 1590291.922,
+     "fuels_ktoe": {
+      "Coal": 3.0286,
+      "Manufactured fuels": 76.4536,
+      "Petroleum": 593.8975,
+      "Gas": 215.9094,
+      "Electricity": 136.7405,
+      "Bioenergy and wastes": 25.3942
+     },
+     "all_fuels_ktoe": 1051.4238
+    },
+    "2023": {
+     "electricity_consumption_mwh": 1597759.828,
+     "fuels_ktoe": {
+      "Coal": 2.1717,
+      "Manufactured fuels": 74.1539,
+      "Petroleum": 576.6688,
+      "Gas": 213.1385,
+      "Electricity": 137.3826,
+      "Bioenergy and wastes": 28.0561
+     },
+     "all_fuels_ktoe": 1031.5716
+    },
+    "2024": {
+     "electricity_consumption_mwh": 1600140.975,
+     "fuels_ktoe": {
+      "Coal": 1.0417,
+      "Manufactured fuels": 67.5389,
+      "Petroleum": 586.6695,
+      "Gas": 205.8512,
+      "Electricity": 137.5874,
+      "Bioenergy and wastes": 28.588
+     },
+     "all_fuels_ktoe": 1027.2767
+    }
+   }
+  },
+  "isle-of-wight": {
+   "name": "Isle of Wight",
+   "generation": {
+    "2014": {
+     "total_mwh": 60611.158,
+     "by_technology_mwh": {
+      "Solar": 49263.956,
+      "Wind": 16.754,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 11330.448,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 75054.963,
+     "by_technology_mwh": {
+      "Solar": 61706.795,
+      "Wind": 19.103,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 13329.066,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 96764.866,
+     "by_technology_mwh": {
+      "Solar": 83042.409,
+      "Wind": 15.179,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 13707.278,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 96799.654,
+     "by_technology_mwh": {
+      "Solar": 82957.315,
+      "Wind": 16.966,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 13825.372,
+      "Other": 0.001
+     }
+    },
+    "2018": {
+     "total_mwh": 112348.331,
+     "by_technology_mwh": {
+      "Solar": 92521.771,
+      "Wind": 15.932,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 19810.627,
+      "Other": 0.001
+     }
+    },
+    "2019": {
+     "total_mwh": 90743.04,
+     "by_technology_mwh": {
+      "Solar": 90725.661,
+      "Wind": 17.379,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 91201.265,
+     "by_technology_mwh": {
+      "Solar": 91180.683,
+      "Wind": 20.582,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 83728.13,
+     "by_technology_mwh": {
+      "Solar": 83712.443,
+      "Wind": 15.688,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 92587.701,
+     "by_technology_mwh": {
+      "Solar": 92575.671,
+      "Wind": 12.03,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 91325.392,
+     "by_technology_mwh": {
+      "Solar": 91312.449,
+      "Wind": 12.943,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 82154.654,
+     "by_technology_mwh": {
+      "Solar": 82142.061,
+      "Wind": 12.593,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 625368.36,
+     "fuels_ktoe": {
+      "Coal": 1.9653,
+      "Manufactured fuels": 0.8519,
+      "Petroleum": 64.6064,
+      "Gas": 118.721,
+      "Electricity": 53.772,
+      "Bioenergy and wastes": 2.0876
+     },
+     "all_fuels_ktoe": 242.0043
+    },
+    "2006": {
+     "electricity_consumption_mwh": 601736.2,
+     "fuels_ktoe": {
+      "Coal": 1.7476,
+      "Manufactured fuels": 0.8028,
+      "Petroleum": 65.6934,
+      "Gas": 110.976,
+      "Electricity": 51.74,
+      "Bioenergy and wastes": 2.5868
+     },
+     "all_fuels_ktoe": 233.5466
+    },
+    "2007": {
+     "electricity_consumption_mwh": 575545.44,
+     "fuels_ktoe": {
+      "Coal": 1.6444,
+      "Manufactured fuels": 0.7372,
+      "Petroleum": 64.346,
+      "Gas": 109.764,
+      "Electricity": 49.488,
+      "Bioenergy and wastes": 2.4664
+     },
+     "all_fuels_ktoe": 228.4461
+    },
+    "2008": {
+     "electricity_consumption_mwh": 587943.02,
+     "fuels_ktoe": {
+      "Coal": 1.9673,
+      "Manufactured fuels": 0.8637,
+      "Petroleum": 61.1484,
+      "Gas": 99.667,
+      "Electricity": 50.554,
+      "Bioenergy and wastes": 2.8294
+     },
+     "all_fuels_ktoe": 217.0298
+    },
+    "2009": {
+     "electricity_consumption_mwh": 568570.596,
+     "fuels_ktoe": {
+      "Coal": 2.2577,
+      "Manufactured fuels": 0.5752,
+      "Petroleum": 59.013,
+      "Gas": 86.2305,
+      "Electricity": 48.8883,
+      "Bioenergy and wastes": 2.9808
+     },
+     "all_fuels_ktoe": 199.9464
+    },
+    "2010": {
+     "electricity_consumption_mwh": 573558.08,
+     "fuels_ktoe": {
+      "Coal": 2.3802,
+      "Manufactured fuels": 0.6882,
+      "Petroleum": 60.237,
+      "Gas": 103.9308,
+      "Electricity": 49.3171,
+      "Bioenergy and wastes": 3.5436
+     },
+     "all_fuels_ktoe": 220.0969
+    },
+    "2011": {
+     "electricity_consumption_mwh": 540673.77,
+     "fuels_ktoe": {
+      "Coal": 2.334,
+      "Manufactured fuels": 0.5929,
+      "Petroleum": 58.6512,
+      "Gas": 98.0688,
+      "Electricity": 46.4896,
+      "Bioenergy and wastes": 3.3848
+     },
+     "all_fuels_ktoe": 209.5213
+    },
+    "2012": {
+     "electricity_consumption_mwh": 555727.193,
+     "fuels_ktoe": {
+      "Coal": 2.5013,
+      "Manufactured fuels": 0.7037,
+      "Petroleum": 57.2247,
+      "Gas": 95.9767,
+      "Electricity": 47.7839,
+      "Bioenergy and wastes": 3.6003
+     },
+     "all_fuels_ktoe": 207.7907
+    },
+    "2013": {
+     "electricity_consumption_mwh": 545802.734,
+     "fuels_ktoe": {
+      "Coal": 2.7669,
+      "Manufactured fuels": 0.8685,
+      "Petroleum": 56.8999,
+      "Gas": 88.2375,
+      "Electricity": 46.9306,
+      "Bioenergy and wastes": 3.8662
+     },
+     "all_fuels_ktoe": 199.5697
+    },
+    "2014": {
+     "electricity_consumption_mwh": 564365.357,
+     "fuels_ktoe": {
+      "Coal": 2.325,
+      "Manufactured fuels": 0.6882,
+      "Petroleum": 57.0829,
+      "Gas": 91.0831,
+      "Electricity": 48.5267,
+      "Bioenergy and wastes": 3.9401
+     },
+     "all_fuels_ktoe": 203.646
+    },
+    "2015": {
+     "electricity_consumption_mwh": 554073.364,
+     "fuels_ktoe": {
+      "Coal": 1.9507,
+      "Manufactured fuels": 0.6233,
+      "Petroleum": 59.3632,
+      "Gas": 94.9306,
+      "Electricity": 47.6417,
+      "Bioenergy and wastes": 3.9247
+     },
+     "all_fuels_ktoe": 208.4343
+    },
+    "2016": {
+     "electricity_consumption_mwh": 544433.655,
+     "fuels_ktoe": {
+      "Coal": 1.8758,
+      "Manufactured fuels": 0.6127,
+      "Petroleum": 58.6554,
+      "Gas": 95.4874,
+      "Electricity": 46.8129,
+      "Bioenergy and wastes": 4.1306
+     },
+     "all_fuels_ktoe": 207.575
+    },
+    "2017": {
+     "electricity_consumption_mwh": 547110.901,
+     "fuels_ktoe": {
+      "Coal": 1.5179,
+      "Manufactured fuels": 0.6747,
+      "Petroleum": 56.7066,
+      "Gas": 95.2777,
+      "Electricity": 47.0431,
+      "Bioenergy and wastes": 4.3226
+     },
+     "all_fuels_ktoe": 205.5427
+    },
+    "2018": {
+     "electricity_consumption_mwh": 544892.151,
+     "fuels_ktoe": {
+      "Coal": 1.5056,
+      "Manufactured fuels": 0.6904,
+      "Petroleum": 56.6176,
+      "Gas": 93.3601,
+      "Electricity": 46.8523,
+      "Bioenergy and wastes": 5.0948
+     },
+     "all_fuels_ktoe": 204.1208
+    },
+    "2019": {
+     "electricity_consumption_mwh": 535405.579,
+     "fuels_ktoe": {
+      "Coal": 1.4063,
+      "Manufactured fuels": 0.6913,
+      "Petroleum": 54.9343,
+      "Gas": 92.3053,
+      "Electricity": 46.0366,
+      "Bioenergy and wastes": 5.868
+     },
+     "all_fuels_ktoe": 201.2417
+    },
+    "2020": {
+     "electricity_consumption_mwh": 505074.371,
+     "fuels_ktoe": {
+      "Coal": 1.2958,
+      "Manufactured fuels": 0.6326,
+      "Petroleum": 45.4762,
+      "Gas": 95.7846,
+      "Electricity": 43.4286,
+      "Bioenergy and wastes": 5.8684
+     },
+     "all_fuels_ktoe": 192.4861
+    },
+    "2021": {
+     "electricity_consumption_mwh": 504862.64,
+     "fuels_ktoe": {
+      "Coal": 1.3533,
+      "Manufactured fuels": 0.6003,
+      "Petroleum": 49.4514,
+      "Gas": 93.6036,
+      "Electricity": 43.4104,
+      "Bioenergy and wastes": 6.6697
+     },
+     "all_fuels_ktoe": 195.0886
+    },
+    "2022": {
+     "electricity_consumption_mwh": 482501.038,
+     "fuels_ktoe": {
+      "Coal": 1.2262,
+      "Manufactured fuels": 0.7135,
+      "Petroleum": 49.7779,
+      "Gas": 84.2486,
+      "Electricity": 41.4876,
+      "Bioenergy and wastes": 7.3064
+     },
+     "all_fuels_ktoe": 184.7602
+    },
+    "2023": {
+     "electricity_consumption_mwh": 479642.456,
+     "fuels_ktoe": {
+      "Coal": 0.8134,
+      "Manufactured fuels": 0.6904,
+      "Petroleum": 49.9052,
+      "Gas": 83.7177,
+      "Electricity": 41.2418,
+      "Bioenergy and wastes": 7.7416
+     },
+     "all_fuels_ktoe": 184.1101
+    },
+    "2024": {
+     "electricity_consumption_mwh": 471393.524,
+     "fuels_ktoe": {
+      "Coal": 0.4113,
+      "Manufactured fuels": 0.6988,
+      "Petroleum": 50.8617,
+      "Gas": 82.8834,
+      "Electricity": 40.5325,
+      "Bioenergy and wastes": 8.8215
+     },
+     "all_fuels_ktoe": 184.2093
+    }
+   }
+  },
+  "portsmouth": {
+   "name": "Portsmouth",
+   "generation": {
+    "2014": {
+     "total_mwh": 19179.789,
+     "by_technology_mwh": {
+      "Solar": 2900.923,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 16278.866,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 82325.316,
+     "by_technology_mwh": {
+      "Solar": 4825.156,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 77500.16,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 14176.481,
+     "by_technology_mwh": {
+      "Solar": 6539.481,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 7637.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 15589.999,
+     "by_technology_mwh": {
+      "Solar": 7954.999,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 7635.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 18886.568,
+     "by_technology_mwh": {
+      "Solar": 9440.698,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 9445.87,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 10079.177,
+     "by_technology_mwh": {
+      "Solar": 10079.177,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 10102.581,
+     "by_technology_mwh": {
+      "Solar": 10102.581,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 10215.993,
+     "by_technology_mwh": {
+      "Solar": 10215.993,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 12651.696,
+     "by_technology_mwh": {
+      "Solar": 12651.696,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 13093.133,
+     "by_technology_mwh": {
+      "Solar": 13093.133,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 12135.044,
+     "by_technology_mwh": {
+      "Solar": 12135.044,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 1077461.35,
+     "fuels_ktoe": {
+      "Coal": 2.7822,
+      "Manufactured fuels": 0.8569,
+      "Petroleum": 121.451,
+      "Gas": 151.284,
+      "Electricity": 92.645,
+      "Bioenergy and wastes": 2.6653
+     },
+     "all_fuels_ktoe": 371.6844
+    },
+    "2006": {
+     "electricity_consumption_mwh": 1039780.15,
+     "fuels_ktoe": {
+      "Coal": 2.5354,
+      "Manufactured fuels": 0.823,
+      "Petroleum": 121.0685,
+      "Gas": 141.329,
+      "Electricity": 89.405,
+      "Bioenergy and wastes": 3.6314
+     },
+     "all_fuels_ktoe": 358.7924
+    },
+    "2007": {
+     "electricity_consumption_mwh": 988689.56,
+     "fuels_ktoe": {
+      "Coal": 2.4089,
+      "Manufactured fuels": 0.7594,
+      "Petroleum": 120.1785,
+      "Gas": 135.35,
+      "Electricity": 85.012,
+      "Bioenergy and wastes": 2.8462
+     },
+     "all_fuels_ktoe": 346.555
+    },
+    "2008": {
+     "electricity_consumption_mwh": 1013182.34,
+     "fuels_ktoe": {
+      "Coal": 2.94,
+      "Manufactured fuels": 0.887,
+      "Petroleum": 111.4946,
+      "Gas": 130.75,
+      "Electricity": 87.118,
+      "Bioenergy and wastes": 3.7812
+     },
+     "all_fuels_ktoe": 336.9708
+    },
+    "2009": {
+     "electricity_consumption_mwh": 995789.387,
+     "fuels_ktoe": {
+      "Coal": 3.1351,
+      "Manufactured fuels": 0.5996,
+      "Petroleum": 109.1982,
+      "Gas": 121.9687,
+      "Electricity": 85.6225,
+      "Bioenergy and wastes": 3.8097
+     },
+     "all_fuels_ktoe": 324.3338
+    },
+    "2010": {
+     "electricity_consumption_mwh": 997933.227,
+     "fuels_ktoe": {
+      "Coal": 4.2716,
+      "Manufactured fuels": 0.8251,
+      "Petroleum": 110.0315,
+      "Gas": 122.5887,
+      "Electricity": 85.8068,
+      "Bioenergy and wastes": 4.7412
+     },
+     "all_fuels_ktoe": 328.265
+    },
+    "2011": {
+     "electricity_consumption_mwh": 1009262.578,
+     "fuels_ktoe": {
+      "Coal": 3.6105,
+      "Manufactured fuels": 0.6219,
+      "Petroleum": 108.9577,
+      "Gas": 112.0256,
+      "Electricity": 86.781,
+      "Bioenergy and wastes": 4.4732
+     },
+     "all_fuels_ktoe": 316.4698
+    },
+    "2012": {
+     "electricity_consumption_mwh": 1003122.149,
+     "fuels_ktoe": {
+      "Coal": 3.6013,
+      "Manufactured fuels": 0.7877,
+      "Petroleum": 108.6672,
+      "Gas": 110.916,
+      "Electricity": 86.253,
+      "Bioenergy and wastes": 4.5034
+     },
+     "all_fuels_ktoe": 314.7286
+    },
+    "2013": {
+     "electricity_consumption_mwh": 996198.107,
+     "fuels_ktoe": {
+      "Coal": 4.8075,
+      "Manufactured fuels": 1.133,
+      "Petroleum": 107.508,
+      "Gas": 108.6578,
+      "Electricity": 85.6576,
+      "Bioenergy and wastes": 4.8515
+     },
+     "all_fuels_ktoe": 312.6154
+    },
+    "2014": {
+     "electricity_consumption_mwh": 990033.622,
+     "fuels_ktoe": {
+      "Coal": 4.6388,
+      "Manufactured fuels": 0.8069,
+      "Petroleum": 108.5054,
+      "Gas": 107.1293,
+      "Electricity": 85.1276,
+      "Bioenergy and wastes": 5.4497
+     },
+     "all_fuels_ktoe": 311.6577
+    },
+    "2015": {
+     "electricity_consumption_mwh": 960038.452,
+     "fuels_ktoe": {
+      "Coal": 3.5315,
+      "Manufactured fuels": 0.6339,
+      "Petroleum": 110.9779,
+      "Gas": 106.7377,
+      "Electricity": 82.5484,
+      "Bioenergy and wastes": 5.0251
+     },
+     "all_fuels_ktoe": 309.4545
+    },
+    "2016": {
+     "electricity_consumption_mwh": 918881.104,
+     "fuels_ktoe": {
+      "Coal": 3.5569,
+      "Manufactured fuels": 0.6234,
+      "Petroleum": 110.5855,
+      "Gas": 107.1275,
+      "Electricity": 79.0096,
+      "Bioenergy and wastes": 5.748
+     },
+     "all_fuels_ktoe": 306.6509
+    },
+    "2017": {
+     "electricity_consumption_mwh": 889882.385,
+     "fuels_ktoe": {
+      "Coal": 3.488,
+      "Manufactured fuels": 0.6864,
+      "Petroleum": 105.9026,
+      "Gas": 110.3729,
+      "Electricity": 76.5161,
+      "Bioenergy and wastes": 6.463
+     },
+     "all_fuels_ktoe": 303.429
+    },
+    "2018": {
+     "electricity_consumption_mwh": 909638.367,
+     "fuels_ktoe": {
+      "Coal": 3.7693,
+      "Manufactured fuels": 0.6974,
+      "Petroleum": 103.6066,
+      "Gas": 108.6885,
+      "Electricity": 78.2148,
+      "Bioenergy and wastes": 8.9347
+     },
+     "all_fuels_ktoe": 303.9114
+    },
+    "2019": {
+     "electricity_consumption_mwh": 882868.774,
+     "fuels_ktoe": {
+      "Coal": 3.1657,
+      "Manufactured fuels": 0.674,
+      "Petroleum": 102.6815,
+      "Gas": 110.2428,
+      "Electricity": 75.9131,
+      "Bioenergy and wastes": 9.9605
+     },
+     "all_fuels_ktoe": 302.6376
+    },
+    "2020": {
+     "electricity_consumption_mwh": 775067.871,
+     "fuels_ktoe": {
+      "Coal": 2.7961,
+      "Manufactured fuels": 0.6165,
+      "Petroleum": 81.9462,
+      "Gas": 126.7949,
+      "Electricity": 66.6438,
+      "Bioenergy and wastes": 11.0375
+     },
+     "all_fuels_ktoe": 289.8351
+    },
+    "2021": {
+     "electricity_consumption_mwh": 772787.048,
+     "fuels_ktoe": {
+      "Coal": 2.0429,
+      "Manufactured fuels": 0.595,
+      "Petroleum": 88.4017,
+      "Gas": 119.4048,
+      "Electricity": 66.4477,
+      "Bioenergy and wastes": 10.333
+     },
+     "all_fuels_ktoe": 287.225
+    },
+    "2022": {
+     "electricity_consumption_mwh": 750785.4,
+     "fuels_ktoe": {
+      "Coal": 1.721,
+      "Manufactured fuels": 0.7177,
+      "Petroleum": 93.6115,
+      "Gas": 106.8223,
+      "Electricity": 64.5559,
+      "Bioenergy and wastes": 11.4689
+     },
+     "all_fuels_ktoe": 278.8973
+    },
+    "2023": {
+     "electricity_consumption_mwh": 747333.008,
+     "fuels_ktoe": {
+      "Coal": 1.4318,
+      "Manufactured fuels": 0.6859,
+      "Petroleum": 90.2066,
+      "Gas": 103.5818,
+      "Electricity": 64.2591,
+      "Bioenergy and wastes": 12.541
+     },
+     "all_fuels_ktoe": 272.7062
+    },
+    "2024": {
+     "electricity_consumption_mwh": 736084.778,
+     "fuels_ktoe": {
+      "Coal": 0.4543,
+      "Manufactured fuels": 0.6922,
+      "Petroleum": 89.5198,
+      "Gas": 102.0473,
+      "Electricity": 63.2919,
+      "Bioenergy and wastes": 10.7687
+     },
+     "all_fuels_ktoe": 266.7742
+    }
+   }
+  },
+  "southampton": {
+   "name": "Southampton",
+   "generation": {
+    "2014": {
+     "total_mwh": 13576.298,
+     "by_technology_mwh": {
+      "Solar": 6245.298,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 7331.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 15393.297,
+     "by_technology_mwh": {
+      "Solar": 7539.297,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 7854.0,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 15282.171,
+     "by_technology_mwh": {
+      "Solar": 8165.171,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 7117.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 15149.865,
+     "by_technology_mwh": {
+      "Solar": 8537.865,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 6612.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 15138.868,
+     "by_technology_mwh": {
+      "Solar": 9709.868,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 5429.0,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 10344.189,
+     "by_technology_mwh": {
+      "Solar": 10344.189,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 10352.037,
+     "by_technology_mwh": {
+      "Solar": 10352.037,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 10112.839,
+     "by_technology_mwh": {
+      "Solar": 10112.839,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 12764.112,
+     "by_technology_mwh": {
+      "Solar": 12764.112,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 13528.915,
+     "by_technology_mwh": {
+      "Solar": 13528.915,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 13159.681,
+     "by_technology_mwh": {
+      "Solar": 13159.681,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 1252225.36,
+     "fuels_ktoe": {
+      "Coal": 1.9645,
+      "Manufactured fuels": 0.8695,
+      "Petroleum": 130.1233,
+      "Gas": 176.216,
+      "Electricity": 107.672,
+      "Bioenergy and wastes": 2.6871
+     },
+     "all_fuels_ktoe": 419.5324
+    },
+    "2006": {
+     "electricity_consumption_mwh": 1201064.99,
+     "fuels_ktoe": {
+      "Coal": 1.7245,
+      "Manufactured fuels": 0.8359,
+      "Petroleum": 135.3256,
+      "Gas": 161.55,
+      "Electricity": 103.273,
+      "Bioenergy and wastes": 3.2137
+     },
+     "all_fuels_ktoe": 405.9218
+    },
+    "2007": {
+     "electricity_consumption_mwh": 1124481.44,
+     "fuels_ktoe": {
+      "Coal": 1.7548,
+      "Manufactured fuels": 0.7835,
+      "Petroleum": 129.8151,
+      "Gas": 158.945,
+      "Electricity": 96.688,
+      "Bioenergy and wastes": 2.9576
+     },
+     "all_fuels_ktoe": 390.9441
+    },
+    "2008": {
+     "electricity_consumption_mwh": 1144008.21,
+     "fuels_ktoe": {
+      "Coal": 1.9882,
+      "Manufactured fuels": 0.8904,
+      "Petroleum": 119.2426,
+      "Gas": 147.82,
+      "Electricity": 98.367,
+      "Bioenergy and wastes": 3.729
+     },
+     "all_fuels_ktoe": 372.0362
+    },
+    "2009": {
+     "electricity_consumption_mwh": 1083759.195,
+     "fuels_ktoe": {
+      "Coal": 2.1306,
+      "Manufactured fuels": 0.6031,
+      "Petroleum": 116.3341,
+      "Gas": 141.6118,
+      "Electricity": 93.1865,
+      "Bioenergy and wastes": 4.0123
+     },
+     "all_fuels_ktoe": 357.8783
+    },
+    "2010": {
+     "electricity_consumption_mwh": 1045190.985,
+     "fuels_ktoe": {
+      "Coal": 2.313,
+      "Manufactured fuels": 0.7065,
+      "Petroleum": 114.4073,
+      "Gas": 138.0802,
+      "Electricity": 89.8702,
+      "Bioenergy and wastes": 4.7433
+     },
+     "all_fuels_ktoe": 350.1206
+    },
+    "2011": {
+     "electricity_consumption_mwh": 1014364.917,
+     "fuels_ktoe": {
+      "Coal": 2.2243,
+      "Manufactured fuels": 0.6312,
+      "Petroleum": 113.006,
+      "Gas": 128.7022,
+      "Electricity": 87.2197,
+      "Bioenergy and wastes": 4.5396
+     },
+     "all_fuels_ktoe": 336.3229
+    },
+    "2012": {
+     "electricity_consumption_mwh": 1022272.093,
+     "fuels_ktoe": {
+      "Coal": 2.1809,
+      "Manufactured fuels": 0.6803,
+      "Petroleum": 112.3268,
+      "Gas": 130.3413,
+      "Electricity": 87.8996,
+      "Bioenergy and wastes": 4.5828
+     },
+     "all_fuels_ktoe": 338.0116
+    },
+    "2013": {
+     "electricity_consumption_mwh": 979253.345,
+     "fuels_ktoe": {
+      "Coal": 2.3869,
+      "Manufactured fuels": 0.7824,
+      "Petroleum": 109.5527,
+      "Gas": 118.4361,
+      "Electricity": 84.2006,
+      "Bioenergy and wastes": 4.9746
+     },
+     "all_fuels_ktoe": 320.3333
+    },
+    "2014": {
+     "electricity_consumption_mwh": 978953.851,
+     "fuels_ktoe": {
+      "Coal": 2.2349,
+      "Manufactured fuels": 0.689,
+      "Petroleum": 113.3668,
+      "Gas": 119.7491,
+      "Electricity": 84.1749,
+      "Bioenergy and wastes": 5.2529
+     },
+     "all_fuels_ktoe": 325.4675
+    },
+    "2015": {
+     "electricity_consumption_mwh": 952194.824,
+     "fuels_ktoe": {
+      "Coal": 1.7762,
+      "Manufactured fuels": 0.6073,
+      "Petroleum": 112.9335,
+      "Gas": 121.6745,
+      "Electricity": 81.874,
+      "Bioenergy and wastes": 4.9497
+     },
+     "all_fuels_ktoe": 323.8152
+    },
+    "2016": {
+     "electricity_consumption_mwh": 908001.709,
+     "fuels_ktoe": {
+      "Coal": 1.8427,
+      "Manufactured fuels": 0.596,
+      "Petroleum": 109.8781,
+      "Gas": 119.8138,
+      "Electricity": 78.0741,
+      "Bioenergy and wastes": 5.314
+     },
+     "all_fuels_ktoe": 315.5188
+    },
+    "2017": {
+     "electricity_consumption_mwh": 919505.798,
+     "fuels_ktoe": {
+      "Coal": 1.6802,
+      "Manufactured fuels": 0.6596,
+      "Petroleum": 107.7982,
+      "Gas": 120.3124,
+      "Electricity": 79.0633,
+      "Bioenergy and wastes": 5.4007
+     },
+     "all_fuels_ktoe": 314.9143
+    },
+    "2018": {
+     "electricity_consumption_mwh": 927242.371,
+     "fuels_ktoe": {
+      "Coal": 1.5114,
+      "Manufactured fuels": 0.6613,
+      "Petroleum": 106.0653,
+      "Gas": 120.6953,
+      "Electricity": 79.7285,
+      "Bioenergy and wastes": 6.5659
+     },
+     "all_fuels_ktoe": 315.2278
+    },
+    "2019": {
+     "electricity_consumption_mwh": 887284.607,
+     "fuels_ktoe": {
+      "Coal": 1.4057,
+      "Manufactured fuels": 0.6304,
+      "Petroleum": 101.1898,
+      "Gas": 123.3568,
+      "Electricity": 76.2927,
+      "Bioenergy and wastes": 7.5432
+     },
+     "all_fuels_ktoe": 310.4187
+    },
+    "2020": {
+     "electricity_consumption_mwh": 823779.419,
+     "fuels_ktoe": {
+      "Coal": 1.3235,
+      "Manufactured fuels": 0.5751,
+      "Petroleum": 80.1374,
+      "Gas": 122.9699,
+      "Electricity": 70.8323,
+      "Bioenergy and wastes": 7.497
+     },
+     "all_fuels_ktoe": 283.3352
+    },
+    "2021": {
+     "electricity_consumption_mwh": 828272.095,
+     "fuels_ktoe": {
+      "Coal": 1.2641,
+      "Manufactured fuels": 0.5546,
+      "Petroleum": 80.9907,
+      "Gas": 120.0347,
+      "Electricity": 71.2186,
+      "Bioenergy and wastes": 7.2633
+     },
+     "all_fuels_ktoe": 281.326
+    },
+    "2022": {
+     "electricity_consumption_mwh": 805185.303,
+     "fuels_ktoe": {
+      "Coal": 1.1433,
+      "Manufactured fuels": 0.674,
+      "Petroleum": 82.7657,
+      "Gas": 111.3679,
+      "Electricity": 69.2335,
+      "Bioenergy and wastes": 8.4269
+     },
+     "all_fuels_ktoe": 273.6112
+    },
+    "2023": {
+     "electricity_consumption_mwh": 820469.299,
+     "fuels_ktoe": {
+      "Coal": 0.7565,
+      "Manufactured fuels": 0.6444,
+      "Petroleum": 82.0756,
+      "Gas": 110.5205,
+      "Electricity": 70.5477,
+      "Bioenergy and wastes": 9.2464
+     },
+     "all_fuels_ktoe": 273.7909
+    },
+    "2024": {
+     "electricity_consumption_mwh": 832058.655,
+     "fuels_ktoe": {
+      "Coal": 0.2576,
+      "Manufactured fuels": 0.6478,
+      "Petroleum": 83.6175,
+      "Gas": 104.4514,
+      "Electricity": 71.5442,
+      "Bioenergy and wastes": 8.687
+     },
+     "all_fuels_ktoe": 269.2055
+    }
+   }
+  },
   "winchester": {
    "name": "Winchester",
    "generation": {
@@ -419,717 +3275,3573 @@
     }
    }
   },
-  "mid-hampshire": {
-   "name": "Mid-Hampshire (proposed)",
+  "east-hampshire": {
+   "name": "East Hampshire",
    "generation": {
     "2014": {
-     "total_mwh": 128723.237,
+     "total_mwh": 10304.058,
      "by_technology_mwh": {
-      "Solar": 89479.382,
-      "Wind": 1122.79,
-      "Hydro": 36.114,
-      "Bioenergy & waste": 38084.95,
-      "Other": 0.001
+      "Solar": 10277.708,
+      "Wind": 26.35,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
      }
     },
     "2015": {
-     "total_mwh": 241243.017,
+     "total_mwh": 24900.716,
      "by_technology_mwh": {
-      "Solar": 160093.268,
-      "Wind": 168.549,
-      "Hydro": 40.013,
-      "Bioenergy & waste": 80941.184,
-      "Other": 0.002
+      "Solar": 24870.672,
+      "Wind": 30.044,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
      }
     },
     "2016": {
-     "total_mwh": 298727.903,
+     "total_mwh": 31500.323,
      "by_technology_mwh": {
-      "Solar": 265792.944,
-      "Wind": 133.931,
-      "Hydro": 83.53,
-      "Bioenergy & waste": 32717.498,
+      "Solar": 31476.45,
+      "Wind": 23.873,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2017": {
-     "total_mwh": 323526.245,
+     "total_mwh": 42292.754,
      "by_technology_mwh": {
-      "Solar": 294098.117,
-      "Wind": 149.697,
-      "Hydro": 114.843,
-      "Bioenergy & waste": 29163.587,
+      "Solar": 42266.07,
+      "Wind": 26.683,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.001
      }
     },
     "2018": {
-     "total_mwh": 356891.423,
+     "total_mwh": 47207.885,
      "by_technology_mwh": {
-      "Solar": 322943.06,
-      "Wind": 140.576,
-      "Hydro": 121.792,
-      "Bioenergy & waste": 33685.996,
+      "Solar": 47182.827,
+      "Wind": 25.057,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.001
      }
     },
     "2019": {
-     "total_mwh": 338322.567,
+     "total_mwh": 47640.083,
      "by_technology_mwh": {
-      "Solar": 316928.289,
-      "Wind": 42.475,
-      "Hydro": 132.042,
-      "Bioenergy & waste": 21219.76,
+      "Solar": 47640.083,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2020": {
-     "total_mwh": 347207.061,
+     "total_mwh": 48407.279,
      "by_technology_mwh": {
-      "Solar": 325790.7,
-      "Wind": 50.304,
-      "Hydro": 143.781,
-      "Bioenergy & waste": 21222.277,
+      "Solar": 48407.279,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2021": {
-     "total_mwh": 318177.942,
+     "total_mwh": 44202.892,
      "by_technology_mwh": {
-      "Solar": 297864.443,
-      "Wind": 38.342,
-      "Hydro": 116.089,
-      "Bioenergy & waste": 20159.069,
+      "Solar": 44202.892,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2022": {
-     "total_mwh": 341147.789,
+     "total_mwh": 51277.263,
      "by_technology_mwh": {
-      "Solar": 323559.22,
-      "Wind": 29.402,
-      "Hydro": 83.306,
-      "Bioenergy & waste": 17475.861,
+      "Solar": 51277.263,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2023": {
-     "total_mwh": 335736.123,
+     "total_mwh": 49978.308,
      "by_technology_mwh": {
-      "Solar": 317985.055,
-      "Wind": 31.634,
-      "Hydro": 108.817,
-      "Bioenergy & waste": 17610.616,
+      "Solar": 49978.308,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     },
     "2024": {
-     "total_mwh": 350924.164,
+     "total_mwh": 48338.199,
      "by_technology_mwh": {
-      "Solar": 335193.255,
-      "Wind": 30.779,
-      "Hydro": 131.242,
-      "Bioenergy & waste": 15568.888,
+      "Solar": 48338.199,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
       "Other": 0.0
      }
     }
    },
    "consumption": {
     "2005": {
-     "electricity_consumption_mwh": 2095489.603,
+     "electricity_consumption_mwh": 508545.01,
      "fuels_ktoe": {
-      "Coal": 7.5799,
-      "Manufactured fuels": 128.3163,
-      "Petroleum": 1306.4716,
-      "Gas": 323.7354,
-      "Electricity": 180.1797,
-      "Bioenergy and wastes": 8.5442
+      "Coal": 3.1285,
+      "Manufactured fuels": 0.7765,
+      "Petroleum": 132.6883,
+      "Gas": 85.645,
+      "Electricity": 43.727,
+      "Bioenergy and wastes": 2.1142
      },
-     "all_fuels_ktoe": 1954.827
+     "all_fuels_ktoe": 268.0796
     },
     "2006": {
-     "electricity_consumption_mwh": 2041739.948,
+     "electricity_consumption_mwh": 494147.07,
      "fuels_ktoe": {
-      "Coal": 7.1037,
-      "Manufactured fuels": 121.1903,
-      "Petroleum": 1220.2816,
-      "Gas": 296.3962,
-      "Electricity": 175.558,
-      "Bioenergy and wastes": 11.0997
+      "Coal": 3.0801,
+      "Manufactured fuels": 0.7629,
+      "Petroleum": 130.2825,
+      "Gas": 84.372,
+      "Electricity": 42.489,
+      "Bioenergy and wastes": 2.8121
      },
-     "all_fuels_ktoe": 1831.629
+     "all_fuels_ktoe": 263.7987
     },
     "2007": {
-     "electricity_consumption_mwh": 2018206.514,
+     "electricity_consumption_mwh": 479946.84,
      "fuels_ktoe": {
-      "Coal": 6.9735,
-      "Manufactured fuels": 127.1093,
-      "Petroleum": 1204.6396,
-      "Gas": 286.4799,
-      "Electricity": 173.5345,
-      "Bioenergy and wastes": 11.6592
+      "Coal": 3.0433,
+      "Manufactured fuels": 0.7163,
+      "Petroleum": 130.4094,
+      "Gas": 84.05,
+      "Electricity": 41.268,
+      "Bioenergy and wastes": 2.9182
      },
-     "all_fuels_ktoe": 1810.3952
+     "all_fuels_ktoe": 262.4042
     },
     "2008": {
-     "electricity_consumption_mwh": 2021237.61,
+     "electricity_consumption_mwh": 484133.64,
      "fuels_ktoe": {
-      "Coal": 7.7243,
-      "Manufactured fuels": 134.3063,
-      "Petroleum": 1076.7582,
-      "Gas": 271.2702,
-      "Electricity": 173.7952,
-      "Bioenergy and wastes": 16.82
+      "Coal": 3.3142,
+      "Manufactured fuels": 0.817,
+      "Petroleum": 127.7971,
+      "Gas": 80.992,
+      "Electricity": 41.628,
+      "Bioenergy and wastes": 4.0794
      },
-     "all_fuels_ktoe": 1680.6728
+     "all_fuels_ktoe": 258.6267
     },
     "2009": {
-     "electricity_consumption_mwh": 2012985.608,
+     "electricity_consumption_mwh": 488125.439,
      "fuels_ktoe": {
-      "Coal": 8.4379,
-      "Manufactured fuels": 122.5006,
-      "Petroleum": 1170.992,
-      "Gas": 250.4369,
-      "Electricity": 173.0856,
-      "Bioenergy and wastes": 18.5799
+      "Coal": 3.5336,
+      "Manufactured fuels": 0.5414,
+      "Petroleum": 123.2585,
+      "Gas": 73.5164,
+      "Electricity": 41.9712,
+      "Bioenergy and wastes": 4.4578
      },
-     "all_fuels_ktoe": 1744.0316
+     "all_fuels_ktoe": 247.2789
     },
     "2010": {
-     "electricity_consumption_mwh": 2014748.504,
+     "electricity_consumption_mwh": 478399.862,
      "fuels_ktoe": {
-      "Coal": 9.1068,
-      "Manufactured fuels": 128.2742,
-      "Petroleum": 1144.7666,
-      "Gas": 249.5563,
-      "Electricity": 173.2372,
-      "Bioenergy and wastes": 21.733
+      "Coal": 3.881,
+      "Manufactured fuels": 0.6758,
+      "Petroleum": 124.272,
+      "Gas": 72.9995,
+      "Electricity": 41.135,
+      "Bioenergy and wastes": 5.3013
      },
-     "all_fuels_ktoe": 1726.6741
+     "all_fuels_ktoe": 248.2646
     },
     "2011": {
-     "electricity_consumption_mwh": 1991237.648,
+     "electricity_consumption_mwh": 469957.223,
      "fuels_ktoe": {
-      "Coal": 9.081,
-      "Manufactured fuels": 190.6685,
-      "Petroleum": 1022.673,
-      "Gas": 237.2705,
-      "Electricity": 171.2156,
-      "Bioenergy and wastes": 20.8767
+      "Coal": 4.04,
+      "Manufactured fuels": 0.5668,
+      "Petroleum": 120.6013,
+      "Gas": 69.7924,
+      "Electricity": 40.409,
+      "Bioenergy and wastes": 5.0912
      },
-     "all_fuels_ktoe": 1651.7853
+     "all_fuels_ktoe": 240.5008
     },
     "2012": {
-     "electricity_consumption_mwh": 1994808.373,
+     "electricity_consumption_mwh": 469088.417,
      "fuels_ktoe": {
-      "Coal": 8.9053,
-      "Manufactured fuels": 157.6498,
-      "Petroleum": 1024.4401,
-      "Gas": 239.7387,
-      "Electricity": 171.5226,
-      "Bioenergy and wastes": 20.4236
+      "Coal": 3.8661,
+      "Manufactured fuels": 0.6726,
+      "Petroleum": 122.2971,
+      "Gas": 70.1502,
+      "Electricity": 40.3343,
+      "Bioenergy and wastes": 5.2108
      },
-     "all_fuels_ktoe": 1622.6801
+     "all_fuels_ktoe": 242.5312
     },
     "2013": {
-     "electricity_consumption_mwh": 1984468.426,
+     "electricity_consumption_mwh": 462539.314,
      "fuels_ktoe": {
-      "Coal": 9.3815,
-      "Manufactured fuels": 138.5249,
-      "Petroleum": 1087.781,
-      "Gas": 237.9391,
-      "Electricity": 170.6336,
-      "Bioenergy and wastes": 22.621
+      "Coal": 3.9209,
+      "Manufactured fuels": 0.8563,
+      "Petroleum": 124.1702,
+      "Gas": 68.6596,
+      "Electricity": 39.7712,
+      "Bioenergy and wastes": 5.7623
      },
-     "all_fuels_ktoe": 1666.881
+     "all_fuels_ktoe": 243.1405
     },
     "2014": {
-     "electricity_consumption_mwh": 1995127.439,
+     "electricity_consumption_mwh": 463538.355,
      "fuels_ktoe": {
-      "Coal": 8.0184,
-      "Manufactured fuels": 134.0668,
-      "Petroleum": 1058.2449,
-      "Gas": 236.8621,
-      "Electricity": 171.5501,
-      "Bioenergy and wastes": 24.6712
+      "Coal": 3.2241,
+      "Manufactured fuels": 0.6563,
+      "Petroleum": 125.8121,
+      "Gas": 65.7805,
+      "Electricity": 39.8571,
+      "Bioenergy and wastes": 6.0785
      },
-     "all_fuels_ktoe": 1633.4134
+     "all_fuels_ktoe": 241.4086
     },
     "2015": {
-     "electricity_consumption_mwh": 1949730.509,
+     "electricity_consumption_mwh": 455270.05,
      "fuels_ktoe": {
-      "Coal": 6.4096,
-      "Manufactured fuels": 129.3097,
-      "Petroleum": 1083.5196,
-      "Gas": 232.5618,
-      "Electricity": 167.6466,
-      "Bioenergy and wastes": 22.8506
+      "Coal": 2.4416,
+      "Manufactured fuels": 0.5429,
+      "Petroleum": 130.0982,
+      "Gas": 63.9338,
+      "Electricity": 39.1462,
+      "Bioenergy and wastes": 5.6513
      },
-     "all_fuels_ktoe": 1642.298
+     "all_fuels_ktoe": 241.8139
     },
     "2016": {
-     "electricity_consumption_mwh": 1884209.483,
+     "electricity_consumption_mwh": 434680.847,
      "fuels_ktoe": {
-      "Coal": 6.2169,
-      "Manufactured fuels": 126.0334,
-      "Petroleum": 1072.706,
-      "Gas": 233.1407,
-      "Electricity": 162.0129,
-      "Bioenergy and wastes": 24.7339
+      "Coal": 2.3762,
+      "Manufactured fuels": 0.5299,
+      "Petroleum": 132.5118,
+      "Gas": 63.4796,
+      "Electricity": 37.3758,
+      "Bioenergy and wastes": 5.9992
      },
-     "all_fuels_ktoe": 1624.8437
+     "all_fuels_ktoe": 242.2725
     },
     "2017": {
-     "electricity_consumption_mwh": 1913845.892,
+     "electricity_consumption_mwh": 444172.76,
      "fuels_ktoe": {
-      "Coal": 5.3465,
-      "Manufactured fuels": 125.2394,
-      "Petroleum": 1071.5729,
-      "Gas": 232.4126,
-      "Electricity": 164.5611,
-      "Bioenergy and wastes": 25.3715
+      "Coal": 1.9434,
+      "Manufactured fuels": 0.5894,
+      "Petroleum": 132.3045,
+      "Gas": 64.805,
+      "Electricity": 38.192,
+      "Bioenergy and wastes": 6.343
      },
-     "all_fuels_ktoe": 1624.5041
+     "all_fuels_ktoe": 244.1773
     },
     "2018": {
-     "electricity_consumption_mwh": 1904055.136,
+     "electricity_consumption_mwh": 441386.444,
      "fuels_ktoe": {
-      "Coal": 5.3085,
-      "Manufactured fuels": 100.9797,
-      "Petroleum": 1077.4299,
-      "Gas": 247.0134,
-      "Electricity": 163.7193,
-      "Bioenergy and wastes": 31.8546
+      "Coal": 2.0321,
+      "Manufactured fuels": 0.6111,
+      "Petroleum": 129.0113,
+      "Gas": 66.0401,
+      "Electricity": 37.9524,
+      "Bioenergy and wastes": 8.0126
      },
-     "all_fuels_ktoe": 1626.3055
+     "all_fuels_ktoe": 243.6596
     },
     "2019": {
-     "electricity_consumption_mwh": 1875684.049,
+     "electricity_consumption_mwh": 439546.143,
      "fuels_ktoe": {
-      "Coal": 4.9048,
-      "Manufactured fuels": 134.8133,
-      "Petroleum": 1043.1131,
-      "Gas": 240.2332,
-      "Electricity": 161.2798,
-      "Bioenergy and wastes": 37.7292
+      "Coal": 1.8471,
+      "Manufactured fuels": 0.5904,
+      "Petroleum": 126.6989,
+      "Gas": 65.2713,
+      "Electricity": 37.7942,
+      "Bioenergy and wastes": 9.9568
      },
-     "all_fuels_ktoe": 1622.0733
+     "all_fuels_ktoe": 242.1587
     },
     "2020": {
-     "electricity_consumption_mwh": 1817222.778,
+     "electricity_consumption_mwh": 432527.863,
      "fuels_ktoe": {
-      "Coal": 4.6157,
-      "Manufactured fuels": 113.4117,
-      "Petroleum": 865.6487,
-      "Gas": 244.6124,
-      "Electricity": 156.253,
-      "Bioenergy and wastes": 37.3275
+      "Coal": 1.7122,
+      "Manufactured fuels": 0.5527,
+      "Petroleum": 102.7122,
+      "Gas": 66.0247,
+      "Electricity": 37.1907,
+      "Bioenergy and wastes": 10.2636
      },
-     "all_fuels_ktoe": 1421.869
+     "all_fuels_ktoe": 218.4561
     },
     "2021": {
-     "electricity_consumption_mwh": 1812714.164,
+     "electricity_consumption_mwh": 426726.654,
      "fuels_ktoe": {
-      "Coal": 4.9152,
-      "Manufactured fuels": 112.1208,
-      "Petroleum": 960.1782,
-      "Gas": 236.0219,
-      "Electricity": 155.8654,
-      "Bioenergy and wastes": 37.8704
+      "Coal": 1.6494,
+      "Manufactured fuels": 0.5165,
+      "Petroleum": 112.677,
+      "Gas": 63.4783,
+      "Electricity": 36.6919,
+      "Bioenergy and wastes": 10.8033
      },
-     "all_fuels_ktoe": 1506.9718
+     "all_fuels_ktoe": 225.8165
     },
     "2022": {
-     "electricity_consumption_mwh": 1742975.835,
+     "electricity_consumption_mwh": 404543.152,
      "fuels_ktoe": {
-      "Coal": 4.5392,
-      "Manufactured fuels": 119.1447,
-      "Petroleum": 1024.8909,
-      "Gas": 210.7164,
-      "Electricity": 149.8689,
-      "Bioenergy and wastes": 44.2313
+      "Coal": 1.5552,
+      "Manufactured fuels": 0.5928,
+      "Petroleum": 112.0386,
+      "Gas": 56.4738,
+      "Electricity": 34.7844,
+      "Bioenergy and wastes": 12.3455
      },
-     "all_fuels_ktoe": 1553.3914
+     "all_fuels_ktoe": 217.7904
     },
     "2023": {
-     "electricity_consumption_mwh": 1740820.142,
+     "electricity_consumption_mwh": 402010.284,
      "fuels_ktoe": {
-      "Coal": 3.4105,
-      "Manufactured fuels": 115.6259,
-      "Petroleum": 1000.7179,
-      "Gas": 208.2572,
-      "Electricity": 149.6836,
-      "Bioenergy and wastes": 48.079
+      "Coal": 1.2661,
+      "Manufactured fuels": 0.5747,
+      "Petroleum": 113.9033,
+      "Gas": 57.1858,
+      "Electricity": 34.5667,
+      "Bioenergy and wastes": 13.3647
      },
-     "all_fuels_ktoe": 1525.7742
+     "all_fuels_ktoe": 220.8613
     },
     "2024": {
-     "electricity_consumption_mwh": 1729274.043,
+     "electricity_consumption_mwh": 399039.368,
      "fuels_ktoe": {
-      "Coal": 1.6122,
-      "Manufactured fuels": 105.2795,
-      "Petroleum": 1022.5214,
-      "Gas": 208.6508,
-      "Electricity": 148.6908,
-      "Bioenergy and wastes": 45.3695
+      "Coal": 0.7097,
+      "Manufactured fuels": 0.5748,
+      "Petroleum": 114.9027,
+      "Gas": 57.555,
+      "Electricity": 34.3112,
+      "Bioenergy and wastes": 13.6759
      },
-     "all_fuels_ktoe": 1532.1242
+     "all_fuels_ktoe": 221.7294
     }
    }
   },
-  "hampshire-solent": {
-   "name": "Hampshire and the Solent",
+  "new-forest": {
+   "name": "New Forest",
    "generation": {
     "2014": {
-     "total_mwh": 385639.062,
+     "total_mwh": 80897.279,
      "by_technology_mwh": {
-      "Solar": 223204.421,
-      "Wind": 3385.869,
-      "Hydro": 37.891,
-      "Bioenergy & waste": 159010.881,
-      "Other": 0.001
+      "Solar": 30098.178,
+      "Wind": 13.175,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 50785.926,
+      "Other": 0.0
      }
     },
     "2015": {
-     "total_mwh": 663603.822,
+     "total_mwh": 153855.857,
      "by_technology_mwh": {
-      "Solar": 336014.493,
-      "Wind": 3013.403,
-      "Hydro": 41.834,
-      "Bioenergy & waste": 324534.09,
-      "Other": 0.003
+      "Solar": 34357.313,
+      "Wind": 15.022,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 119483.522,
+      "Other": 0.0
      }
     },
     "2016": {
-     "total_mwh": 639373.277,
+     "total_mwh": 76816.869,
      "by_technology_mwh": {
-      "Solar": 496036.599,
-      "Wind": 174.333,
-      "Hydro": 86.361,
-      "Bioenergy & waste": 143075.983,
-      "Other": 0.002
+      "Solar": 36325.747,
+      "Wind": 11.937,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 40479.185,
+      "Other": 0.0
      }
     },
     "2017": {
-     "total_mwh": 672482.034,
+     "total_mwh": 71231.967,
      "by_technology_mwh": {
-      "Solar": 532016.554,
-      "Wind": 194.855,
-      "Hydro": 118.568,
-      "Bioenergy & waste": 140152.056,
-      "Other": 0.002
+      "Solar": 36723.439,
+      "Wind": 13.342,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 34495.186,
+      "Other": 0.0
      }
     },
     "2018": {
-     "total_mwh": 747954.461,
+     "total_mwh": 81963.029,
      "by_technology_mwh": {
-      "Solar": 593471.222,
-      "Wind": 1969.338,
-      "Hydro": 125.598,
-      "Bioenergy & waste": 152388.302,
-      "Other": 0.002
+      "Solar": 41249.677,
+      "Wind": 12.529,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 40700.823,
+      "Other": 0.0
      }
     },
     "2019": {
-     "total_mwh": 656305.727,
+     "total_mwh": 74853.776,
      "by_technology_mwh": {
-      "Solar": 587182.299,
-      "Wind": 65.21,
-      "Hydro": 135.116,
-      "Bioenergy & waste": 68923.103,
+      "Solar": 40045.584,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 34808.193,
       "Other": 0.0
      }
     },
     "2020": {
-     "total_mwh": 668274.993,
+     "total_mwh": 74773.327,
      "by_technology_mwh": {
-      "Solar": 600129.134,
-      "Wind": 77.229,
-      "Hydro": 147.128,
-      "Bioenergy & waste": 67921.504,
+      "Solar": 39961.007,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 34812.321,
       "Other": 0.0
      }
     },
     "2021": {
-     "total_mwh": 625932.778,
+     "total_mwh": 70613.61,
      "by_technology_mwh": {
-      "Solar": 556067.591,
-      "Wind": 58.865,
-      "Hydro": 118.791,
-      "Bioenergy & waste": 69687.534,
+      "Solar": 37545.341,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33068.27,
       "Other": 0.0
      }
     },
     "2022": {
-     "total_mwh": 686697.53,
+     "total_mwh": 71372.345,
      "by_technology_mwh": {
-      "Solar": 620452.097,
-      "Wind": 45.139,
-      "Hydro": 85.245,
-      "Bioenergy & waste": 66115.049,
+      "Solar": 42705.521,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 28666.824,
       "Other": 0.0
      }
     },
     "2023": {
-     "total_mwh": 692970.008,
+     "total_mwh": 71844.333,
      "by_technology_mwh": {
-      "Solar": 620829.33,
-      "Wind": 48.566,
-      "Hydro": 111.35,
-      "Bioenergy & waste": 71980.762,
+      "Solar": 42956.46,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 28887.873,
       "Other": 0.0
      }
     },
     "2024": {
-     "total_mwh": 693115.841,
+     "total_mwh": 84776.882,
      "by_technology_mwh": {
-      "Solar": 624294.48,
-      "Wind": 47.253,
-      "Hydro": 134.296,
-      "Bioenergy & waste": 68639.812,
+      "Solar": 59238.192,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 25538.689,
       "Other": 0.0
      }
     }
    },
    "consumption": {
     "2005": {
-     "electricity_consumption_mwh": 9255223.78,
+     "electricity_consumption_mwh": 863039.04,
      "fuels_ktoe": {
-      "Coal": 28.7977,
-      "Manufactured fuels": 216.5456,
-      "Petroleum": 2884.2466,
-      "Gas": 1473.953,
-      "Electricity": 795.806,
-      "Bioenergy and wastes": 32.843
+      "Coal": 2.5929,
+      "Manufactured fuels": 205.976,
+      "Petroleum": 1404.6086,
+      "Gas": 159.905,
+      "Electricity": 74.208,
+      "Bioenergy and wastes": 3.8522
      },
-     "all_fuels_ktoe": 5432.1919
+     "all_fuels_ktoe": 1851.1426
     },
     "2006": {
-     "electricity_consumption_mwh": 9052024.42,
+     "electricity_consumption_mwh": 814053.48,
      "fuels_ktoe": {
-      "Coal": 26.2453,
-      "Manufactured fuels": 204.8811,
-      "Petroleum": 2753.7937,
-      "Gas": 1377.012,
-      "Electricity": 778.334,
-      "Bioenergy and wastes": 41.8882
+      "Coal": 2.3148,
+      "Manufactured fuels": 194.5919,
+      "Petroleum": 1260.5835,
+      "Gas": 133.592,
+      "Electricity": 69.996,
+      "Bioenergy and wastes": 4.6124
      },
-     "all_fuels_ktoe": 5182.1514
+     "all_fuels_ktoe": 1665.6896
     },
     "2007": {
-     "electricity_consumption_mwh": 8762530.46,
+     "electricity_consumption_mwh": 798643.73,
      "fuels_ktoe": {
-      "Coal": 26.0795,
-      "Manufactured fuels": 214.0911,
-      "Petroleum": 2720.2112,
-      "Gas": 1344.987,
-      "Electricity": 753.442,
-      "Bioenergy and wastes": 40.084
+      "Coal": 2.389,
+      "Manufactured fuels": 204.3355,
+      "Petroleum": 1231.605,
+      "Gas": 131.929,
+      "Electricity": 68.671,
+      "Bioenergy and wastes": 4.7509
      },
-     "all_fuels_ktoe": 5098.8938
+     "all_fuels_ktoe": 1643.6804
     },
     "2008": {
-     "electricity_consumption_mwh": 8833985.18,
+     "electricity_consumption_mwh": 804784.37,
      "fuels_ktoe": {
-      "Coal": 29.4561,
-      "Manufactured fuels": 226.7778,
-      "Petroleum": 2465.3388,
-      "Gas": 1272.599,
-      "Electricity": 759.586,
-      "Bioenergy and wastes": 54.0588
+      "Coal": 2.4798,
+      "Manufactured fuels": 215.6165,
+      "Petroleum": 1042.691,
+      "Gas": 119.82,
+      "Electricity": 69.199,
+      "Bioenergy and wastes": 6.3631
      },
-     "all_fuels_ktoe": 4807.8166
+     "all_fuels_ktoe": 1456.1685
     },
     "2009": {
-     "electricity_consumption_mwh": 8626635.268,
+     "electricity_consumption_mwh": 792042.286,
      "fuels_ktoe": {
-      "Coal": 31.6935,
-      "Manufactured fuels": 205.2785,
-      "Petroleum": 2599.2986,
-      "Gas": 1163.5425,
-      "Electricity": 741.7571,
-      "Bioenergy and wastes": 58.1061
+      "Coal": 2.6154,
+      "Manufactured fuels": 197.7093,
+      "Petroleum": 1218.6866,
+      "Gas": 105.9776,
+      "Electricity": 68.1034,
+      "Bioenergy and wastes": 7.0065
      },
-     "all_fuels_ktoe": 4799.6783
+     "all_fuels_ktoe": 1600.0997
     },
     "2010": {
-     "electricity_consumption_mwh": 8574891.22,
+     "electricity_consumption_mwh": 789640.277,
      "fuels_ktoe": {
-      "Coal": 36.3893,
-      "Manufactured fuels": 215.8305,
-      "Petroleum": 2556.8335,
-      "Gas": 1174.9549,
-      "Electricity": 737.3079,
-      "Bioenergy and wastes": 68.4846
+      "Coal": 2.7126,
+      "Manufactured fuels": 206.8413,
+      "Petroleum": 1171.6114,
+      "Gas": 105.9287,
+      "Electricity": 67.8968,
+      "Bioenergy and wastes": 8.2091
      },
-     "all_fuels_ktoe": 4789.8008
+     "all_fuels_ktoe": 1563.2
     },
     "2011": {
-     "electricity_consumption_mwh": 8389843.626,
+     "electricity_consumption_mwh": 786404.282,
      "fuels_ktoe": {
-      "Coal": 35.3197,
-      "Manufactured fuels": 317.3115,
-      "Petroleum": 2344.8047,
-      "Gas": 1104.2815,
-      "Electricity": 721.3967,
-      "Bioenergy and wastes": 65.6128
+      "Coal": 2.7578,
+      "Manufactured fuels": 309.5373,
+      "Petroleum": 994.1183,
+      "Gas": 99.7368,
+      "Electricity": 67.6186,
+      "Bioenergy and wastes": 7.8929
      },
-     "all_fuels_ktoe": 4588.7269
+     "all_fuels_ktoe": 1481.6618
     },
     "2012": {
-     "electricity_consumption_mwh": 8340590.338,
+     "electricity_consumption_mwh": 761811.005,
      "fuels_ktoe": {
-      "Coal": 35.5248,
-      "Manufactured fuels": 263.6725,
-      "Petroleum": 2339.9199,
-      "Gas": 1103.1744,
-      "Electricity": 717.1617,
-      "Bioenergy and wastes": 65.04
+      "Coal": 2.5888,
+      "Manufactured fuels": 254.9726,
+      "Petroleum": 989.919,
+      "Gas": 100.0618,
+      "Electricity": 65.504,
+      "Bioenergy and wastes": 7.6928
      },
-     "all_fuels_ktoe": 4524.4932
+     "all_fuels_ktoe": 1420.739
     },
     "2013": {
-     "electricity_consumption_mwh": 8232940.728,
+     "electricity_consumption_mwh": 761727.091,
      "fuels_ktoe": {
-      "Coal": 39.96,
-      "Manufactured fuels": 233.6753,
-      "Petroleum": 2431.8016,
-      "Gas": 1069.9061,
-      "Electricity": 707.9055,
-      "Bioenergy and wastes": 71.1049
+      "Coal": 2.5577,
+      "Manufactured fuels": 222.9784,
+      "Petroleum": 1091.2849,
+      "Gas": 102.1103,
+      "Electricity": 65.4967,
+      "Bioenergy and wastes": 8.4448
      },
-     "all_fuels_ktoe": 4554.3534
+     "all_fuels_ktoe": 1492.8728
     },
     "2014": {
-     "electricity_consumption_mwh": 8300756.745,
+     "electricity_consumption_mwh": 781135.11,
      "fuels_ktoe": {
-      "Coal": 35.9748,
-      "Manufactured fuels": 225.0332,
-      "Petroleum": 2396.9115,
-      "Gas": 1071.2992,
-      "Electricity": 713.7366,
-      "Bioenergy and wastes": 77.7637
+      "Coal": 2.1991,
+      "Manufactured fuels": 216.2243,
+      "Petroleum": 1041.6655,
+      "Gas": 101.292,
+      "Electricity": 67.1655,
+      "Bioenergy and wastes": 9.1814
      },
-     "all_fuels_ktoe": 4520.7191
+     "all_fuels_ktoe": 1437.7278
     },
     "2015": {
-     "electricity_consumption_mwh": 8183262.97,
+     "electricity_consumption_mwh": 767775.146,
      "fuels_ktoe": {
-      "Coal": 28.8226,
-      "Manufactured fuels": 216.4989,
-      "Petroleum": 2450.6657,
-      "Gas": 1064.9601,
-      "Electricity": 703.634,
-      "Bioenergy and wastes": 72.9595
+      "Coal": 1.8328,
+      "Manufactured fuels": 208.8305,
+      "Petroleum": 1056.6938,
+      "Gas": 101.0607,
+      "Electricity": 66.0168,
+      "Bioenergy and wastes": 8.6579
      },
-     "all_fuels_ktoe": 4537.5407
+     "all_fuels_ktoe": 1443.0926
     },
     "2016": {
-     "electricity_consumption_mwh": 7930891.357,
+     "electricity_consumption_mwh": 739033.142,
      "fuels_ktoe": {
-      "Coal": 28.4108,
-      "Manufactured fuels": 211.0169,
-      "Petroleum": 2430.7459,
-      "Gas": 1057.8199,
-      "Electricity": 681.9339,
-      "Bioenergy and wastes": 80.0749
+      "Coal": 1.8347,
+      "Manufactured fuels": 203.497,
+      "Petroleum": 1031.6515,
+      "Gas": 98.1126,
+      "Electricity": 63.5454,
+      "Bioenergy and wastes": 9.2897
      },
-     "all_fuels_ktoe": 4490.0023
+     "all_fuels_ktoe": 1407.9309
     },
     "2017": {
-     "electricity_consumption_mwh": 7966638.489,
+     "electricity_consumption_mwh": 750489.38,
      "fuels_ktoe": {
-      "Coal": 25.1412,
-      "Manufactured fuels": 210.1262,
-      "Petroleum": 2418.7676,
-      "Gas": 1059.8221,
-      "Electricity": 685.0076,
-      "Bioenergy and wastes": 82.684
+      "Coal": 1.6743,
+      "Manufactured fuels": 201.7191,
+      "Petroleum": 1024.9899,
+      "Gas": 99.2657,
+      "Electricity": 64.5305,
+      "Bioenergy and wastes": 9.3009
      },
-     "all_fuels_ktoe": 4481.5487
+     "all_fuels_ktoe": 1401.4803
     },
     "2018": {
-     "electricity_consumption_mwh": 7968113.373,
+     "electricity_consumption_mwh": 756280.396,
      "fuels_ktoe": {
-      "Coal": 23.6048,
-      "Manufactured fuels": 170.5181,
-      "Petroleum": 2414.2117,
-      "Gas": 1095.135,
-      "Electricity": 685.1344,
-      "Bioenergy and wastes": 103.8495
+      "Coal": 1.6541,
+      "Manufactured fuels": 162.4794,
+      "Petroleum": 1047.9239,
+      "Gas": 100.1292,
+      "Electricity": 65.0284,
+      "Bioenergy and wastes": 11.3328
      },
-     "all_fuels_ktoe": 4492.4534
+     "all_fuels_ktoe": 1388.5478
     },
     "2019": {
-     "electricity_consumption_mwh": 7829549.988,
+     "electricity_consumption_mwh": 745461.243,
      "fuels_ktoe": {
-      "Coal": 19.5951,
-      "Manufactured fuels": 225.8273,
-      "Petroleum": 2345.3727,
-      "Gas": 1086.2434,
-      "Electricity": 673.2201,
-      "Bioenergy and wastes": 119.5998
+      "Coal": 1.5391,
+      "Manufactured fuels": 218.053,
+      "Petroleum": 999.783,
+      "Gas": 99.0812,
+      "Electricity": 64.0981,
+      "Bioenergy and wastes": 13.1364
      },
-     "all_fuels_ktoe": 4469.8585
+     "all_fuels_ktoe": 1395.6908
     },
     "2020": {
-     "electricity_consumption_mwh": 7448746.857,
+     "electricity_consumption_mwh": 726853.638,
      "fuels_ktoe": {
-      "Coal": 18.142,
-      "Manufactured fuels": 190.4108,
-      "Petroleum": 1924.7956,
-      "Gas": 1122.9407,
-      "Electricity": 640.4769,
-      "Bioenergy and wastes": 119.019
+      "Coal": 1.4714,
+      "Manufactured fuels": 183.2519,
+      "Petroleum": 843.3608,
+      "Gas": 101.3092,
+      "Electricity": 62.4982,
+      "Bioenergy and wastes": 12.9295
      },
-     "all_fuels_ktoe": 4015.7851
+     "all_fuels_ktoe": 1204.821
     },
     "2021": {
-     "electricity_consumption_mwh": 7408406.509,
+     "electricity_consumption_mwh": 721202.759,
      "fuels_ktoe": {
-      "Coal": 17.7355,
-      "Manufactured fuels": 188.0583,
-      "Petroleum": 2115.6197,
-      "Gas": 1078.0027,
-      "Electricity": 637.0083,
-      "Bioenergy and wastes": 118.4327
+      "Coal": 1.5575,
+      "Manufactured fuels": 181.2069,
+      "Petroleum": 942.186,
+      "Gas": 96.6317,
+      "Electricity": 62.0123,
+      "Bioenergy and wastes": 12.9837
      },
-     "all_fuels_ktoe": 4154.8573
+     "all_fuels_ktoe": 1296.5781
     },
     "2022": {
-     "electricity_consumption_mwh": 7106704.803,
+     "electricity_consumption_mwh": 683678.65,
      "fuels_ktoe": {
-      "Coal": 15.9442,
-      "Manufactured fuels": 200.3505,
-      "Petroleum": 2231.5559,
-      "Gas": 956.2989,
-      "Electricity": 611.0666,
-      "Bioenergy and wastes": 135.1351
+      "Coal": 1.4261,
+      "Manufactured fuels": 192.3213,
+      "Petroleum": 1044.5989,
+      "Gas": 85.0889,
+      "Electricity": 58.7858,
+      "Bioenergy and wastes": 14.7138
      },
-     "all_fuels_ktoe": 4150.3512
+     "all_fuels_ktoe": 1396.9348
     },
     "2023": {
-     "electricity_consumption_mwh": 7096526.398,
+     "electricity_consumption_mwh": 673847.534,
      "fuels_ktoe": {
-      "Coal": 11.3781,
-      "Manufactured fuels": 194.3292,
-      "Petroleum": 2187.1653,
-      "Gas": 942.2636,
-      "Electricity": 610.1914,
-      "Bioenergy and wastes": 147.5097
+      "Coal": 0.8922,
+      "Manufactured fuels": 186.5438,
+      "Petroleum": 1002.4985,
+      "Gas": 85.9157,
+      "Electricity": 57.9405,
+      "Bioenergy and wastes": 15.8522
      },
-     "all_fuels_ktoe": 4092.8373
+     "all_fuels_ktoe": 1349.6429
     },
     "2024": {
-     "electricity_consumption_mwh": 7088445.74,
+     "electricity_consumption_mwh": 654250.854,
      "fuels_ktoe": {
-      "Coal": 5.2528,
-      "Manufactured fuels": 177.3518,
-      "Petroleum": 2218.9442,
-      "Gas": 931.3591,
-      "Electricity": 609.4966,
-      "Bioenergy and wastes": 145.9048
+      "Coal": 0.4219,
+      "Manufactured fuels": 169.5638,
+      "Petroleum": 1026.5158,
+      "Gas": 83.4019,
+      "Electricity": 56.2554,
+      "Bioenergy and wastes": 14.8555
      },
-     "all_fuels_ktoe": 4088.3093
+     "all_fuels_ktoe": 1351.0143
+    }
+   }
+  },
+  "test-valley": {
+   "name": "Test Valley",
+   "generation": {
+    "2014": {
+     "total_mwh": 53944.549,
+     "by_technology_mwh": {
+      "Solar": 44767.014,
+      "Wind": 1144.015,
+      "Hydro": 10.256,
+      "Bioenergy & waste": 8023.263,
+      "Other": 0.001
+     }
+    },
+    "2015": {
+     "total_mwh": 66630.048,
+     "by_technology_mwh": {
+      "Solar": 57444.467,
+      "Wind": 52.576,
+      "Hydro": 9.741,
+      "Bioenergy & waste": 9123.263,
+      "Other": 0.001
+     }
+    },
+    "2016": {
+     "total_mwh": 166589.938,
+     "by_technology_mwh": {
+      "Solar": 157483.97,
+      "Wind": 41.778,
+      "Hydro": 9.716,
+      "Bioenergy & waste": 9054.475,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 181033.781,
+     "by_technology_mwh": {
+      "Solar": 172803.781,
+      "Wind": 46.696,
+      "Hydro": 11.518,
+      "Bioenergy & waste": 8171.786,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 198969.149,
+     "by_technology_mwh": {
+      "Solar": 190488.397,
+      "Wind": 43.851,
+      "Hydro": 10.639,
+      "Bioenergy & waste": 8426.263,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 184593.054,
+     "by_technology_mwh": {
+      "Solar": 184545.223,
+      "Wind": 47.831,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 193080.194,
+     "by_technology_mwh": {
+      "Solar": 193023.548,
+      "Wind": 56.647,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 172147.477,
+     "by_technology_mwh": {
+      "Solar": 172104.3,
+      "Wind": 43.177,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 181811.375,
+     "by_technology_mwh": {
+      "Solar": 181778.265,
+      "Wind": 33.11,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 180175.929,
+     "by_technology_mwh": {
+      "Solar": 180140.307,
+      "Wind": 35.623,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 163645.51,
+     "by_technology_mwh": {
+      "Solar": 163610.85,
+      "Wind": 34.66,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 580918.5,
+     "fuels_ktoe": {
+      "Coal": 1.9482,
+      "Manufactured fuels": 1.5949,
+      "Petroleum": 180.3642,
+      "Gas": 70.837,
+      "Electricity": 49.95,
+      "Bioenergy and wastes": 2.2897
+     },
+     "all_fuels_ktoe": 306.984
+    },
+    "2006": {
+     "electricity_consumption_mwh": 577929.59,
+     "fuels_ktoe": {
+      "Coal": 1.7675,
+      "Manufactured fuels": 1.4191,
+      "Petroleum": 182.9993,
+      "Gas": 73.484,
+      "Electricity": 49.693,
+      "Bioenergy and wastes": 2.9986
+     },
+     "all_fuels_ktoe": 312.3616
+    },
+    "2007": {
+     "electricity_consumption_mwh": 576289.76,
+     "fuels_ktoe": {
+      "Coal": 1.7415,
+      "Manufactured fuels": 1.5013,
+      "Petroleum": 184.3214,
+      "Gas": 66.701,
+      "Electricity": 49.552,
+      "Bioenergy and wastes": 3.3268
+     },
+     "all_fuels_ktoe": 307.144
+    },
+    "2008": {
+     "electricity_consumption_mwh": 558530.75,
+     "fuels_ktoe": {
+      "Coal": 1.9081,
+      "Manufactured fuels": 1.7005,
+      "Petroleum": 176.3527,
+      "Gas": 64.276,
+      "Electricity": 48.025,
+      "Bioenergy and wastes": 4.8895
+     },
+     "all_fuels_ktoe": 297.1508
+    },
+    "2009": {
+     "electricity_consumption_mwh": 547578.329,
+     "fuels_ktoe": {
+      "Coal": 2.0195,
+      "Manufactured fuels": 1.2198,
+      "Petroleum": 172.7509,
+      "Gas": 63.0373,
+      "Electricity": 47.0833,
+      "Bioenergy and wastes": 5.5284
+     },
+     "all_fuels_ktoe": 291.6383
+    },
+    "2010": {
+     "electricity_consumption_mwh": 554347.772,
+     "fuels_ktoe": {
+      "Coal": 2.2052,
+      "Manufactured fuels": 1.2082,
+      "Petroleum": 174.7673,
+      "Gas": 63.0231,
+      "Electricity": 47.6653,
+      "Bioenergy and wastes": 6.4625
+     },
+     "all_fuels_ktoe": 295.3316
+    },
+    "2011": {
+     "electricity_consumption_mwh": 554134.171,
+     "fuels_ktoe": {
+      "Coal": 2.1419,
+      "Manufactured fuels": 1.1717,
+      "Petroleum": 167.405,
+      "Gas": 60.5495,
+      "Electricity": 47.647,
+      "Bioenergy and wastes": 6.1466
+     },
+     "all_fuels_ktoe": 285.0616
+    },
+    "2012": {
+     "electricity_consumption_mwh": 578018.232,
+     "fuels_ktoe": {
+      "Coal": 2.0411,
+      "Manufactured fuels": 1.2298,
+      "Petroleum": 170.7826,
+      "Gas": 61.4464,
+      "Electricity": 49.7006,
+      "Bioenergy and wastes": 6.0145
+     },
+     "all_fuels_ktoe": 291.215
+    },
+    "2013": {
+     "electricity_consumption_mwh": 580590.208,
+     "fuels_ktoe": {
+      "Coal": 2.1799,
+      "Manufactured fuels": 1.3115,
+      "Petroleum": 170.5289,
+      "Gas": 60.7279,
+      "Electricity": 49.9218,
+      "Bioenergy and wastes": 6.7113
+     },
+     "all_fuels_ktoe": 291.3813
+    },
+    "2014": {
+     "electricity_consumption_mwh": 582851.641,
+     "fuels_ktoe": {
+      "Coal": 1.9329,
+      "Manufactured fuels": 1.3032,
+      "Petroleum": 168.6752,
+      "Gas": 60.975,
+      "Electricity": 50.1162,
+      "Bioenergy and wastes": 7.2216
+     },
+     "all_fuels_ktoe": 290.2241
+    },
+    "2015": {
+     "electricity_consumption_mwh": 568877.502,
+     "fuels_ktoe": {
+      "Coal": 1.5867,
+      "Manufactured fuels": 1.1973,
+      "Petroleum": 175.8777,
+      "Gas": 60.6328,
+      "Electricity": 48.9147,
+      "Bioenergy and wastes": 6.6502
+     },
+     "all_fuels_ktoe": 294.8594
+    },
+    "2016": {
+     "electricity_consumption_mwh": 559648.254,
+     "fuels_ktoe": {
+      "Coal": 1.5557,
+      "Manufactured fuels": 1.1905,
+      "Petroleum": 177.9289,
+      "Gas": 63.5696,
+      "Electricity": 48.1211,
+      "Bioenergy and wastes": 7.1253
+     },
+     "all_fuels_ktoe": 299.4911
+    },
+    "2017": {
+     "electricity_consumption_mwh": 572037.292,
+     "fuels_ktoe": {
+      "Coal": 1.4389,
+      "Manufactured fuels": 1.4181,
+      "Petroleum": 179.4805,
+      "Gas": 59.8906,
+      "Electricity": 49.1864,
+      "Bioenergy and wastes": 7.3727
+     },
+     "all_fuels_ktoe": 298.787
+    },
+    "2018": {
+     "electricity_consumption_mwh": 562614.197,
+     "fuels_ktoe": {
+      "Coal": 1.4499,
+      "Manufactured fuels": 1.0078,
+      "Petroleum": 176.5426,
+      "Gas": 70.9083,
+      "Electricity": 48.3761,
+      "Bioenergy and wastes": 9.4237
+     },
+     "all_fuels_ktoe": 307.7084
+    },
+    "2019": {
+     "electricity_consumption_mwh": 551963.013,
+     "fuels_ktoe": {
+      "Coal": 1.4487,
+      "Manufactured fuels": 0.9907,
+      "Petroleum": 176.6223,
+      "Gas": 68.3036,
+      "Electricity": 47.4603,
+      "Bioenergy and wastes": 11.2704
+     },
+     "all_fuels_ktoe": 306.096
+    },
+    "2020": {
+     "electricity_consumption_mwh": 536533.02,
+     "fuels_ktoe": {
+      "Coal": 1.3668,
+      "Manufactured fuels": 0.8671,
+      "Petroleum": 143.2024,
+      "Gas": 68.9343,
+      "Electricity": 46.1335,
+      "Bioenergy and wastes": 11.0595
+     },
+     "all_fuels_ktoe": 271.5637
+    },
+    "2021": {
+     "electricity_consumption_mwh": 536553.589,
+     "fuels_ktoe": {
+      "Coal": 1.6331,
+      "Manufactured fuels": 0.8735,
+      "Petroleum": 156.345,
+      "Gas": 67.2467,
+      "Electricity": 46.1353,
+      "Bioenergy and wastes": 11.4803
+     },
+     "all_fuels_ktoe": 283.714
+    },
+    "2022": {
+     "electricity_consumption_mwh": 515385.437,
+     "fuels_ktoe": {
+      "Coal": 1.4712,
+      "Manufactured fuels": 0.9957,
+      "Petroleum": 157.3972,
+      "Gas": 59.0562,
+      "Electricity": 44.3152,
+      "Bioenergy and wastes": 13.5079
+     },
+     "all_fuels_ktoe": 276.7434
+    },
+    "2023": {
+     "electricity_consumption_mwh": 515303.345,
+     "fuels_ktoe": {
+      "Coal": 1.1742,
+      "Manufactured fuels": 1.0271,
+      "Petroleum": 157.2939,
+      "Gas": 54.5974,
+      "Electricity": 44.3081,
+      "Bioenergy and wastes": 14.8799
+     },
+     "all_fuels_ktoe": 273.2806
+    },
+    "2024": {
+     "electricity_consumption_mwh": 513387.634,
+     "fuels_ktoe": {
+      "Coal": 0.5469,
+      "Manufactured fuels": 1.0057,
+      "Petroleum": 159.46,
+      "Gas": 54.2417,
+      "Electricity": 44.1434,
+      "Bioenergy and wastes": 13.7439
+     },
+     "all_fuels_ktoe": 273.1416
+    }
+   }
+  },
+  "basingstoke-and-deane": {
+   "name": "Basingstoke and Deane",
+   "generation": {
+    "2014": {
+     "total_mwh": 35890.571,
+     "by_technology_mwh": {
+      "Solar": 11959.403,
+      "Wind": 2081.605,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 21849.564,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 81595.499,
+     "by_technology_mwh": {
+      "Solar": 22776.087,
+      "Wind": 2777.345,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 56042.067,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 57069.411,
+     "by_technology_mwh": {
+      "Solar": 31955.301,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 25114.109,
+      "Other": 0.001
+     }
+    },
+    "2017": {
+     "total_mwh": 63083.551,
+     "by_technology_mwh": {
+      "Solar": 31809.516,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 31274.036,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 69958.381,
+     "by_technology_mwh": {
+      "Solar": 34716.977,
+      "Wind": 1775.702,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33465.702,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 54089.009,
+     "by_technology_mwh": {
+      "Solar": 33222.935,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 20866.074,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 53245.383,
+     "by_technology_mwh": {
+      "Solar": 32293.962,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 20951.421,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 56307.986,
+     "by_technology_mwh": {
+      "Solar": 31804.557,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 24503.43,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 65253.118,
+     "by_technology_mwh": {
+      "Solar": 37857.259,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 27395.859,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 72223.458,
+     "by_technology_mwh": {
+      "Solar": 38500.64,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33722.818,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 69509.197,
+     "by_technology_mwh": {
+      "Solar": 35555.746,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 33953.45,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 890311.39,
+     "fuels_ktoe": {
+      "Coal": 3.443,
+      "Manufactured fuels": 1.0075,
+      "Petroleum": 208.2929,
+      "Gas": 145.355,
+      "Electricity": 76.553,
+      "Bioenergy and wastes": 3.6004
+     },
+     "all_fuels_ktoe": 438.2518
+    },
+    "2006": {
+     "electricity_consumption_mwh": 898487.28,
+     "fuels_ktoe": {
+      "Coal": 3.0322,
+      "Manufactured fuels": 0.9632,
+      "Petroleum": 213.1121,
+      "Gas": 131.571,
+      "Electricity": 77.256,
+      "Bioenergy and wastes": 4.5532
+     },
+     "all_fuels_ktoe": 430.4887
+    },
+    "2007": {
+     "electricity_consumption_mwh": 883112.42,
+     "fuels_ktoe": {
+      "Coal": 3.1554,
+      "Manufactured fuels": 0.893,
+      "Petroleum": 210.88,
+      "Gas": 131.171,
+      "Electricity": 75.934,
+      "Bioenergy and wastes": 4.3956
+     },
+     "all_fuels_ktoe": 426.429
+    },
+    "2008": {
+     "electricity_consumption_mwh": 909012.43,
+     "fuels_ktoe": {
+      "Coal": 3.2798,
+      "Manufactured fuels": 1.028,
+      "Petroleum": 208.5794,
+      "Gas": 123.704,
+      "Electricity": 78.161,
+      "Bioenergy and wastes": 6.3534
+     },
+     "all_fuels_ktoe": 421.1056
+    },
+    "2009": {
+     "electricity_consumption_mwh": 898399.226,
+     "fuels_ktoe": {
+      "Coal": 3.4419,
+      "Manufactured fuels": 0.6828,
+      "Petroleum": 200.2395,
+      "Gas": 114.6306,
+      "Electricity": 77.2484,
+      "Bioenergy and wastes": 6.8657
+     },
+     "all_fuels_ktoe": 403.1089
+    },
+    "2010": {
+     "electricity_consumption_mwh": 890662.204,
+     "fuels_ktoe": {
+      "Coal": 3.6439,
+      "Manufactured fuels": 0.797,
+      "Petroleum": 202.6223,
+      "Gas": 113.8168,
+      "Electricity": 76.5832,
+      "Bioenergy and wastes": 7.9811
+     },
+     "all_fuels_ktoe": 405.4442
+    },
+    "2011": {
+     "electricity_consumption_mwh": 918889.51,
+     "fuels_ktoe": {
+      "Coal": 3.9408,
+      "Manufactured fuels": 0.7116,
+      "Petroleum": 194.7301,
+      "Gas": 103.6954,
+      "Electricity": 79.0103,
+      "Bioenergy and wastes": 7.634
+     },
+     "all_fuels_ktoe": 389.7222
+    },
+    "2012": {
+     "electricity_consumption_mwh": 867751.121,
+     "fuels_ktoe": {
+      "Coal": 3.5077,
+      "Manufactured fuels": 0.7898,
+      "Petroleum": 194.1791,
+      "Gas": 107.2119,
+      "Electricity": 74.6132,
+      "Bioenergy and wastes": 7.3146
+     },
+     "all_fuels_ktoe": 387.6163
+    },
+    "2013": {
+     "electricity_consumption_mwh": 847236.01,
+     "fuels_ktoe": {
+      "Coal": 3.3332,
+      "Manufactured fuels": 0.9228,
+      "Petroleum": 193.3756,
+      "Gas": 106.014,
+      "Electricity": 72.8492,
+      "Bioenergy and wastes": 8.0688
+     },
+     "all_fuels_ktoe": 384.5635
+    },
+    "2014": {
+     "electricity_consumption_mwh": 855141.558,
+     "fuels_ktoe": {
+      "Coal": 2.6896,
+      "Manufactured fuels": 0.7928,
+      "Petroleum": 195.9477,
+      "Gas": 106.3963,
+      "Electricity": 73.5289,
+      "Bioenergy and wastes": 9.1608
+     },
+     "all_fuels_ktoe": 388.5161
+    },
+    "2015": {
+     "electricity_consumption_mwh": 849148.56,
+     "fuels_ktoe": {
+      "Coal": 2.0118,
+      "Manufactured fuels": 0.7234,
+      "Petroleum": 201.8618,
+      "Gas": 104.3954,
+      "Electricity": 73.0136,
+      "Bioenergy and wastes": 8.5232
+     },
+     "all_fuels_ktoe": 390.5292
+    },
+    "2016": {
+     "electricity_consumption_mwh": 832073.547,
+     "fuels_ktoe": {
+      "Coal": 1.9697,
+      "Manufactured fuels": 0.7104,
+      "Petroleum": 204.3251,
+      "Gas": 102.5119,
+      "Electricity": 71.5454,
+      "Bioenergy and wastes": 9.6925
+     },
+     "all_fuels_ktoe": 390.7551
+    },
+    "2017": {
+     "electricity_consumption_mwh": 827411.621,
+     "fuels_ktoe": {
+      "Coal": 1.7198,
+      "Manufactured fuels": 0.7834,
+      "Petroleum": 204.0823,
+      "Gas": 94.4439,
+      "Electricity": 71.1446,
+      "Bioenergy and wastes": 9.6585
+     },
+     "all_fuels_ktoe": 381.8325
+    },
+    "2018": {
+     "electricity_consumption_mwh": 809962.769,
+     "fuels_ktoe": {
+      "Coal": 1.7347,
+      "Manufactured fuels": 0.795,
+      "Petroleum": 201.2207,
+      "Gas": 105.4177,
+      "Electricity": 69.6443,
+      "Bioenergy and wastes": 11.5041
+     },
+     "all_fuels_ktoe": 390.3163
+    },
+    "2019": {
+     "electricity_consumption_mwh": 809747.62,
+     "fuels_ktoe": {
+      "Coal": 1.6125,
+      "Manufactured fuels": 0.7721,
+      "Petroleum": 199.4712,
+      "Gas": 105.3846,
+      "Electricity": 69.6258,
+      "Bioenergy and wastes": 14.1574
+     },
+     "all_fuels_ktoe": 391.0236
+    },
+    "2020": {
+     "electricity_consumption_mwh": 781649.719,
+     "fuels_ktoe": {
+      "Coal": 1.5432,
+      "Manufactured fuels": 0.7107,
+      "Petroleum": 159.4871,
+      "Gas": 105.423,
+      "Electricity": 67.2098,
+      "Bioenergy and wastes": 13.5881
+     },
+     "all_fuels_ktoe": 347.9621
+    },
+    "2021": {
+     "electricity_consumption_mwh": 765508.789,
+     "fuels_ktoe": {
+      "Coal": 1.5685,
+      "Manufactured fuels": 0.6874,
+      "Petroleum": 176.9961,
+      "Gas": 100.7432,
+      "Electricity": 65.8219,
+      "Bioenergy and wastes": 13.117
+     },
+     "all_fuels_ktoe": 358.9342
+    },
+    "2022": {
+     "electricity_consumption_mwh": 726989.502,
+     "fuels_ktoe": {
+      "Coal": 1.4393,
+      "Manufactured fuels": 0.8174,
+      "Petroleum": 176.8453,
+      "Gas": 82.5848,
+      "Electricity": 62.5098,
+      "Bioenergy and wastes": 15.174
+     },
+     "all_fuels_ktoe": 339.3706
+    },
+    "2023": {
+     "electricity_consumption_mwh": 700947.021,
+     "fuels_ktoe": {
+      "Coal": 0.9267,
+      "Manufactured fuels": 0.7894,
+      "Petroleum": 176.64,
+      "Gas": 78.9751,
+      "Electricity": 60.2706,
+      "Bioenergy and wastes": 16.555
+     },
+     "all_fuels_ktoe": 334.1569
+    },
+    "2024": {
+     "electricity_consumption_mwh": 698791.565,
+     "fuels_ktoe": {
+      "Coal": 0.3828,
+      "Manufactured fuels": 0.797,
+      "Petroleum": 181.2635,
+      "Gas": 79.1155,
+      "Electricity": 60.0853,
+      "Bioenergy and wastes": 16.5378
+     },
+     "all_fuels_ktoe": 338.1819
+    }
+   }
+  },
+  "hart": {
+   "name": "Hart",
+   "generation": {
+    "2014": {
+     "total_mwh": 6251.011,
+     "by_technology_mwh": {
+      "Solar": 3471.032,
+      "Wind": 10.979,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 2769.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 7392.8,
+     "by_technology_mwh": {
+      "Solar": 4007.322,
+      "Wind": 12.518,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 3372.96,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 13908.36,
+     "by_technology_mwh": {
+      "Solar": 10294.413,
+      "Wind": 9.947,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 3604.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 17483.62,
+     "by_technology_mwh": {
+      "Solar": 13872.502,
+      "Wind": 11.118,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 3600.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 18196.905,
+     "by_technology_mwh": {
+      "Solar": 15052.521,
+      "Wind": 10.441,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 3133.943,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 15378.775,
+     "by_technology_mwh": {
+      "Solar": 15378.775,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 15820.2,
+     "by_technology_mwh": {
+      "Solar": 15820.2,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 14543.825,
+     "by_technology_mwh": {
+      "Solar": 14543.825,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 17636.337,
+     "by_technology_mwh": {
+      "Solar": 17636.337,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 18345.69,
+     "by_technology_mwh": {
+      "Solar": 18345.69,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 17535.629,
+     "by_technology_mwh": {
+      "Solar": 17535.629,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 376090.94,
+     "fuels_ktoe": {
+      "Coal": 1.0796,
+      "Manufactured fuels": 0.5415,
+      "Petroleum": 96.82,
+      "Gas": 74.727,
+      "Electricity": 32.338,
+      "Bioenergy and wastes": 1.8198
+     },
+     "all_fuels_ktoe": 207.3258
+    },
+    "2006": {
+     "electricity_consumption_mwh": 372090.22,
+     "fuels_ktoe": {
+      "Coal": 0.9461,
+      "Manufactured fuels": 0.5336,
+      "Petroleum": 97.3088,
+      "Gas": 74.998,
+      "Electricity": 31.994,
+      "Bioenergy and wastes": 2.1633
+     },
+     "all_fuels_ktoe": 207.9439
+    },
+    "2007": {
+     "electricity_consumption_mwh": 363286.31,
+     "fuels_ktoe": {
+      "Coal": 1.0107,
+      "Manufactured fuels": 0.4944,
+      "Petroleum": 98.8412,
+      "Gas": 73.844,
+      "Electricity": 31.237,
+      "Bioenergy and wastes": 2.3112
+     },
+     "all_fuels_ktoe": 207.7386
+    },
+    "2008": {
+     "electricity_consumption_mwh": 367903.42,
+     "fuels_ktoe": {
+      "Coal": 1.0181,
+      "Manufactured fuels": 0.5789,
+      "Petroleum": 94.932,
+      "Gas": 71.848,
+      "Electricity": 31.634,
+      "Bioenergy and wastes": 3.1496
+     },
+     "all_fuels_ktoe": 203.1606
+    },
+    "2009": {
+     "electricity_consumption_mwh": 365753.9,
+     "fuels_ktoe": {
+      "Coal": 1.0811,
+      "Manufactured fuels": 0.3856,
+      "Petroleum": 91.1455,
+      "Gas": 65.6184,
+      "Electricity": 31.4492,
+      "Bioenergy and wastes": 3.5109
+     },
+     "all_fuels_ktoe": 193.1917
+    },
+    "2010": {
+     "electricity_consumption_mwh": 364400.809,
+     "fuels_ktoe": {
+      "Coal": 1.0875,
+      "Manufactured fuels": 0.4309,
+      "Petroleum": 89.7386,
+      "Gas": 64.1433,
+      "Electricity": 31.3328,
+      "Bioenergy and wastes": 3.9983
+     },
+     "all_fuels_ktoe": 190.7314
+    },
+    "2011": {
+     "electricity_consumption_mwh": 351212.645,
+     "fuels_ktoe": {
+      "Coal": 1.0815,
+      "Manufactured fuels": 0.4002,
+      "Petroleum": 87.716,
+      "Gas": 61.4119,
+      "Electricity": 30.1989,
+      "Bioenergy and wastes": 3.8115
+     },
+     "all_fuels_ktoe": 184.6199
+    },
+    "2012": {
+     "electricity_consumption_mwh": 342003.73,
+     "fuels_ktoe": {
+      "Coal": 1.0277,
+      "Manufactured fuels": 0.4042,
+      "Petroleum": 85.7897,
+      "Gas": 61.345,
+      "Electricity": 29.407,
+      "Bioenergy and wastes": 3.6723
+     },
+     "all_fuels_ktoe": 181.6459
+    },
+    "2013": {
+     "electricity_consumption_mwh": 341640.388,
+     "fuels_ktoe": {
+      "Coal": 1.0241,
+      "Manufactured fuels": 0.4448,
+      "Petroleum": 85.1945,
+      "Gas": 60.6643,
+      "Electricity": 29.3758,
+      "Bioenergy and wastes": 4.061
+     },
+     "all_fuels_ktoe": 180.7645
+    },
+    "2014": {
+     "electricity_consumption_mwh": 346714.46,
+     "fuels_ktoe": {
+      "Coal": 0.9286,
+      "Manufactured fuels": 0.4175,
+      "Petroleum": 85.7728,
+      "Gas": 62.0215,
+      "Electricity": 29.8121,
+      "Bioenergy and wastes": 4.2753
+     },
+     "all_fuels_ktoe": 183.2277
+    },
+    "2015": {
+     "electricity_consumption_mwh": 375220.093,
+     "fuels_ktoe": {
+      "Coal": 0.7897,
+      "Manufactured fuels": 0.4004,
+      "Petroleum": 88.319,
+      "Gas": 60.0011,
+      "Electricity": 32.2631,
+      "Bioenergy and wastes": 3.973
+     },
+     "all_fuels_ktoe": 185.7464
+    },
+    "2016": {
+     "electricity_consumption_mwh": 374025.116,
+     "fuels_ktoe": {
+      "Coal": 0.794,
+      "Manufactured fuels": 0.3915,
+      "Petroleum": 89.7526,
+      "Gas": 60.3255,
+      "Electricity": 32.1604,
+      "Bioenergy and wastes": 4.2194
+     },
+     "all_fuels_ktoe": 187.6435
+    },
+    "2017": {
+     "electricity_consumption_mwh": 395679.993,
+     "fuels_ktoe": {
+      "Coal": 0.7628,
+      "Manufactured fuels": 0.4337,
+      "Petroleum": 90.3262,
+      "Gas": 60.9539,
+      "Electricity": 34.0224,
+      "Bioenergy and wastes": 4.2434
+     },
+     "all_fuels_ktoe": 190.7424
+    },
+    "2018": {
+     "electricity_consumption_mwh": 409743.958,
+     "fuels_ktoe": {
+      "Coal": 0.7143,
+      "Manufactured fuels": 0.4315,
+      "Petroleum": 88.177,
+      "Gas": 61.4153,
+      "Electricity": 35.2316,
+      "Bioenergy and wastes": 5.0832
+     },
+     "all_fuels_ktoe": 191.0529
+    },
+    "2019": {
+     "electricity_consumption_mwh": 426232.025,
+     "fuels_ktoe": {
+      "Coal": 0.6436,
+      "Manufactured fuels": 0.4107,
+      "Petroleum": 88.9762,
+      "Gas": 61.5192,
+      "Electricity": 36.6494,
+      "Bioenergy and wastes": 6.1084
+     },
+     "all_fuels_ktoe": 194.3074
+    },
+    "2020": {
+     "electricity_consumption_mwh": 435484.039,
+     "fuels_ktoe": {
+      "Coal": 0.6249,
+      "Manufactured fuels": 0.375,
+      "Petroleum": 71.2138,
+      "Gas": 62.5002,
+      "Electricity": 37.4449,
+      "Bioenergy and wastes": 5.7894
+     },
+     "all_fuels_ktoe": 177.9482
+    },
+    "2021": {
+     "electricity_consumption_mwh": 449921.967,
+     "fuels_ktoe": {
+      "Coal": 0.6991,
+      "Manufactured fuels": 0.36,
+      "Petroleum": 77.8219,
+      "Gas": 59.6143,
+      "Electricity": 38.6863,
+      "Bioenergy and wastes": 5.8882
+     },
+     "all_fuels_ktoe": 183.0699
+    },
+    "2022": {
+     "electricity_consumption_mwh": 431655.518,
+     "fuels_ktoe": {
+      "Coal": 0.6464,
+      "Manufactured fuels": 0.4211,
+      "Petroleum": 78.0388,
+      "Gas": 53.367,
+      "Electricity": 37.1157,
+      "Bioenergy and wastes": 7.0987
+     },
+     "all_fuels_ktoe": 176.6877
+    },
+    "2023": {
+     "electricity_consumption_mwh": 433413.208,
+     "fuels_ktoe": {
+      "Coal": 0.3844,
+      "Manufactured fuels": 0.4118,
+      "Petroleum": 77.9818,
+      "Gas": 53.0846,
+      "Electricity": 37.2668,
+      "Bioenergy and wastes": 7.8054
+     },
+     "all_fuels_ktoe": 176.9348
+    },
+    "2024": {
+     "electricity_consumption_mwh": 446492.615,
+     "fuels_ktoe": {
+      "Coal": 0.1797,
+      "Manufactured fuels": 0.4223,
+      "Petroleum": 75.5632,
+      "Gas": 53.8329,
+      "Electricity": 38.3915,
+      "Bioenergy and wastes": 7.7836
+     },
+     "all_fuels_ktoe": 176.1731
+    }
+   }
+  },
+  "rushmoor": {
+   "name": "Rushmoor",
+   "generation": {
+    "2014": {
+     "total_mwh": 1629.111,
+     "by_technology_mwh": {
+      "Solar": 1629.111,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 2091.161,
+     "by_technology_mwh": {
+      "Solar": 2091.161,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 2431.698,
+     "by_technology_mwh": {
+      "Solar": 2431.698,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 2527.603,
+     "by_technology_mwh": {
+      "Solar": 2527.603,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 2889.611,
+     "by_technology_mwh": {
+      "Solar": 2889.611,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 3471.989,
+     "by_technology_mwh": {
+      "Solar": 3471.989,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 3478.355,
+     "by_technology_mwh": {
+      "Solar": 3478.355,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 3457.996,
+     "by_technology_mwh": {
+      "Solar": 3457.996,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 4553.848,
+     "by_technology_mwh": {
+      "Solar": 4553.848,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 5079.374,
+     "by_technology_mwh": {
+      "Solar": 5079.374,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 5004.861,
+     "by_technology_mwh": {
+      "Solar": 5004.861,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 491867.59,
+     "fuels_ktoe": {
+      "Coal": 1.3243,
+      "Manufactured fuels": 0.4184,
+      "Petroleum": 59.6959,
+      "Gas": 77.778,
+      "Electricity": 42.293,
+      "Bioenergy and wastes": 1.8383
+     },
+     "all_fuels_ktoe": 183.348
+    },
+    "2006": {
+     "electricity_consumption_mwh": 502288.07,
+     "fuels_ktoe": {
+      "Coal": 1.2295,
+      "Manufactured fuels": 0.3981,
+      "Petroleum": 60.8025,
+      "Gas": 75.471,
+      "Electricity": 43.189,
+      "Bioenergy and wastes": 2.3443
+     },
+     "all_fuels_ktoe": 183.4344
+    },
+    "2007": {
+     "electricity_consumption_mwh": 483773.11,
+     "fuels_ktoe": {
+      "Coal": 1.3118,
+      "Manufactured fuels": 0.3654,
+      "Petroleum": 60.8836,
+      "Gas": 74.392,
+      "Electricity": 41.597,
+      "Bioenergy and wastes": 1.908
+     },
+     "all_fuels_ktoe": 180.4578
+    },
+    "2008": {
+     "electricity_consumption_mwh": 462897.26,
+     "fuels_ktoe": {
+      "Coal": 1.5042,
+      "Manufactured fuels": 0.4293,
+      "Petroleum": 57.853,
+      "Gas": 71.667,
+      "Electricity": 39.802,
+      "Bioenergy and wastes": 2.3715
+     },
+     "all_fuels_ktoe": 173.627
+    },
+    "2009": {
+     "electricity_consumption_mwh": 458410.624,
+     "fuels_ktoe": {
+      "Coal": 1.4073,
+      "Manufactured fuels": 0.2895,
+      "Petroleum": 55.3269,
+      "Gas": 62.5573,
+      "Electricity": 39.4162,
+      "Bioenergy and wastes": 2.3139
+     },
+     "all_fuels_ktoe": 161.3112
+    },
+    "2010": {
+     "electricity_consumption_mwh": 440101.61,
+     "fuels_ktoe": {
+      "Coal": 2.3065,
+      "Manufactured fuels": 0.4072,
+      "Petroleum": 55.6612,
+      "Gas": 65.3086,
+      "Electricity": 37.8419,
+      "Bioenergy and wastes": 2.8169
+     },
+     "all_fuels_ktoe": 164.3422
+    },
+    "2011": {
+     "electricity_consumption_mwh": 411103.694,
+     "fuels_ktoe": {
+      "Coal": 1.9198,
+      "Manufactured fuels": 0.2997,
+      "Petroleum": 53.7264,
+      "Gas": 62.5468,
+      "Electricity": 35.3486,
+      "Bioenergy and wastes": 2.6843
+     },
+     "all_fuels_ktoe": 156.5255
+    },
+    "2012": {
+     "electricity_consumption_mwh": 413764.294,
+     "fuels_ktoe": {
+      "Coal": 1.9671,
+      "Manufactured fuels": 0.3714,
+      "Petroleum": 53.7546,
+      "Gas": 59.6287,
+      "Electricity": 35.5773,
+      "Bioenergy and wastes": 2.6583
+     },
+     "all_fuels_ktoe": 153.9575
+    },
+    "2013": {
+     "electricity_consumption_mwh": 397611.86,
+     "fuels_ktoe": {
+      "Coal": 2.7842,
+      "Manufactured fuels": 0.5551,
+      "Petroleum": 53.0186,
+      "Gas": 56.4009,
+      "Electricity": 34.1885,
+      "Bioenergy and wastes": 2.8651
+     },
+     "all_fuels_ktoe": 149.8123
+    },
+    "2014": {
+     "electricity_consumption_mwh": 411374.827,
+     "fuels_ktoe": {
+      "Coal": 3.0455,
+      "Manufactured fuels": 0.4006,
+      "Petroleum": 54.4711,
+      "Gas": 57.2451,
+      "Electricity": 35.3719,
+      "Bioenergy and wastes": 3.3901
+     },
+     "all_fuels_ktoe": 153.9243
+    },
+    "2015": {
+     "electricity_consumption_mwh": 405387.177,
+     "fuels_ktoe": {
+      "Coal": 2.4653,
+      "Manufactured fuels": 0.313,
+      "Petroleum": 55.5701,
+      "Gas": 58.8139,
+      "Electricity": 34.857,
+      "Bioenergy and wastes": 3.2147
+     },
+     "all_fuels_ktoe": 155.234
+    },
+    "2016": {
+     "electricity_consumption_mwh": 390118.835,
+     "fuels_ktoe": {
+      "Coal": 2.5273,
+      "Manufactured fuels": 0.3083,
+      "Petroleum": 55.066,
+      "Gas": 56.4817,
+      "Electricity": 33.5442,
+      "Bioenergy and wastes": 3.8198
+     },
+     "all_fuels_ktoe": 151.7473
+    },
+    "2017": {
+     "electricity_consumption_mwh": 375497.589,
+     "fuels_ktoe": {
+      "Coal": 2.5287,
+      "Manufactured fuels": 0.3387,
+      "Petroleum": 55.5286,
+      "Gas": 56.0531,
+      "Electricity": 32.287,
+      "Bioenergy and wastes": 4.2843
+     },
+     "all_fuels_ktoe": 151.0204
+    },
+    "2018": {
+     "electricity_consumption_mwh": 386290.924,
+     "fuels_ktoe": {
+      "Coal": 2.2871,
+      "Manufactured fuels": 0.3462,
+      "Petroleum": 56.0128,
+      "Gas": 57.4738,
+      "Electricity": 33.215,
+      "Bioenergy and wastes": 5.939
+     },
+     "all_fuels_ktoe": 155.2738
+    },
+    "2019": {
+     "electricity_consumption_mwh": 366174.927,
+     "fuels_ktoe": {
+      "Coal": 0.787,
+      "Manufactured fuels": 0.3354,
+      "Petroleum": 55.2384,
+      "Gas": 58.8144,
+      "Electricity": 31.4854,
+      "Bioenergy and wastes": 5.4132
+     },
+     "all_fuels_ktoe": 152.0737
+    },
+    "2020": {
+     "electricity_consumption_mwh": 354237.366,
+     "fuels_ktoe": {
+      "Coal": 0.7319,
+      "Manufactured fuels": 0.3064,
+      "Petroleum": 43.8138,
+      "Gas": 61.0512,
+      "Electricity": 30.4589,
+      "Bioenergy and wastes": 5.2764
+     },
+     "all_fuels_ktoe": 141.6387
+    },
+    "2021": {
+     "electricity_consumption_mwh": 349393.005,
+     "fuels_ktoe": {
+      "Coal": 0.6518,
+      "Manufactured fuels": 0.2965,
+      "Petroleum": 46.6414,
+      "Gas": 59.9639,
+      "Electricity": 30.0424,
+      "Bioenergy and wastes": 4.5313
+     },
+     "all_fuels_ktoe": 142.1273
+    },
+    "2022": {
+     "electricity_consumption_mwh": 333959.717,
+     "fuels_ktoe": {
+      "Coal": 0.614,
+      "Manufactured fuels": 0.353,
+      "Petroleum": 46.2916,
+      "Gas": 52.4349,
+      "Electricity": 28.7154,
+      "Bioenergy and wastes": 4.9977
+     },
+     "all_fuels_ktoe": 133.4065
+    },
+    "2023": {
+     "electricity_consumption_mwh": 343241.455,
+     "fuels_ktoe": {
+      "Coal": 0.4144,
+      "Manufactured fuels": 0.3401,
+      "Petroleum": 47.3414,
+      "Gas": 49.8318,
+      "Electricity": 29.5135,
+      "Bioenergy and wastes": 5.5031
+     },
+     "all_fuels_ktoe": 132.9442
+    },
+    "2024": {
+     "electricity_consumption_mwh": 358769.409,
+     "fuels_ktoe": {
+      "Coal": 0.1121,
+      "Manufactured fuels": 0.3485,
+      "Petroleum": 47.7044,
+      "Gas": 49.4809,
+      "Electricity": 30.8486,
+      "Bioenergy and wastes": 4.8476
+     },
+     "all_fuels_ktoe": 133.3421
+    }
+   }
+  },
+  "fareham": {
+   "name": "Fareham",
+   "generation": {
+    "2014": {
+     "total_mwh": 22805.011,
+     "by_technology_mwh": {
+      "Solar": 22805.011,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 26131.345,
+     "by_technology_mwh": {
+      "Solar": 26131.345,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 25734.676,
+     "by_technology_mwh": {
+      "Solar": 25734.676,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 23076.293,
+     "by_technology_mwh": {
+      "Solar": 23076.293,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 26108.142,
+     "by_technology_mwh": {
+      "Solar": 26108.142,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 27399.249,
+     "by_technology_mwh": {
+      "Solar": 27399.249,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 28591.015,
+     "by_technology_mwh": {
+      "Solar": 28591.015,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 27204.679,
+     "by_technology_mwh": {
+      "Solar": 27204.679,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 31195.805,
+     "by_technology_mwh": {
+      "Solar": 31195.805,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 32394.979,
+     "by_technology_mwh": {
+      "Solar": 32394.979,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 30035.874,
+     "by_technology_mwh": {
+      "Solar": 30035.874,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 544388.67,
+     "fuels_ktoe": {
+      "Coal": 1.5505,
+      "Manufactured fuels": 0.6718,
+      "Petroleum": 89.3111,
+      "Gas": 82.82,
+      "Electricity": 46.809,
+      "Bioenergy and wastes": 1.7226
+     },
+     "all_fuels_ktoe": 222.885
+    },
+    "2006": {
+     "electricity_consumption_mwh": 532735.41,
+     "fuels_ktoe": {
+      "Coal": 1.3994,
+      "Manufactured fuels": 0.6434,
+      "Petroleum": 89.8048,
+      "Gas": 80.634,
+      "Electricity": 45.807,
+      "Bioenergy and wastes": 2.1611
+     },
+     "all_fuels_ktoe": 220.4496
+    },
+    "2007": {
+     "electricity_consumption_mwh": 518244.43,
+     "fuels_ktoe": {
+      "Coal": 1.3766,
+      "Manufactured fuels": 0.5988,
+      "Petroleum": 89.1332,
+      "Gas": 78.283,
+      "Electricity": 44.561,
+      "Bioenergy and wastes": 2.3324
+     },
+     "all_fuels_ktoe": 216.286
+    },
+    "2008": {
+     "electricity_consumption_mwh": 529153.37,
+     "fuels_ktoe": {
+      "Coal": 1.5301,
+      "Manufactured fuels": 0.6881,
+      "Petroleum": 84.6044,
+      "Gas": 75.098,
+      "Electricity": 45.499,
+      "Bioenergy and wastes": 3.0714
+     },
+     "all_fuels_ktoe": 210.4919
+    },
+    "2009": {
+     "electricity_consumption_mwh": 500871.99,
+     "fuels_ktoe": {
+      "Coal": 1.6362,
+      "Manufactured fuels": 0.463,
+      "Petroleum": 83.1646,
+      "Gas": 67.8604,
+      "Electricity": 43.0672,
+      "Bioenergy and wastes": 3.4153
+     },
+     "all_fuels_ktoe": 199.6067
+    },
+    "2010": {
+     "electricity_consumption_mwh": 510011.381,
+     "fuels_ktoe": {
+      "Coal": 1.8552,
+      "Manufactured fuels": 0.5501,
+      "Petroleum": 82.1218,
+      "Gas": 66.9635,
+      "Electricity": 43.8531,
+      "Bioenergy and wastes": 3.9951
+     },
+     "all_fuels_ktoe": 199.3388
+    },
+    "2011": {
+     "electricity_consumption_mwh": 450562.136,
+     "fuels_ktoe": {
+      "Coal": 1.6665,
+      "Manufactured fuels": 0.483,
+      "Petroleum": 81.2394,
+      "Gas": 65.5177,
+      "Electricity": 38.7414,
+      "Bioenergy and wastes": 3.7768
+     },
+     "all_fuels_ktoe": 191.4247
+    },
+    "2012": {
+     "electricity_consumption_mwh": 440917.15,
+     "fuels_ktoe": {
+      "Coal": 1.5919,
+      "Manufactured fuels": 0.5253,
+      "Petroleum": 81.4676,
+      "Gas": 65.5939,
+      "Electricity": 37.9121,
+      "Bioenergy and wastes": 3.8209
+     },
+     "all_fuels_ktoe": 190.9117
+    },
+    "2013": {
+     "electricity_consumption_mwh": 439514.812,
+     "fuels_ktoe": {
+      "Coal": 1.8608,
+      "Manufactured fuels": 0.6262,
+      "Petroleum": 79.5465,
+      "Gas": 63.3867,
+      "Electricity": 37.7915,
+      "Bioenergy and wastes": 4.18
+     },
+     "all_fuels_ktoe": 187.3916
+    },
+    "2014": {
+     "electricity_consumption_mwh": 436913.238,
+     "fuels_ktoe": {
+      "Coal": 1.7387,
+      "Manufactured fuels": 0.5409,
+      "Petroleum": 81.1957,
+      "Gas": 62.6189,
+      "Electricity": 37.5678,
+      "Bioenergy and wastes": 4.3513
+     },
+     "all_fuels_ktoe": 188.0133
+    },
+    "2015": {
+     "electricity_consumption_mwh": 439096.344,
+     "fuels_ktoe": {
+      "Coal": 1.431,
+      "Manufactured fuels": 0.4796,
+      "Petroleum": 83.6905,
+      "Gas": 61.7365,
+      "Electricity": 37.7555,
+      "Bioenergy and wastes": 4.0924
+     },
+     "all_fuels_ktoe": 189.1854
+    },
+    "2016": {
+     "electricity_consumption_mwh": 426800.934,
+     "fuels_ktoe": {
+      "Coal": 1.4291,
+      "Manufactured fuels": 0.4711,
+      "Petroleum": 83.2618,
+      "Gas": 61.3696,
+      "Electricity": 36.6983,
+      "Bioenergy and wastes": 4.1637
+     },
+     "all_fuels_ktoe": 187.3935
+    },
+    "2017": {
+     "electricity_consumption_mwh": 430728.18,
+     "fuels_ktoe": {
+      "Coal": 1.4213,
+      "Manufactured fuels": 0.5202,
+      "Petroleum": 82.0695,
+      "Gas": 62.1482,
+      "Electricity": 37.036,
+      "Bioenergy and wastes": 4.3532
+     },
+     "all_fuels_ktoe": 187.5483
+    },
+    "2018": {
+     "electricity_consumption_mwh": 427536.896,
+     "fuels_ktoe": {
+      "Coal": 1.5093,
+      "Manufactured fuels": 0.5278,
+      "Petroleum": 78.57,
+      "Gas": 71.8931,
+      "Electricity": 36.7616,
+      "Bioenergy and wastes": 5.5015
+     },
+     "all_fuels_ktoe": 194.7632
+    },
+    "2019": {
+     "electricity_consumption_mwh": 418737.915,
+     "fuels_ktoe": {
+      "Coal": 1.308,
+      "Manufactured fuels": 0.5924,
+      "Petroleum": 76.4341,
+      "Gas": 67.2761,
+      "Electricity": 36.005,
+      "Bioenergy and wastes": 6.3725
+     },
+     "all_fuels_ktoe": 187.9881
+    },
+    "2020": {
+     "electricity_consumption_mwh": 402047.668,
+     "fuels_ktoe": {
+      "Coal": 1.2039,
+      "Manufactured fuels": 0.5845,
+      "Petroleum": 59.7001,
+      "Gas": 65.6632,
+      "Electricity": 34.5699,
+      "Bioenergy and wastes": 6.3799
+     },
+     "all_fuels_ktoe": 168.1014
+    },
+    "2021": {
+     "electricity_consumption_mwh": 395192.993,
+     "fuels_ktoe": {
+      "Coal": 1.0094,
+      "Manufactured fuels": 0.541,
+      "Petroleum": 66.0684,
+      "Gas": 63.7308,
+      "Electricity": 33.9805,
+      "Bioenergy and wastes": 6.0037
+     },
+     "all_fuels_ktoe": 171.3337
+    },
+    "2022": {
+     "electricity_consumption_mwh": 380255.31,
+     "fuels_ktoe": {
+      "Coal": 0.9406,
+      "Manufactured fuels": 0.6184,
+      "Petroleum": 68.0911,
+      "Gas": 53.8027,
+      "Electricity": 32.6961,
+      "Bioenergy and wastes": 7.2922
+     },
+     "all_fuels_ktoe": 163.441
+    },
+    "2023": {
+     "electricity_consumption_mwh": 387060.425,
+     "fuels_ktoe": {
+      "Coal": 0.6345,
+      "Manufactured fuels": 0.5782,
+      "Petroleum": 67.922,
+      "Gas": 54.583,
+      "Electricity": 33.2812,
+      "Bioenergy and wastes": 8.0397
+     },
+     "all_fuels_ktoe": 165.0385
+    },
+    "2024": {
+     "electricity_consumption_mwh": 390998.047,
+     "fuels_ktoe": {
+      "Coal": 0.1974,
+      "Manufactured fuels": 0.5398,
+      "Petroleum": 68.4761,
+      "Gas": 53.6689,
+      "Electricity": 33.6198,
+      "Bioenergy and wastes": 7.3425
+     },
+     "all_fuels_ktoe": 163.8445
+    }
+   }
+  },
+  "gosport": {
+   "name": "Gosport",
+   "generation": {
+    "2014": {
+     "total_mwh": 1801.722,
+     "by_technology_mwh": {
+      "Solar": 1801.722,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 2460.918,
+     "by_technology_mwh": {
+      "Solar": 2460.918,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 3064.438,
+     "by_technology_mwh": {
+      "Solar": 3064.438,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 3277.25,
+     "by_technology_mwh": {
+      "Solar": 3277.25,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 3747.099,
+     "by_technology_mwh": {
+      "Solar": 3747.099,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 3669.582,
+     "by_technology_mwh": {
+      "Solar": 3669.582,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 3665.749,
+     "by_technology_mwh": {
+      "Solar": 3665.749,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 3701.268,
+     "by_technology_mwh": {
+      "Solar": 3701.268,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 4918.646,
+     "by_technology_mwh": {
+      "Solar": 4918.646,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 5444.992,
+     "by_technology_mwh": {
+      "Solar": 5444.992,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 5443.452,
+     "by_technology_mwh": {
+      "Solar": 5443.452,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 333536.77,
+     "fuels_ktoe": {
+      "Coal": 1.1778,
+      "Manufactured fuels": 0.6982,
+      "Petroleum": 29.5421,
+      "Gas": 54.806,
+      "Electricity": 28.679,
+      "Bioenergy and wastes": 1.5884
+     },
+     "all_fuels_ktoe": 116.4915
+    },
+    "2006": {
+     "electricity_consumption_mwh": 325442.29,
+     "fuels_ktoe": {
+      "Coal": 1.0726,
+      "Manufactured fuels": 0.8162,
+      "Petroleum": 29.2149,
+      "Gas": 54.599,
+      "Electricity": 27.983,
+      "Bioenergy and wastes": 1.9207
+     },
+     "all_fuels_ktoe": 115.6064
+    },
+    "2007": {
+     "electricity_consumption_mwh": 313021.45,
+     "fuels_ktoe": {
+      "Coal": 1.3675,
+      "Manufactured fuels": 0.7766,
+      "Petroleum": 29.4269,
+      "Gas": 52.35,
+      "Electricity": 26.915,
+      "Bioenergy and wastes": 1.318
+     },
+     "all_fuels_ktoe": 112.153
+    },
+    "2008": {
+     "electricity_consumption_mwh": 311463.03,
+     "fuels_ktoe": {
+      "Coal": 1.5348,
+      "Manufactured fuels": 0.8487,
+      "Petroleum": 26.8538,
+      "Gas": 50.135,
+      "Electricity": 26.781,
+      "Bioenergy and wastes": 1.4198
+     },
+     "all_fuels_ktoe": 107.574
+    },
+    "2009": {
+     "electricity_consumption_mwh": 296241.004,
+     "fuels_ktoe": {
+      "Coal": 1.334,
+      "Manufactured fuels": 0.5817,
+      "Petroleum": 26.0389,
+      "Gas": 43.6582,
+      "Electricity": 25.4721,
+      "Bioenergy and wastes": 1.3056
+     },
+     "all_fuels_ktoe": 98.3915
+    },
+    "2010": {
+     "electricity_consumption_mwh": 292073.092,
+     "fuels_ktoe": {
+      "Coal": 1.8667,
+      "Manufactured fuels": 0.6592,
+      "Petroleum": 25.5353,
+      "Gas": 42.888,
+      "Electricity": 25.1138,
+      "Bioenergy and wastes": 1.5808
+     },
+     "all_fuels_ktoe": 97.6437
+    },
+    "2011": {
+     "electricity_consumption_mwh": 282087.823,
+     "fuels_ktoe": {
+      "Coal": 2.0774,
+      "Manufactured fuels": 0.6044,
+      "Petroleum": 25.1823,
+      "Gas": 40.257,
+      "Electricity": 24.2552,
+      "Bioenergy and wastes": 1.622
+     },
+     "all_fuels_ktoe": 93.9982
+    },
+    "2012": {
+     "electricity_consumption_mwh": 285506.931,
+     "fuels_ktoe": {
+      "Coal": 2.4514,
+      "Manufactured fuels": 0.524,
+      "Petroleum": 25.0297,
+      "Gas": 39.3738,
+      "Electricity": 24.5492,
+      "Bioenergy and wastes": 1.6116
+     },
+     "all_fuels_ktoe": 93.5397
+    },
+    "2013": {
+     "electricity_consumption_mwh": 285198.787,
+     "fuels_ktoe": {
+      "Coal": 2.8516,
+      "Manufactured fuels": 0.5836,
+      "Petroleum": 24.4624,
+      "Gas": 39.74,
+      "Electricity": 24.5227,
+      "Bioenergy and wastes": 1.7225
+     },
+     "all_fuels_ktoe": 93.8828
+    },
+    "2014": {
+     "electricity_consumption_mwh": 287374.769,
+     "fuels_ktoe": {
+      "Coal": 2.9276,
+      "Manufactured fuels": 0.5558,
+      "Petroleum": 25.0341,
+      "Gas": 38.5394,
+      "Electricity": 24.7098,
+      "Bioenergy and wastes": 2.4321
+     },
+     "all_fuels_ktoe": 94.1987
+    },
+    "2015": {
+     "electricity_consumption_mwh": 288146.912,
+     "fuels_ktoe": {
+      "Coal": 2.4941,
+      "Manufactured fuels": 0.4924,
+      "Petroleum": 25.1611,
+      "Gas": 37.6105,
+      "Electricity": 24.7762,
+      "Bioenergy and wastes": 2.5145
+     },
+     "all_fuels_ktoe": 93.0488
+    },
+    "2016": {
+     "electricity_consumption_mwh": 280072.235,
+     "fuels_ktoe": {
+      "Coal": 2.5208,
+      "Manufactured fuels": 0.4698,
+      "Petroleum": 25.3701,
+      "Gas": 37.1477,
+      "Electricity": 24.0819,
+      "Bioenergy and wastes": 3.3855
+     },
+     "all_fuels_ktoe": 92.9757
+    },
+    "2017": {
+     "electricity_consumption_mwh": 281801.605,
+     "fuels_ktoe": {
+      "Coal": 2.0786,
+      "Manufactured fuels": 0.5218,
+      "Petroleum": 25.1883,
+      "Gas": 38.2106,
+      "Electricity": 24.2306,
+      "Bioenergy and wastes": 3.1354
+     },
+     "all_fuels_ktoe": 93.3653
+    },
+    "2018": {
+     "electricity_consumption_mwh": 274470.062,
+     "fuels_ktoe": {
+      "Coal": 0.7237,
+      "Manufactured fuels": 0.5193,
+      "Petroleum": 24.8236,
+      "Gas": 37.1171,
+      "Electricity": 23.6002,
+      "Bioenergy and wastes": 3.9754
+     },
+     "all_fuels_ktoe": 90.7592
+    },
+    "2019": {
+     "electricity_consumption_mwh": 268340.027,
+     "fuels_ktoe": {
+      "Coal": 0.6107,
+      "Manufactured fuels": 0.4659,
+      "Petroleum": 24.7138,
+      "Gas": 36.8845,
+      "Electricity": 23.0731,
+      "Bioenergy and wastes": 4.1881
+     },
+     "all_fuels_ktoe": 89.9361
+    },
+    "2020": {
+     "electricity_consumption_mwh": 255600.067,
+     "fuels_ktoe": {
+      "Coal": 0.5878,
+      "Manufactured fuels": 0.4596,
+      "Petroleum": 20.3024,
+      "Gas": 37.816,
+      "Electricity": 21.9776,
+      "Bioenergy and wastes": 4.0164
+     },
+     "all_fuels_ktoe": 85.1598
+    },
+    "2021": {
+     "electricity_consumption_mwh": 249512.65,
+     "fuels_ktoe": {
+      "Coal": 0.5526,
+      "Manufactured fuels": 0.3964,
+      "Petroleum": 20.5886,
+      "Gas": 35.8289,
+      "Electricity": 21.4542,
+      "Bioenergy and wastes": 3.2703
+     },
+     "all_fuels_ktoe": 82.0909
+    },
+    "2022": {
+     "electricity_consumption_mwh": 234303.284,
+     "fuels_ktoe": {
+      "Coal": 0.5355,
+      "Manufactured fuels": 0.4289,
+      "Petroleum": 20.1304,
+      "Gas": 31.9924,
+      "Electricity": 20.1465,
+      "Bioenergy and wastes": 3.1814
+     },
+     "all_fuels_ktoe": 76.4151
+    },
+    "2023": {
+     "electricity_consumption_mwh": 233430.481,
+     "fuels_ktoe": {
+      "Coal": 0.3243,
+      "Manufactured fuels": 0.3956,
+      "Petroleum": 19.6193,
+      "Gas": 32.1146,
+      "Electricity": 20.0714,
+      "Bioenergy and wastes": 3.3487
+     },
+     "all_fuels_ktoe": 75.8738
+    },
+    "2024": {
+     "electricity_consumption_mwh": 229367.859,
+     "fuels_ktoe": {
+      "Coal": 0.1993,
+      "Manufactured fuels": 0.366,
+      "Petroleum": 19.4628,
+      "Gas": 31.41,
+      "Electricity": 19.7221,
+      "Bioenergy and wastes": 3.0965
+     },
+     "all_fuels_ktoe": 74.2566
+    }
+   }
+  },
+  "havant": {
+   "name": "Havant",
+   "generation": {
+    "2014": {
+     "total_mwh": 24437.204,
+     "by_technology_mwh": {
+      "Solar": 4969.204,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 19468.0,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 26345.768,
+     "by_technology_mwh": {
+      "Solar": 6808.768,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 19537.0,
+      "Other": 0.0
+     }
+    },
+    "2016": {
+     "total_mwh": 25377.801,
+     "by_technology_mwh": {
+      "Solar": 7717.801,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 17660.0,
+      "Other": 0.0
+     }
+    },
+    "2017": {
+     "total_mwh": 25180.651,
+     "by_technology_mwh": {
+      "Solar": 8156.651,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 17024.0,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 24671.13,
+     "by_technology_mwh": {
+      "Solar": 9059.13,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 15612.0,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 8704.129,
+     "by_technology_mwh": {
+      "Solar": 8704.129,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 8570.595,
+     "by_technology_mwh": {
+      "Solar": 8570.595,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 8388.838,
+     "by_technology_mwh": {
+      "Solar": 8388.838,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 10790.54,
+     "by_technology_mwh": {
+      "Solar": 10790.54,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 11866.73,
+     "by_technology_mwh": {
+      "Solar": 11866.73,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 11793.92,
+     "by_technology_mwh": {
+      "Solar": 11793.92,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 0.0,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 491448.91,
+     "fuels_ktoe": {
+      "Coal": 2.526,
+      "Manufactured fuels": 0.6808,
+      "Petroleum": 71.0586,
+      "Gas": 85.407,
+      "Electricity": 42.257,
+      "Bioenergy and wastes": 1.8797
+     },
+     "all_fuels_ktoe": 203.8091
+    },
+    "2006": {
+     "electricity_consumption_mwh": 484610.47,
+     "fuels_ktoe": {
+      "Coal": 2.3602,
+      "Manufactured fuels": 0.6494,
+      "Petroleum": 71.2819,
+      "Gas": 82.765,
+      "Electricity": 41.669,
+      "Bioenergy and wastes": 2.7634
+     },
+     "all_fuels_ktoe": 201.4878
+    },
+    "2007": {
+     "electricity_consumption_mwh": 469363.54,
+     "fuels_ktoe": {
+      "Coal": 1.9962,
+      "Manufactured fuels": 0.5988,
+      "Petroleum": 72.0285,
+      "Gas": 81.252,
+      "Electricity": 40.358,
+      "Bioenergy and wastes": 2.3426
+     },
+     "all_fuels_ktoe": 198.5761
+    },
+    "2008": {
+     "electricity_consumption_mwh": 454988.86,
+     "fuels_ktoe": {
+      "Coal": 2.6147,
+      "Manufactured fuels": 0.6968,
+      "Petroleum": 67.253,
+      "Gas": 78.042,
+      "Electricity": 39.122,
+      "Bioenergy and wastes": 3.047
+     },
+     "all_fuels_ktoe": 190.7765
+    },
+    "2009": {
+     "electricity_consumption_mwh": 431045.082,
+     "fuels_ktoe": {
+      "Coal": 3.2253,
+      "Manufactured fuels": 0.4682,
+      "Petroleum": 64.8558,
+      "Gas": 70.9694,
+      "Electricity": 37.0632,
+      "Bioenergy and wastes": 3.0251
+     },
+     "all_fuels_ktoe": 179.6069
+    },
+    "2010": {
+     "electricity_consumption_mwh": 435694.006,
+     "fuels_ktoe": {
+      "Coal": 3.7556,
+      "Manufactured fuels": 0.6742,
+      "Petroleum": 64.7079,
+      "Gas": 70.1249,
+      "Electricity": 37.4629,
+      "Bioenergy and wastes": 3.6338
+     },
+     "all_fuels_ktoe": 180.3595
+    },
+    "2011": {
+     "electricity_consumption_mwh": 420504.987,
+     "fuels_ktoe": {
+      "Coal": 3.6146,
+      "Manufactured fuels": 0.4859,
+      "Petroleum": 63.9766,
+      "Gas": 65.5646,
+      "Electricity": 36.1569,
+      "Bioenergy and wastes": 3.512
+     },
+     "all_fuels_ktoe": 173.3106
+    },
+    "2012": {
+     "electricity_consumption_mwh": 425392.633,
+     "fuels_ktoe": {
+      "Coal": 4.1283,
+      "Manufactured fuels": 0.7275,
+      "Petroleum": 65.2019,
+      "Gas": 63.3391,
+      "Electricity": 36.5772,
+      "Bioenergy and wastes": 3.7678
+     },
+     "all_fuels_ktoe": 173.7418
+    },
+    "2013": {
+     "electricity_consumption_mwh": 423966.479,
+     "fuels_ktoe": {
+      "Coal": 4.9576,
+      "Manufactured fuels": 1.0768,
+      "Petroleum": 63.6949,
+      "Gas": 61.2685,
+      "Electricity": 36.4546,
+      "Bioenergy and wastes": 3.8855
+     },
+     "all_fuels_ktoe": 171.3377
+    },
+    "2014": {
+     "electricity_consumption_mwh": 432635.495,
+     "fuels_ktoe": {
+      "Coal": 4.1558,
+      "Manufactured fuels": 0.6669,
+      "Petroleum": 63.9411,
+      "Gas": 61.2399,
+      "Electricity": 37.2,
+      "Bioenergy and wastes": 4.0212
+     },
+     "all_fuels_ktoe": 171.2248
+    },
+    "2015": {
+     "electricity_consumption_mwh": 427011.719,
+     "fuels_ktoe": {
+      "Coal": 3.2355,
+      "Manufactured fuels": 0.5002,
+      "Petroleum": 65.289,
+      "Gas": 60.493,
+      "Electricity": 36.7164,
+      "Bioenergy and wastes": 3.7501
+     },
+     "all_fuels_ktoe": 169.9842
+    },
+    "2016": {
+     "electricity_consumption_mwh": 415356.964,
+     "fuels_ktoe": {
+      "Coal": 3.0025,
+      "Manufactured fuels": 0.4922,
+      "Petroleum": 65.0878,
+      "Gas": 60.2023,
+      "Electricity": 35.7143,
+      "Bioenergy and wastes": 3.908
+     },
+     "all_fuels_ktoe": 168.4071
+    },
+    "2017": {
+     "electricity_consumption_mwh": 412312.744,
+     "fuels_ktoe": {
+      "Coal": 2.2148,
+      "Manufactured fuels": 0.5414,
+      "Petroleum": 66.4851,
+      "Gas": 62.3565,
+      "Electricity": 35.4525,
+      "Bioenergy and wastes": 4.3715
+     },
+     "all_fuels_ktoe": 171.4218
+    },
+    "2018": {
+     "electricity_consumption_mwh": 403886.993,
+     "fuels_ktoe": {
+      "Coal": 2.2043,
+      "Manufactured fuels": 0.5514,
+      "Petroleum": 64.9474,
+      "Gas": 61.8386,
+      "Electricity": 34.728,
+      "Bioenergy and wastes": 5.7952
+     },
+     "all_fuels_ktoe": 170.0648
+    },
+    "2019": {
+     "electricity_consumption_mwh": 392631.073,
+     "fuels_ktoe": {
+      "Coal": 1.6146,
+      "Manufactured fuels": 0.5265,
+      "Petroleum": 64.2578,
+      "Gas": 61.3021,
+      "Electricity": 33.7602,
+      "Bioenergy and wastes": 6.3673
+     },
+     "all_fuels_ktoe": 167.8284
+    },
+    "2020": {
+     "electricity_consumption_mwh": 375297.089,
+     "fuels_ktoe": {
+      "Coal": 1.3897,
+      "Manufactured fuels": 0.4801,
+      "Petroleum": 52.9325,
+      "Gas": 63.0108,
+      "Electricity": 32.2697,
+      "Bioenergy and wastes": 6.571
+     },
+     "all_fuels_ktoe": 156.6539
+    },
+    "2021": {
+     "electricity_consumption_mwh": 368886.749,
+     "fuels_ktoe": {
+      "Coal": 1.1145,
+      "Manufactured fuels": 0.4675,
+      "Petroleum": 55.8679,
+      "Gas": 59.3713,
+      "Electricity": 31.7186,
+      "Bioenergy and wastes": 5.9698
+     },
+     "all_fuels_ktoe": 154.5094
+    },
+    "2022": {
+     "electricity_consumption_mwh": 347480.255,
+     "fuels_ktoe": {
+      "Coal": 0.9476,
+      "Manufactured fuels": 0.5629,
+      "Petroleum": 56.1187,
+      "Gas": 52.8291,
+      "Electricity": 29.8779,
+      "Bioenergy and wastes": 6.4562
+     },
+     "all_fuels_ktoe": 146.7924
+    },
+    "2023": {
+     "electricity_consumption_mwh": 347689.117,
+     "fuels_ktoe": {
+      "Coal": 0.6197,
+      "Manufactured fuels": 0.5422,
+      "Petroleum": 55.9623,
+      "Gas": 53.2499,
+      "Electricity": 29.8959,
+      "Bioenergy and wastes": 7.0964
+     },
+     "all_fuels_ktoe": 147.3664
+    },
+    "2024": {
+     "electricity_consumption_mwh": 342374.237,
+     "fuels_ktoe": {
+      "Coal": 0.5272,
+      "Manufactured fuels": 0.5523,
+      "Petroleum": 52.4185,
+      "Gas": 52.5771,
+      "Electricity": 29.4389,
+      "Bioenergy and wastes": 9.9808
+     },
+     "all_fuels_ktoe": 145.4948
+    }
+   }
+  },
+  "eastleigh": {
+   "name": "Eastleigh",
+   "generation": {
+    "2014": {
+     "total_mwh": 30716.451,
+     "by_technology_mwh": {
+      "Solar": 9527.695,
+      "Wind": 13.942,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 21174.814,
+      "Other": 0.0
+     }
+    },
+    "2015": {
+     "total_mwh": 29972.762,
+     "by_technology_mwh": {
+      "Solar": 11664.045,
+      "Wind": 16.664,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 18292.052,
+      "Other": 0.001
+     }
+    },
+    "2016": {
+     "total_mwh": 30689.693,
+     "by_technology_mwh": {
+      "Solar": 11986.756,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 18702.936,
+      "Other": 0.001
+     }
+    },
+    "2017": {
+     "total_mwh": 29104.645,
+     "by_technology_mwh": {
+      "Solar": 12488.305,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 16616.34,
+      "Other": 0.0
+     }
+    },
+    "2018": {
+     "total_mwh": 34190.913,
+     "by_technology_mwh": {
+      "Solar": 19239.819,
+      "Wind": 10.654,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 14940.44,
+      "Other": 0.0
+     }
+    },
+    "2019": {
+     "total_mwh": 33526.455,
+     "by_technology_mwh": {
+      "Solar": 20277.619,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 13248.836,
+      "Other": 0.0
+     }
+    },
+    "2020": {
+     "total_mwh": 34387.901,
+     "by_technology_mwh": {
+      "Solar": 22230.139,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 12157.762,
+      "Other": 0.0
+     }
+    },
+    "2021": {
+     "total_mwh": 33270.822,
+     "by_technology_mwh": {
+      "Solar": 21154.988,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 12115.834,
+      "Other": 0.0
+     }
+    },
+    "2022": {
+     "total_mwh": 33531.254,
+     "by_technology_mwh": {
+      "Solar": 23478.887,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 10052.366,
+      "Other": 0.0
+     }
+    },
+    "2023": {
+     "total_mwh": 34571.917,
+     "by_technology_mwh": {
+      "Solar": 25201.846,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 9370.071,
+      "Other": 0.0
+     }
+    },
+    "2024": {
+     "total_mwh": 32615.462,
+     "by_technology_mwh": {
+      "Solar": 23467.789,
+      "Wind": 0.0,
+      "Hydro": 0.0,
+      "Bioenergy & waste": 9147.672,
+      "Other": 0.0
+     }
+    }
+   },
+   "consumption": {
+    "2005": {
+     "electricity_consumption_mwh": 568474.4,
+     "fuels_ktoe": {
+      "Coal": 1.57,
+      "Manufactured fuels": 0.8888,
+      "Petroleum": 110.1799,
+      "Gas": 95.123,
+      "Electricity": 48.88,
+      "Bioenergy and wastes": 2.2112
+     },
+     "all_fuels_ktoe": 258.853
+    },
+    "2006": {
+     "electricity_consumption_mwh": 565764.61,
+     "fuels_ktoe": {
+      "Coal": 1.3996,
+      "Manufactured fuels": 0.9478,
+      "Petroleum": 109.5405,
+      "Gas": 89.241,
+      "Electricity": 48.647,
+      "Bioenergy and wastes": 2.7292
+     },
+     "all_fuels_ktoe": 252.5042
+    },
+    "2007": {
+     "electricity_consumption_mwh": 547307.8,
+     "fuels_ktoe": {
+      "Coal": 1.3684,
+      "Manufactured fuels": 0.8943,
+      "Petroleum": 110.8036,
+      "Gas": 87.202,
+      "Electricity": 47.06,
+      "Bioenergy and wastes": 2.7134
+     },
+     "all_fuels_ktoe": 250.0417
+    },
+    "2008": {
+     "electricity_consumption_mwh": 553262.36,
+     "fuels_ktoe": {
+      "Coal": 1.5329,
+      "Manufactured fuels": 1.0347,
+      "Petroleum": 102.5779,
+      "Gas": 82.268,
+      "Electricity": 47.572,
+      "Bioenergy and wastes": 3.5965
+     },
+     "all_fuels_ktoe": 238.5821
+    },
+    "2009": {
+     "electricity_consumption_mwh": 541216.684,
+     "fuels_ktoe": {
+      "Coal": 1.6715,
+      "Manufactured fuels": 0.7028,
+      "Petroleum": 101.6089,
+      "Gas": 74.6824,
+      "Electricity": 46.5363,
+      "Bioenergy and wastes": 3.9943
+     },
+     "all_fuels_ktoe": 229.1963
+    },
+    "2010": {
+     "electricity_consumption_mwh": 538739.485,
+     "fuels_ktoe": {
+      "Coal": 1.7422,
+      "Manufactured fuels": 0.8011,
+      "Petroleum": 103.5946,
+      "Gas": 74.3596,
+      "Electricity": 46.3233,
+      "Bioenergy and wastes": 4.6778
+     },
+     "all_fuels_ktoe": 231.4986
+    },
+    "2011": {
+     "electricity_consumption_mwh": 531312.781,
+     "fuels_ktoe": {
+      "Coal": 1.673,
+      "Manufactured fuels": 0.7307,
+      "Petroleum": 102.4145,
+      "Gas": 69.3854,
+      "Electricity": 45.6847,
+      "Bioenergy and wastes": 4.4599
+     },
+     "all_fuels_ktoe": 224.3481
+    },
+    "2012": {
+     "electricity_consumption_mwh": 527821.635,
+     "fuels_ktoe": {
+      "Coal": 1.6703,
+      "Manufactured fuels": 0.7,
+      "Petroleum": 100.2635,
+      "Gas": 69.5543,
+      "Electricity": 45.3845,
+      "Bioenergy and wastes": 4.3249
+     },
+     "all_fuels_ktoe": 221.8975
+    },
+    "2013": {
+     "electricity_consumption_mwh": 531641.14,
+     "fuels_ktoe": {
+      "Coal": 1.7935,
+      "Manufactured fuels": 0.7925,
+      "Petroleum": 99.3063,
+      "Gas": 68.5838,
+      "Electricity": 45.7129,
+      "Bioenergy and wastes": 4.7625
+     },
+     "all_fuels_ktoe": 220.9515
+    },
+    "2014": {
+     "electricity_consumption_mwh": 533796.552,
+     "fuels_ktoe": {
+      "Coal": 1.5613,
+      "Manufactured fuels": 0.7209,
+      "Petroleum": 101.1459,
+      "Gas": 68.612,
+      "Electricity": 45.8982,
+      "Bioenergy and wastes": 5.1504
+     },
+     "all_fuels_ktoe": 223.0887
+    },
+    "2015": {
+     "electricity_consumption_mwh": 523582.397,
+     "fuels_ktoe": {
+      "Coal": 1.3495,
+      "Manufactured fuels": 0.6487,
+      "Petroleum": 104.1855,
+      "Gas": 66.7191,
+      "Electricity": 45.02,
+      "Bioenergy and wastes": 4.8334
+     },
+     "all_fuels_ktoe": 222.7561
+    },
+    "2016": {
+     "electricity_consumption_mwh": 513788.391,
+     "fuels_ktoe": {
+      "Coal": 1.3146,
+      "Manufactured fuels": 0.6266,
+      "Petroleum": 105.3584,
+      "Gas": 65.8264,
+      "Electricity": 44.1778,
+      "Bioenergy and wastes": 5.2702
+     },
+     "all_fuels_ktoe": 222.574
+    },
+    "2017": {
+     "electricity_consumption_mwh": 522069.702,
+     "fuels_ktoe": {
+      "Coal": 1.1833,
+      "Manufactured fuels": 0.7024,
+      "Petroleum": 104.8326,
+      "Gas": 68.6001,
+      "Electricity": 44.8899,
+      "Bioenergy and wastes": 5.2934
+     },
+     "all_fuels_ktoe": 225.5017
+    },
+    "2018": {
+     "electricity_consumption_mwh": 518961.121,
+     "fuels_ktoe": {
+      "Coal": 1.1304,
+      "Manufactured fuels": 0.6539,
+      "Petroleum": 100.502,
+      "Gas": 69.672,
+      "Electricity": 44.6226,
+      "Bioenergy and wastes": 6.4428
+     },
+     "all_fuels_ktoe": 223.0237
+    },
+    "2019": {
+     "electricity_consumption_mwh": 521010.742,
+     "fuels_ktoe": {
+      "Coal": 1.0127,
+      "Manufactured fuels": 0.5621,
+      "Petroleum": 97.3985,
+      "Gas": 69.2884,
+      "Electricity": 44.7989,
+      "Bioenergy and wastes": 7.4361
+     },
+     "all_fuels_ktoe": 220.4965
+    },
+    "2020": {
+     "electricity_consumption_mwh": 488756.165,
+     "fuels_ktoe": {
+      "Coal": 0.9674,
+      "Manufactured fuels": 0.5128,
+      "Petroleum": 77.0714,
+      "Gas": 76.559,
+      "Electricity": 42.0255,
+      "Bioenergy and wastes": 7.2682
+     },
+     "all_fuels_ktoe": 204.4043
+    },
+    "2021": {
+     "electricity_consumption_mwh": 479989.258,
+     "fuels_ktoe": {
+      "Coal": 1.4485,
+      "Manufactured fuels": 0.4977,
+      "Petroleum": 83.3619,
+      "Gas": 71.4546,
+      "Electricity": 41.2716,
+      "Bioenergy and wastes": 8.9584
+     },
+     "all_fuels_ktoe": 206.9927
+    },
+    "2022": {
+     "electricity_consumption_mwh": 460501.038,
+     "fuels_ktoe": {
+      "Coal": 1.1638,
+      "Manufactured fuels": 0.5897,
+      "Petroleum": 85.7162,
+      "Gas": 64.7116,
+      "Electricity": 39.596,
+      "Bioenergy and wastes": 9.7108
+     },
+     "all_fuels_ktoe": 201.4881
+    },
+    "2023": {
+     "electricity_consumption_mwh": 456532.013,
+     "fuels_ktoe": {
+      "Coal": 0.9354,
+      "Manufactured fuels": 0.5715,
+      "Petroleum": 85.6244,
+      "Gas": 62.9647,
+      "Electricity": 39.2547,
+      "Bioenergy and wastes": 10.9551
+     },
+     "all_fuels_ktoe": 200.3057
+    },
+    "2024": {
+     "electricity_consumption_mwh": 455188.477,
+     "fuels_ktoe": {
+      "Coal": 0.5582,
+      "Manufactured fuels": 0.5841,
+      "Petroleum": 84.4647,
+      "Gas": 62.7675,
+      "Electricity": 39.1392,
+      "Bioenergy and wastes": 12.5627
+     },
+     "all_fuels_ktoe": 200.0764
     }
    }
   }

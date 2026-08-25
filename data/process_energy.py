@@ -6,7 +6,7 @@ from datetime import date
 
 import openpyxl
 
-from la_config import ALL_LAS, HAMPSHIRE_SOLENT_LAS, MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION
+from la_config import ALL_LAS, REGION_DEFS
 
 RENEWABLE_SRC = sys.argv[1] if len(sys.argv) > 1 else "renewable_electricity_source.xlsx"
 TFEC_SRC = sys.argv[2] if len(sys.argv) > 2 else "energy_consumption_source.xlsx"
@@ -155,11 +155,9 @@ def main():
     generation_years = sorted(generation_by_year.keys())
     consumption_years = sorted(consumption_by_year.keys())
 
-    regions_spec = [
-        ("winchester", "Winchester", ["Winchester"], None),
-        ("mid-hampshire", "Mid-Hampshire (proposed)", MID_HAMPSHIRE_LAS, MID_HAMPSHIRE_RETAINED_FRACTION),
-        ("hampshire-solent", "Hampshire and the Solent", HAMPSHIRE_SOLENT_LAS, None),
-    ]
+    # Same REGION_DEFS as mid_hampshire_emissions.json (see la_config.py) — kept as (key, name,
+    # las, weight) tuples here to match this function's existing shape.
+    regions_spec = [(r["key"], r["name"], r["las"], r["weight"]) for r in REGION_DEFS]
 
     out = {
         "meta": {
