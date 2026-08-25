@@ -893,7 +893,7 @@
     const gap = detail ? 3 : 6;
     const barH = detail ? 18 : 24;
     const labelFontSize = detail ? "11" : "12.5";
-    const M = { top: 10, right: 70, bottom: 10, left: detail ? 185 : 130 };
+    const M = { top: 10, right: 70, bottom: 10, left: detail ? 235 : 130 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap);
 
@@ -915,7 +915,7 @@
       const barY = y + (rowH - barH) / 2;
 
       const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
-      label.textContent = detail ? shortSubsectorLabel(r.sector, r.name) : r.name;
+      label.textContent = detail ? (r.sector + " — " + shortSubsectorLabel(r.sector, r.name)) : r.name;
 
       const rect = el("rect", {
         x: barX, y: barY, width: Math.abs(barW), height: barH, rx: "4",
