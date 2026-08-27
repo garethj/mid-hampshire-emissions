@@ -11,6 +11,10 @@
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let currentConsumptionDetail = false; // show consumption chart as all fuel types instead of simple groups
   let currentHorizon = "gwp100"; // "gwp100" (official DESNZ) | "gwp20"
+  // "kwh" (GWh / kWh per person) | "toe" (ktoe / toe per person) — shared display unit for the
+  // generation and consumption charts, which otherwise show each dataset's own native unit (see
+  // KTOE_TO_MWH below).
+  let currentEnergyUnit = "kwh";
   // "context" (self + ancestors up to Hampshire and the Solent, the default) or "constituents"
   // (all siblings at the nearest level with children — see nearestHub() below) — drives the top
   // trend chart's region set. Reset to "context" on every region change, since carrying
@@ -311,9 +315,12 @@
     return Number(n).toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + "%";
   }
 
-  // Consumption-by-fuel figures are stored and displayed in ktoe, DESNZ's own native unit for
-  // this dataset — unlike generation (GWh), converting to a second unit here wouldn't earn its
-  // keep, since ktoe already reads at a comparable, compact scale for these regions.
+  // Same DUKES/IEA factor as data/process_energy.py's KTOE_TO_MWH — used here to let the
+  // generation chart (native MWh) and consumption chart (native ktoe) share one display-unit
+  // toggle (currentEnergyUnit) instead of each being stuck in its own dataset's native unit.
+  const KTOE_TO_MWH = 11630;
+
+  // Consumption-by-fuel figures are stored in ktoe, DESNZ's own native unit for this dataset.
   function fmtKtoe(ktoe) {
     return Number(ktoe).toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
   }
@@ -539,11 +546,17 @@
     return metric === "total" ? rawMwh : rawMwh / regionPopulation(regionKey, year);
   }
 
-  function fmtGenerationMetric(metric, n) {
+  // unit "kwh" shows generation's native GWh/kWh-per-person; "toe" converts to ktoe/toe-per-person
+  // via KTOE_TO_MWH, so the chart can match whatever unit family the consumption chart is on.
+  function fmtGenerationMetric(metric, unit, n) {
+    if (unit === "toe") {
+      return metric === "total" ? fmtKtoe(n / KTOE_TO_MWH) : fmtToePerCapita(n / KTOE_TO_MWH);
+    }
     return metric === "total" ? fmtGwh(n) : fmtKwhPerCapita(n);
   }
 
-  function generationUnitLabel(metric) {
+  function generationUnitLabel(metric, unit) {
+    if (unit === "toe") return metric === "total" ? "ktoe" : "toe/person";
     return metric === "total" ? "GWh" : "kWh/person";
   }
 
@@ -566,11 +579,17 @@
     return metric === "total" ? raw : raw / regionPopulation(regionKey, year);
   }
 
-  function fmtConsumptionMetric(metric, n) {
+  // unit "toe" shows consumption's native ktoe/toe-per-person; "kwh" converts to GWh/kWh-per-person
+  // via KTOE_TO_MWH — mirrors fmtGenerationMetric above.
+  function fmtConsumptionMetric(metric, unit, n) {
+    if (unit === "kwh") {
+      return metric === "total" ? fmtGwh(n * KTOE_TO_MWH) : fmtKwhPerCapita(n * KTOE_TO_MWH);
+    }
     return metric === "total" ? fmtKtoe(n) : fmtToePerCapita(n);
   }
 
-  function consumptionUnitLabel(metric) {
+  function consumptionUnitLabel(metric, unit) {
+    if (unit === "kwh") return metric === "total" ? "GWh" : "kWh/person";
     return metric === "total" ? "ktoe" : "toe/person";
   }
 
@@ -1401,12 +1420,12 @@
   // Structurally mirrors the gas chart above: technologies, like gases, are never negative, so
   // bars run left-to-right from a fixed edge rather than diverging from a centre zero line.
 
-  function updateGenerationNote(regionKey, gy, metric) {
+  function updateGenerationNote(regionKey, gy, metric, unit) {
     const gen = energyGeneration(regionKey, gy);
     const total = generationMetricValue(regionKey, gy, gen.total_mwh, metric);
     const share = energyGenerationShareOfDemand(regionKey, gy);
     const label = metric === "total" ? "Total renewable generation, " : "Renewable generation per person, ";
-    generationNoteText = label + gy + ": " + fmtGenerationMetric(metric, total) + " " + generationUnitLabel(metric) +
+    generationNoteText = label + gy + ": " + fmtGenerationMetric(metric, unit, total) + " " + generationUnitLabel(metric, unit) +
       (share === null ? "." : " — equivalent to " + fmtRatioPct(share) + " of estimated local electricity demand (generation and demand aren't directly connected via the shared national grid).");
   }
 
@@ -1418,6 +1437,7 @@
     const gy = energyLatestGenerationYear();
     const view = currentView;
     const metric = currentMetric;
+    const unit = currentEnergyUnit;
 
     const metricLabel = metric === "total"
       ? "renewable electricity generation by technology"
@@ -1425,16 +1445,16 @@
     document.getElementById("generation-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " +
       (view === "historical" ? (years[0] + "–" + gy) : gy);
-    updateGenerationNote(regionKey, gy, metric);
+    updateGenerationNote(regionKey, gy, metric, unit);
 
     if (view === "historical") {
-      buildGenerationChartHistorical(container, regionKey, years, metric);
+      buildGenerationChartHistorical(container, regionKey, years, metric, unit);
     } else {
-      buildGenerationChartLatest(container, regionKey, gy, metric);
+      buildGenerationChartLatest(container, regionKey, gy, metric, unit);
     }
   }
 
-  function buildGenerationChartLatest(container, regionKey, gy, metric) {
+  function buildGenerationChartLatest(container, regionKey, gy, metric, unit) {
     const gen = energyGeneration(regionKey, gy);
     const total = generationMetricValue(regionKey, gy, gen.total_mwh, metric);
     const rows = ENERGY_TECH_ORDER.map(t => ({ name: t, value: generationMetricValue(regionKey, gy, gen.by_technology_mwh[t], metric) }))
@@ -1465,22 +1485,22 @@
       rect.style.cursor = "pointer";
 
       const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      valText.textContent = fmtGenerationMetric(metric, r.value) + " " + generationUnitLabel(metric);
+      valText.textContent = fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit);
 
       rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
       rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
       rect.addEventListener("pointermove", (ev) => {
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
-          ttRow(tt, color, gy + "", fmtGenerationMetric(metric, r.value) + " " + generationUnitLabel(metric) + " (" + fmtRatioPct(r.value / total * 100) + " of total)");
+          ttRow(tt, color, gy + "", fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(r.value / total * 100) + " of total)");
         });
       });
     });
 
-    buildGenerationTableLatest(gy, rows, metric);
+    buildGenerationTableLatest(gy, rows, metric, unit);
   }
 
-  function buildGenerationChartHistorical(container, regionKey, years, metric) {
+  function buildGenerationChartHistorical(container, regionKey, years, metric, unit) {
     const series = ENERGY_TECH_ORDER.map(t => ({
       name: t,
       color: categoryColor(t),
@@ -1507,7 +1527,7 @@
       const yy = yScale(val);
       el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
       const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = fmtGenerationMetric(metric, val);
+      txt.textContent = fmtGenerationMetric(metric, unit, val);
     }
 
     const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
@@ -1540,7 +1560,7 @@
       showTooltip(ev.clientX, ev.clientY, (tt) => {
         ttTitle(tt, String(years[idx]));
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
-          ttRow(tt, s.color, s.name, fmtGenerationMetric(metric, s.values[idx]) + " " + generationUnitLabel(metric) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
+          ttRow(tt, s.color, s.name, fmtGenerationMetric(metric, unit, s.values[idx]) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
         });
       });
     });
@@ -1551,10 +1571,10 @@
     series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
     container.appendChild(legendWrap);
 
-    buildGenerationTableHistorical(years, series, metric);
+    buildGenerationTableHistorical(years, series, metric, unit);
   }
 
-  function buildGenerationTableLatest(gy, rows, metric) {
+  function buildGenerationTableLatest(gy, rows, metric, unit) {
     const wrap = document.getElementById("generation-table");
     if (!wrap) return;
     clearNode(wrap);
@@ -1562,20 +1582,20 @@
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Technology", generationUnitLabel(metric) + " (" + gy + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
+    ["Technology", generationUnitLabel(metric, unit) + " (" + gy + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
     thead.appendChild(htr);
     table.appendChild(thead);
     const tbody = document.createElement("tbody");
     rows.forEach(r => {
       const tr = document.createElement("tr");
-      [r.name, fmtGenerationMetric(metric, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      [r.name, fmtGenerationMetric(metric, unit, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
     wrap.appendChild(table);
   }
 
-  function buildGenerationTableHistorical(years, series, metric) {
+  function buildGenerationTableHistorical(years, series, metric, unit) {
     const wrap = document.getElementById("generation-table");
     if (!wrap) return;
     clearNode(wrap);
@@ -1583,7 +1603,7 @@
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Year"].concat(series.map(s => s.name + " (" + generationUnitLabel(metric) + ")")).forEach(h => {
+    ["Year"].concat(series.map(s => s.name + " (" + generationUnitLabel(metric, unit) + ")")).forEach(h => {
       const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
     });
     thead.appendChild(htr);
@@ -1591,7 +1611,7 @@
     const tbody = document.createElement("tbody");
     years.forEach((y, i) => {
       const tr = document.createElement("tr");
-      const cells = [y].concat(series.map(s => fmtGenerationMetric(metric, s.values[i])));
+      const cells = [y].concat(series.map(s => fmtGenerationMetric(metric, unit, s.values[i])));
       cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
@@ -1615,6 +1635,7 @@
     const view = currentView;
     const detail = currentConsumptionDetail;
     const metric = currentMetric;
+    const unit = currentEnergyUnit;
 
     // Browsers restore a checkbox's checked state across a manual refresh independently of the
     // DOM/JS default, so force it back in line with actual app state on every render (same
@@ -1631,13 +1652,13 @@
       (view === "historical" ? (years[0] + "–" + cy) : cy);
 
     if (view === "historical") {
-      buildConsumptionChartHistorical(container, regionKey, years, detail, metric);
+      buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit);
     } else {
-      buildConsumptionChartLatest(container, regionKey, cy, detail, metric);
+      buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit);
     }
   }
 
-  function buildConsumptionChartLatest(container, regionKey, cy, detail, metric) {
+  function buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit) {
     const cats = consumptionCategories(detail);
     const allFuelsRaw = energyConsumption(regionKey, cy).all_fuels_ktoe;
     const allFuels = metric === "total" ? allFuelsRaw : allFuelsRaw / regionPopulation(regionKey, cy);
@@ -1669,28 +1690,28 @@
       rect.style.cursor = "pointer";
 
       const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      valText.textContent = fmtConsumptionMetric(metric, r.value) + " " + consumptionUnitLabel(metric);
+      valText.textContent = fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit);
 
       rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
       rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
       rect.addEventListener("pointermove", (ev) => {
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
-          ttRow(tt, color, cy + "", fmtConsumptionMetric(metric, r.value) + " " + consumptionUnitLabel(metric) + " (" + fmtRatioPct(r.value / allFuels * 100) + " of total)");
+          ttRow(tt, color, cy + "", fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit) + " (" + fmtRatioPct(r.value / allFuels * 100) + " of total)");
           if (!detail) {
             const breakdown = fuelSimpleBreakdown(regionKey, cy, r.key, metric);
             if (breakdown) {
-              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, sub.value) + " " + consumptionUnitLabel(metric), i === 0));
+              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
             }
           }
         });
       });
     });
 
-    buildConsumptionTableLatest(cy, rows, metric);
+    buildConsumptionTableLatest(cy, rows, metric, unit);
   }
 
-  function buildConsumptionChartHistorical(container, regionKey, years, detail, metric) {
+  function buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit) {
     const cats = consumptionCategories(detail);
     const series = cats.map(c => ({
       key: c.key,
@@ -1719,7 +1740,7 @@
       const yy = yScale(val);
       el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
       const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = fmtConsumptionMetric(metric, val);
+      txt.textContent = fmtConsumptionMetric(metric, unit, val);
     }
 
     const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
@@ -1752,11 +1773,11 @@
       showTooltip(ev.clientX, ev.clientY, (tt) => {
         ttTitle(tt, String(years[idx]));
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
-          ttRow(tt, s.color, s.name, fmtConsumptionMetric(metric, s.values[idx]) + " " + consumptionUnitLabel(metric) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
+          ttRow(tt, s.color, s.name, fmtConsumptionMetric(metric, unit, s.values[idx]) + " " + consumptionUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
           if (!detail) {
             const breakdown = fuelSimpleBreakdown(regionKey, years[idx], s.key, metric);
             if (breakdown) {
-              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, sub.value) + " " + consumptionUnitLabel(metric), i === 0));
+              breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
             }
           }
         });
@@ -1769,10 +1790,10 @@
     series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
     container.appendChild(legendWrap);
 
-    buildConsumptionTableHistorical(years, series, metric);
+    buildConsumptionTableHistorical(years, series, metric, unit);
   }
 
-  function buildConsumptionTableLatest(cy, rows, metric) {
+  function buildConsumptionTableLatest(cy, rows, metric, unit) {
     const wrap = document.getElementById("consumption-table");
     if (!wrap) return;
     clearNode(wrap);
@@ -1780,20 +1801,20 @@
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Source", consumptionUnitLabel(metric) + " (" + cy + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
+    ["Source", consumptionUnitLabel(metric, unit) + " (" + cy + ")"].forEach(h => { const th = document.createElement("th"); th.textContent = h; htr.appendChild(th); });
     thead.appendChild(htr);
     table.appendChild(thead);
     const tbody = document.createElement("tbody");
     rows.forEach(r => {
       const tr = document.createElement("tr");
-      [r.name, fmtConsumptionMetric(metric, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      [r.name, fmtConsumptionMetric(metric, unit, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
     wrap.appendChild(table);
   }
 
-  function buildConsumptionTableHistorical(years, series, metric) {
+  function buildConsumptionTableHistorical(years, series, metric, unit) {
     const wrap = document.getElementById("consumption-table");
     if (!wrap) return;
     clearNode(wrap);
@@ -1801,7 +1822,7 @@
     table.className = "data-table";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
-    ["Year"].concat(series.map(s => s.name + " (" + consumptionUnitLabel(metric) + ")")).forEach(h => {
+    ["Year"].concat(series.map(s => s.name + " (" + consumptionUnitLabel(metric, unit) + ")")).forEach(h => {
       const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
     });
     thead.appendChild(htr);
@@ -1809,7 +1830,7 @@
     const tbody = document.createElement("tbody");
     years.forEach((y, i) => {
       const tr = document.createElement("tr");
-      const cells = [y].concat(series.map(s => fmtConsumptionMetric(metric, s.values[i])));
+      const cells = [y].concat(series.map(s => fmtConsumptionMetric(metric, unit, s.values[i])));
       cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
@@ -1838,6 +1859,13 @@
         "The \"20-year\" view reweights the same underlying gas quantities using GWP20 instead — methane at 84x CO2, roughly 3x higher than under GWP100. Nitrous oxide (N2O), the other major non-CO2 gas here, barely changes between the two (264x vs 265x), since it persists for over a century either way. Nothing about the underlying emissions changes — only how heavily methane counts.",
         "Why it matters: a shorter horizon reflects the urgency of near-term warming and the fact that cutting methane now has an outsized effect on the next few decades' peak temperature — a case increasingly made in climate policy discussion, though GWP100 remains the official reporting basis DESNZ, the UK Government and the UNFCCC use. Areas with more livestock farming or landfill waste (both largely methane) look proportionally worse under the 20-year view than the official 100-year figures suggest; areas dominated by transport and heating (mostly CO2) barely move.",
         "This 20-year view is calculated here, not published by DESNZ — it rescales each gas's contribution to the official CO2e figure by GWP20/GWP100 for that gas (IPCC AR5 Table 8.A.1, without climate-carbon feedbacks: CO2=1/1, CH4=84/28, N2O=264/265). Every other part of the methodology (boundaries, population, sectors) is identical between the two views."
+      ]
+    },
+    "energy-unit-toggle": {
+      title: "MWh-based vs ktoe-based units",
+      body: [
+        "Renewable generation and energy consumption come from two different DESNZ datasets, each published in its own native unit: generation in MWh (shown here as GWh, or kWh per person), consumption in ktoe — kilotonnes of oil equivalent (shown as ktoe, or toe per person). This toggle picks one shared unit family for both charts, named after each dataset's own published unit, and converts whichever chart isn't already in that family using the standard DUKES/IEA factor of 1 toe = 11.63 MWh.",
+        "\"MWh-based\" keeps generation as DESNZ publishes it and converts consumption into GWh / kWh per person. \"ktoe-based\" keeps consumption as DESNZ publishes it and converts generation into ktoe / toe per person. Neither option is more \"correct\" than the other — pick whichever makes the two charts easier to compare directly."
       ]
     },
     "trend-chart": {
@@ -1875,12 +1903,12 @@
       title: "Renewable electricity generation by technology",
       dynamicIntro: () => generationNoteText,
       body: [
-        "Renewable electricity generated within the area's boundary, in GWh, split by technology: Solar (photovoltaics), Wind (onshore + offshore), Hydro, Bioenergy & waste (anaerobic digestion, sewage gas, landfill gas, municipal solid waste, animal and plant biomass, cofiring), and Other (wave/tidal, plus a small residual — see the note further down).",
+        "Renewable electricity generated within the area's boundary, split by technology: Solar (photovoltaics), Wind (onshore + offshore), Hydro, Bioenergy & waste (anaerobic digestion, sewage gas, landfill gas, municipal solid waste, animal and plant biomass, cofiring), and Other (wave/tidal, plus a small residual — see the note further down).",
         "This is generation, not consumption — how much renewable electricity is physically produced within the area, regardless of where it's ultimately used. The figure above compares this to local electricity demand (from DESNZ's separate energy consumption statistics) — but the two aren't directly connected: Great Britain runs on one shared national grid, so electricity generated by a local wind farm or solar array isn't routed to local homes and businesses, it's exported to the grid and pooled with generation from everywhere else, while local demand draws from that same shared pool. A ratio near or above 100% means an area generates roughly as much renewable electricity as it consumes in total, not that it's disconnected from the grid or self-sufficient in practice.",
         "DESNZ suppresses some small per-technology generation figures (shown as \"[X]\" in its source workbook) to avoid revealing individual plants' output — mainly affects Wind, Hydro and Bioenergy in these mostly solar-dominated local authorities. This site treats suppressed cells as 0 for their own technology and folds the (small) gap against DESNZ's own published total into \"Other\", so the bars always sum exactly to DESNZ's figure.",
         "Electricity consumption figures (used for the demand comparison above) are published in ktoe and converted here to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh.",
         "Generation data starts 2014, the first year DESNZ publishes local authority-level renewable generation; consumption data runs 2005–2024, so the demand comparison is only available from 2014 onward.",
-        "Use the control panel above the charts to switch between totals (GWh) and per-person figures (kWh per person) — the demand-comparison percentage is unaffected either way, since it's a ratio of two totals.",
+        "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle above the charts below to switch between GWh/kWh-per-person and ktoe/toe-per-person — see that toggle's own \"i\" button for why. Neither choice affects the demand-comparison percentage above, since it's a ratio of two totals.",
         "For Mid-Hampshire, each technology is the sum of that technology's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
       ],
       link: { href: "https://www.gov.uk/government/statistics/regional-renewable-statistics", label: "gov.uk statistical release" }
@@ -1888,11 +1916,11 @@
     "consumption-chart": {
       title: "Energy consumption by fuel",
       body: [
-        "Total final energy consumed within the area's boundary, in ktoe (kilotonnes of oil equivalent, DESNZ's own unit for this dataset), covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation.",
+        "Total final energy consumed within the area's boundary, covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation. DESNZ publishes this dataset in ktoe (kilotonnes of oil equivalent) — the energy unit toggle just above lets you view it instead in the same GWh/kWh-per-person units as the generation chart; see that toggle's own \"i\" button for details.",
         "The default \"simple\" view groups DESNZ's six published fuel categories into three: Fossil fuels (Coal + Manufactured fuels + Petroleum + Gas), Electricity, and Bioenergy & waste. Tick \"Show all fuel types\" for DESNZ's own six categories individually.",
         "Electricity is kept separate from both \"Fossil fuels\" and \"Bioenergy & waste\" rather than folded into either — the electricity consumed locally is drawn from Great Britain's national grid, whose generation mix (gas, nuclear, wind, solar, imports, etc.) isn't attributed back to the area consuming it by this dataset, so this site can't honestly label it either way.",
         "Oil (petroleum) is typically the largest category here, dominated by road transport fuel — DESNZ's road transport figures are modelled from national/regional fuel sales data apportioned to local authorities, not measured locally.",
-        "Use the control panel above to switch between totals (ktoe) and per-person figures (toe per person).",
+        "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle just above to switch between ktoe/toe-per-person and GWh/kWh-per-person.",
         "For Mid-Hampshire, each fuel is the sum of that fuel's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
       ],
       link: { href: "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level", label: "gov.uk statistical release" }
@@ -2042,6 +2070,17 @@
     renderPageWideCharts();
   }
 
+  // Page-wide (not per-chart) for the same reason as setMetric/setHorizon above: it's one
+  // control-to-chart wiring answered by PAGE_WIDE_CHARTS rather than a hand-picked chart list,
+  // even though only generation/consumption actually read currentEnergyUnit.
+  function setEnergyUnit(unit) {
+    currentEnergyUnit = unit;
+    document.querySelectorAll("[data-energy-unit]").forEach(b => {
+      b.classList.toggle("is-active", b.dataset.energyUnit === unit);
+    });
+    renderPageWideCharts();
+  }
+
   function setView(view) {
     currentView = view;
     document.querySelectorAll("[data-view]").forEach(b => {
@@ -2063,16 +2102,21 @@
     renderPageWideCharts();
   }
 
-  // Keeps the sticky region-toggle row pinned directly under the sticky control panel,
-  // whatever height the panel actually renders at (it wraps to two rows below ~640px wide).
+  // Keeps each sticky bar pinned directly under the one above it, whatever height each actually
+  // renders at (the control panel wraps to two rows below ~640px wide, changing everything
+  // stacked beneath it): control panel -> region toggle -> energy unit toggle.
   function setupStickyOffset() {
     const panel = document.getElementById("control-panel");
+    const regionRow = document.getElementById("region-scoped").querySelector(".region-toggle-row");
     const update = () => {
       document.documentElement.style.setProperty("--control-panel-h", panel.offsetHeight + "px");
+      document.documentElement.style.setProperty("--region-toggle-h", regionRow.offsetHeight + "px");
     };
     update();
     if (window.ResizeObserver) {
-      new ResizeObserver(update).observe(panel);
+      const ro = new ResizeObserver(update);
+      ro.observe(panel);
+      ro.observe(regionRow);
     } else {
       window.addEventListener("resize", update);
     }
@@ -2095,6 +2139,9 @@
     });
     document.querySelectorAll("[data-horizon]").forEach(btn => {
       btn.addEventListener("click", () => setHorizon(btn.dataset.horizon));
+    });
+    document.querySelectorAll("[data-energy-unit]").forEach(btn => {
+      btn.addEventListener("click", () => setEnergyUnit(btn.dataset.energyUnit));
     });
 
     document.getElementById("sector-detail-toggle").addEventListener("change", (ev) => {

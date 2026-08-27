@@ -70,6 +70,19 @@ test("renders without a page error in forced dark mode", async ({ page }) => {
   await expect(page.locator("#trend-chart svg")).toBeVisible();
 });
 
+test("energy unit toggle sits above the generation/consumption charts, not the top control panel, and switches units live", async ({ page }) => {
+  await page.goto("index.html");
+  await expect(page.locator('#control-panel [data-energy-unit]')).toHaveCount(0);
+  await expect(page.locator('#energy-scoped [data-energy-unit="toe"]')).toBeVisible();
+
+  await page.click('.table-toggle[data-target="generation-table"]');
+  await expect(page.locator("#generation-table thead th").nth(1)).toContainText("kWh/person");
+
+  await page.click('[data-energy-unit="toe"]');
+  await expect(page.locator('[data-energy-unit="toe"]')).toHaveClass(/is-active/);
+  await expect(page.locator("#generation-table thead th").nth(1)).toContainText("toe/person");
+});
+
 test("'Compare all constituents' checkbox changes the number of chart bars/lines shown", async ({ page }) => {
   await page.goto("index.html?region=eastleigh");
   await page.click('[data-view="historical"]');

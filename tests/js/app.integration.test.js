@@ -188,6 +188,89 @@ test("info modal opens with non-empty content and closes on Escape", async () =>
   assert.ok(doc.getElementById("modal-overlay").classList.contains("is-hidden"));
 });
 
+test("energy unit toggle lives above the generation/consumption charts, not the top control panel", async () => {
+  const dom = await loadApp();
+  const doc = dom.window.document;
+
+  assert.equal(doc.querySelector("#control-panel [data-energy-unit]"), null,
+    "energy unit toggle should not be in the page-wide control panel");
+
+  const toggle = doc.querySelector('[data-energy-unit="toe"]');
+  assert.ok(toggle, "expected an energy-unit toggle button somewhere on the page");
+
+  const energyScoped = doc.getElementById("energy-scoped");
+  assert.ok(energyScoped, "expected an #energy-scoped wrapper");
+  assert.ok(energyScoped.contains(toggle), "toggle should live inside #energy-scoped");
+  assert.ok(energyScoped.contains(doc.getElementById("generation-chart")));
+  assert.ok(energyScoped.contains(doc.getElementById("consumption-chart")));
+
+  // The three emissions charts don't read currentEnergyUnit, and shouldn't be inside its scope.
+  assert.ok(!energyScoped.contains(doc.getElementById("trend-chart")));
+  assert.ok(!energyScoped.contains(doc.getElementById("sector-chart")));
+  assert.ok(!energyScoped.contains(doc.getElementById("gas-chart")));
+});
+
+test("energy unit toggle converts generation and consumption tables between MWh-based and ktoe-based figures", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const { DATA, ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('.table-toggle[data-target="generation-table"]'));
+  fireClick(window, doc.querySelector('.table-toggle[data-target="consumption-table"]'));
+
+  const gy = ENERGY_DATA.meta.generation_years[ENERGY_DATA.meta.generation_years.length - 1];
+  const cy = ENERGY_DATA.meta.consumption_years[ENERGY_DATA.meta.consumption_years.length - 1];
+  const gen = ENERGY_DATA.regions.winchester.generation[gy];
+  const con = ENERGY_DATA.regions.winchester.consumption[cy];
+  const popGy = DATA.regions.winchester.years[gy].population_thousands;
+  const popCy = DATA.regions.winchester.years[cy].population_thousands;
+  const KTOE_TO_MWH = 11630;
+
+  // Default is per-capita, MWh-based: generation shows its native kWh/person; consumption is
+  // converted from its native toe/person.
+  assert.ok(doc.querySelector('[data-energy-unit="kwh"]').classList.contains("is-active"));
+  let genSum = tableRows(window, "generation-table").reduce((acc, row) => acc + num(row[1]), 0);
+  let conSum = tableRows(window, "consumption-table").reduce((acc, row) => acc + num(row[1]), 0);
+  const expectedGenKwh = gen.total_mwh / popGy;
+  const expectedConKwh = (con.all_fuels_ktoe / popCy) * KTOE_TO_MWH;
+  assert.ok(Math.abs(genSum - expectedGenKwh) < 0.5,
+    `generation table sums to ${genSum} kWh/person, expected ~${expectedGenKwh}`);
+  assert.ok(Math.abs(conSum - expectedConKwh) < 5,
+    `consumption table sums to ${conSum} kWh/person, expected ~${expectedConKwh}`);
+
+  // Switch to ktoe-based: generation is now converted, consumption reverts to its native figure.
+  fireClick(window, doc.querySelector('[data-energy-unit="toe"]'));
+  assert.ok(doc.querySelector('[data-energy-unit="toe"]').classList.contains("is-active"));
+  assert.ok(!doc.querySelector('[data-energy-unit="kwh"]').classList.contains("is-active"));
+  genSum = tableRows(window, "generation-table").reduce((acc, row) => acc + num(row[1]), 0);
+  conSum = tableRows(window, "consumption-table").reduce((acc, row) => acc + num(row[1]), 0);
+  const expectedGenToe = expectedGenKwh / KTOE_TO_MWH;
+  const expectedConToe = con.all_fuels_ktoe / popCy;
+  assert.ok(Math.abs(genSum - expectedGenToe) < 0.05,
+    `generation table sums to ${genSum} toe/person, expected ~${expectedGenToe}`);
+  assert.ok(Math.abs(conSum - expectedConToe) < 0.05,
+    `consumption table sums to ${conSum} toe/person, expected ~${expectedConToe}`);
+});
+
+test("energy unit toggle can be switched in every metric/view combination without error", async () => {
+  const dom = await loadApp();
+  const { window } = dom;
+  const doc = window.document;
+
+  for (const view of ["latest", "historical"]) {
+    fireClick(window, doc.querySelector(`[data-view="${view}"]`));
+    for (const metric of ["per_capita", "total"]) {
+      fireClick(window, doc.querySelector(`[data-metric="${metric}"]`));
+      for (const unit of ["kwh", "toe"]) {
+        fireClick(window, doc.querySelector(`[data-energy-unit="${unit}"]`));
+      }
+    }
+  }
+
+  assert.deepEqual(dom.errors, [], `unexpected error(s) while cycling energy unit x metric x view: ${dom.errors.map(String)}`);
+});
+
 test("generation chart's info modal shows a % of demand figure consistent with the raw MWh totals", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;

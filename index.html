@@ -106,6 +106,15 @@
       <div class="table-scroll is-hidden" id="gas-table"></div>
     </div>
 
+    <div class="energy-scoped" id="energy-scoped">
+    <div class="energy-unit-row" id="energy-unit-row" role="group" aria-label="Choose energy unit">
+      <div class="seg-toggle">
+        <button class="seg-btn is-active" data-energy-unit="kwh">MWh-based</button>
+        <button class="seg-btn" data-energy-unit="toe">ktoe-based</button>
+      </div>
+      <button class="info-btn" data-info="energy-unit-toggle" aria-label="About this unit toggle">i</button>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <h2 id="generation-chart-title">Winchester renewable electricity generation by technology, 2024</h2>
@@ -130,6 +139,8 @@
       <div class="chart-wrap" id="consumption-chart"></div>
       <button class="table-toggle" data-target="consumption-table">Show as table</button>
       <div class="table-scroll is-hidden" id="consumption-table"></div>
+    </div>
+
     </div>
 
     </div>

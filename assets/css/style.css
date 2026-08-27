@@ -113,6 +113,21 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
   padding: 10px 16px; margin-bottom: 22px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
+
+/* ---------- Energy unit toggle ---------- */
+/* Only the generation and consumption charts read this control, unlike the page-wide control
+   panel and region toggle above — so it lives right above those two charts instead, and (like
+   the region toggle) stops sticking once its own section (this row plus the two energy cards
+   below it) scrolls past. Stacks below both the control panel and the region toggle, so its
+   sticky offset is their two heights combined — both kept in sync with their real rendered
+   heights by the same ResizeObserver in app.js that already tracks --control-panel-h. */
+.energy-unit-row {
+  display: flex; align-items: center; gap: 10px; overflow-x: auto;
+  position: sticky; top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px)); z-index: 20;
+  background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px;
+  padding: 10px 16px; margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
 .seg-btn {
   font: inherit; font-size: 0.95rem; font-weight: 500; padding: 9px 16px;
   background: var(--surface-1); color: var(--text-secondary); border: none; cursor: pointer;
@@ -255,11 +270,11 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
   .brand-text h1 { font-size: 1.15rem; }
 }
 
-/* Both sticky bars stay pinned while scrolling on mobile, so they need to stay a single
+/* All three sticky bars stay pinned while scrolling on mobile, so they need to stay a single
    compact row rather than wrapping to two or three — wrapping would eat a large chunk of a
    phone viewport permanently. Buttons shrink and the row scrolls horizontally instead. */
 @media (max-width: 640px) {
-  .control-panel, .region-toggle-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
+  .control-panel, .region-toggle-row, .energy-unit-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
   .control-group { flex: none; }
   .control-panel .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
   #region-select { padding: 7px 30px 7px 10px; font-size: 0.88rem; }
