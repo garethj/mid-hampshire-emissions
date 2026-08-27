@@ -293,6 +293,13 @@
     return sign + n.toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + "%";
   }
 
+  // population_thousands (e.g. 212.345) as a person count, rounded to the nearest hundred —
+  // DESNZ's mid-year estimates aren't precise to the individual, so showing exact ones would be
+  // false precision.
+  function fmtPopulation(thousands) {
+    return (Math.round(thousands * 10) * 100).toLocaleString("en-GB");
+  }
+
   // Metric-aware formatting: "total" is kt CO2e (whole numbers), "per_capita" is t CO2e per person (2dp).
   function fmtValue(metric, n) {
     return metric === "total" ? fmtKt(n) : fmtPerCapita(n);
@@ -419,10 +426,13 @@
   // groupFirst marks the first row of a breakdown group explicitly (rather than relying on a
   // CSS :first-of-type, which would only catch the very first .tt-subrow in the whole tooltip —
   // wrong when more than one hovered row has its own breakdown, e.g. the historical crosshair
-  // showing several series at once).
-  function ttSubRow(parent, label, value, groupFirst) {
+  // showing several series at once). groupLast marks the last row of a group whose tooltip
+  // keeps going with another row afterwards belonging to a *different* parent (e.g. the next
+  // region in a multi-region crosshair) — the divider goes after this row instead of before it,
+  // so it reads as closing this group rather than detaching this row from its own parent above.
+  function ttSubRow(parent, label, value, groupFirst, groupLast) {
     const row = document.createElement("div");
-    row.className = "tt-row tt-subrow" + (groupFirst ? " tt-subrow-first" : "");
+    row.className = "tt-row tt-subrow" + (groupFirst ? " tt-subrow-first" : "") + (groupLast ? " tt-subrow-last" : "");
     const key = document.createElement("div");
     key.className = "tt-key";
     const labelSpan = document.createElement("span");
@@ -434,6 +444,17 @@
     row.appendChild(key);
     row.appendChild(val);
     parent.appendChild(row);
+  }
+
+  // Muted "Population" subrow showing the person count a per-capita figure was divided by —
+  // only relevant under the per-capita metric (population isn't part of the "total" calculation,
+  // so it'd be noise there), and only when that region/year actually has a population figure
+  // (the historical trend chart's post-latest-year "required pathway" points don't).
+  function ttPopulationRow(tt, regionKey, year, metric, groupFirst, groupLast) {
+    if (metric !== "per_capita") return;
+    const yd = DATA.regions[regionKey] && DATA.regions[regionKey].years[year];
+    if (!yd) return;
+    ttSubRow(tt, "Population", fmtPopulation(yd.population_thousands), groupFirst, groupLast);
   }
 
   // ---------------- data access ----------------
@@ -869,6 +890,7 @@
             text += " (" + fmtPct((val - s.values[idx - 1]) / s.values[idx - 1] * 100) + " vs " + years[idx - 1] + ")";
           }
           ttRow(tt, s.color, s.label, text);
+          ttPopulationRow(tt, s.key, year, metric, false, true);
         });
       });
     });
@@ -937,6 +959,7 @@
           const prev = prevValues[i];
           const deltaText = " (" + fmtPct((value - prev) / prev * 100) + " vs " + py + ")";
           ttRow(tt, r.color, unitLabel(metric), fmtValue(metric, value) + deltaText);
+          ttPopulationRow(tt, r.key, ly, metric, true);
         });
       });
     });
@@ -1102,6 +1125,7 @@
               ttSubRow(tt, shortSubsectorLabel(sub.sector, sub.name), fmtValue(metric, sub.value) + " " + unitShort(metric), i === 0);
             });
           }
+          ttPopulationRow(tt, regionKey, ly, metric, true);
         });
       });
     });
@@ -1175,6 +1199,7 @@
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
           ttRow(tt, s.color, s.name, fmtValue(metric, s.values[idx]) + " " + unitShort(metric) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
         });
+        ttPopulationRow(tt, regionKey, years[idx], metric, true);
       });
     });
     hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
@@ -1295,6 +1320,7 @@
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
           ttRow(tt, color, ly + "", fmtValue(metric, r.value) + " " + unitLabel(metric) + " (" + fmtRatioPct(r.value / regionTotal * 100) + " of total)");
+          ttPopulationRow(tt, regionKey, ly, metric, true);
         });
       });
     });
@@ -1366,6 +1392,7 @@
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
           ttRow(tt, s.color, s.name, fmtValue(metric, s.values[idx]) + " " + unitShort(metric) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
         });
+        ttPopulationRow(tt, regionKey, years[idx], metric, true);
       });
     });
     hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
@@ -1498,6 +1525,7 @@
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
           ttRow(tt, color, gy + "", fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(r.value / total * 100) + " of total)");
+          ttPopulationRow(tt, regionKey, gy, metric, true);
         });
       });
     });
@@ -1567,6 +1595,7 @@
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
           ttRow(tt, s.color, s.name, fmtGenerationMetric(metric, unit, s.values[idx]) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
         });
+        ttPopulationRow(tt, regionKey, years[idx], metric, true);
       });
     });
     hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
@@ -1709,6 +1738,7 @@
               breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
             }
           }
+          ttPopulationRow(tt, regionKey, cy, metric, true);
         });
       });
     });
@@ -1786,6 +1816,7 @@
             }
           }
         });
+        ttPopulationRow(tt, regionKey, years[idx], metric, true);
       });
     });
     hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
@@ -1854,6 +1885,14 @@
         "Hampshire and the Solent is the Combined County Authority established 4 June 2026 (SI 2026/595), covering the whole of Hampshire plus Portsmouth, Southampton and the Isle of Wight — the strategic tier every other region here sits underneath. Unlike the four new unitaries, this one already exists, and its footprint isn't affected by exactly where any moving parish ends up, since they all stay inside it either way.",
         "The historic districts and current unitaries always show today's whole-district figures — not an LGR-adjusted fragment — even though a few of them also contribute a population-weighted slice to a neighbouring proposed unitary's total.",
         "The new-unitary decision is subject to a judicial review sought by Hampshire County Council, so these boundaries are the current best information, not guaranteed final."
+      ]
+    },
+    "metric-toggle": {
+      title: "Totals vs per-person figures",
+      body: [
+        "\"Totals\" is each region's raw figure — kt CO2e for emissions, GWh/ktoe for energy. \"Per person\" divides that same figure by the region's population, so different-sized areas can be compared on equal terms (Southampton's total emissions dwarf Winchester's largely because it has far more people, not because each resident emits more).",
+        "The population used is DESNZ's own mid-year population estimate, published in the same dataset as the emissions figures (not a separate Census or ONS source). For a composite region — a proposed unitary, or Hampshire and the Solent — it's summed across the constituent local authorities the same way emissions are summed, including the same population-weighted scaling for the three historic districts split by the Local Government Reorganisation boundary change (see the region selector's \"i\" button, and \"Full methodology & sources\" below).",
+        "Hover any chart while \"Per person\" is selected to see the actual population figure a given region/year was divided by, alongside the value itself."
       ]
     },
     "horizon-toggle": {
