@@ -32,6 +32,10 @@ data/fetch_source.py        downloads/updates data/emissions_source.csv from the
 data/process.py             turns the raw emissions CSV above into the two pre-processed emissions files above
 data/fetch_energy_source.py downloads/updates the two raw energy workbooks above from the current DESNZ releases
 data/process_energy.py      turns the raw energy workbooks above into the two pre-processed energy files above (requires the `openpyxl` package)
+data/tests/                 Python tests: la_config.py structure, pipeline fixture tests, and invariant checks against the committed data files — see "Running the tests" below
+tests/js/                   jsdom integration tests against the real index.html + app.js
+tests/playwright/           real-browser UI smoke suite (run manually, not part of the pre-commit gate)
+.githooks/pre-commit        the pre-commit test gate (opt in with `git config core.hooksPath .githooks`)
 ```
 
 ## Getting the raw source data
@@ -58,6 +62,29 @@ DESNZ typically publishes new releases each summer. To refresh:
 ## Local development
 
 No build step, no server. Just open `index.html` directly in a browser (double-click it, or `open index.html`). Data loads via a `<script>` tag rather than `fetch`, so it works straight from disk (`file://`) — Chrome and other browsers block `fetch` of local files as a NetworkError, which a plain script tag isn't subject to.
+
+## Running the tests
+
+The site itself has no dependencies, but the test suite does — `npm install` once to pull them in (see `package.json`; nothing here affects the shipped site). Three tiers, of increasing cost:
+
+```
+data/tests/            Python: la_config.py structure, pipeline fixture tests (process.py/process_energy.py
+                        run against tiny synthetic source files), and invariant checks against the committed
+                        mid_hampshire_emissions.json/mid_hampshire_energy.json (sector/gas/region sums,
+                        per-capita, GWP20 rescaling, suppression folding, cross-hierarchy consistency).
+                        Run: npm run test:data  (or python3 -m unittest discover -s data/tests -p "test_*.py")
+
+tests/js/               jsdom integration tests against the real index.html + app.js — drives every one of
+                        the 19 regions through every metric/view/horizon combination (checking nothing
+                        throws), plus targeted checks that rendered table/modal values match DATA/ENERGY_DATA.
+                        Run: npm run test:js
+
+tests/playwright/       A small real-browser smoke suite (rendering, CSS show/hide, light/dark theme, deep
+                        links) — not part of the pre-commit gate (needs a downloaded browser, slower). Run
+                        manually as needed: npm run test:ui  (first time: npx playwright install chromium)
+```
+
+`npm test` runs the first two tiers together — the same ones a pre-commit hook runs. To have git run them automatically before every commit: `git config core.hooksPath .githooks` (one-time, local to your checkout; see `.githooks/pre-commit`).
 
 ## Known limitations
 

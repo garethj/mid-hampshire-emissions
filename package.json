@@ -1,0 +1,15 @@
+{
+  "name": "mid-hampshire-emissions-tests",
+  "private": true,
+  "description": "Dev-only test tooling for the Hampshire Emissions Explorer. The site itself has no build step or dependencies — this package.json exists purely so the test suite (jsdom integration tests + Playwright UI smoke tests) has somewhere to declare its own dependencies.",
+  "scripts": {
+    "test": "npm run test:data && npm run test:js",
+    "test:data": "python3 -m unittest discover -s data/tests -p \"test_*.py\"",
+    "test:js": "node --test \"tests/js/**/*.test.js\"",
+    "test:ui": "playwright test --config tests/playwright/playwright.config.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "jsdom": "^25.0.0"
+  }
+}

@@ -1,0 +1,16 @@
+#!/bin/sh
+# Data-and-calculation regression gate — runs the fast test tiers (Python pipeline/fixture tests,
+# committed-JSON invariant checks, jsdom app.js integration tests) before every commit. Does NOT
+# run the Playwright UI smoke suite (tests/playwright/) — that needs a browser download and is
+# slow, so it's run manually via `npm run test:ui` instead. See README.md "Running the tests".
+#
+# One-time setup to activate this hook: git config core.hooksPath .githooks
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+echo "Running data validation tests..."
+python3 -m unittest discover -s data/tests -p "test_*.py"
+
+echo "Running app.js integration tests..."
+node --test "tests/js/**/*.test.js"
