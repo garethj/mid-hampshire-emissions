@@ -70,6 +70,21 @@ test("renders without a page error in forced dark mode", async ({ page }) => {
   await expect(page.locator("#trend-chart svg")).toBeVisible();
 });
 
+test("modal title and close button stay in view when the body content is scrolled", async ({ page }) => {
+  await page.goto("index.html");
+  // "Full methodology & sources" is the longest dialog on the site, tall enough to scroll on any
+  // reasonably-sized viewport.
+  await page.click('[data-info="general-methodology"]');
+  const before = await page.locator("#modal-close").boundingBox();
+
+  await page.locator("#modal-body").evaluate((el) => { el.scrollTop = el.scrollHeight; });
+  const after = await page.locator("#modal-close").boundingBox();
+
+  expect(after).toEqual(before);
+  await expect(page.locator("#modal-close")).toBeInViewport();
+  await expect(page.locator("#modal-title")).toBeInViewport();
+});
+
 test("energy unit toggle sits above the generation/consumption charts, not the top control panel, and switches units live", async ({ page }) => {
   await page.goto("index.html");
   await expect(page.locator('#control-panel [data-energy-unit]')).toHaveCount(0);

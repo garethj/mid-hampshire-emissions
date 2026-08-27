@@ -249,16 +249,26 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
   align-items: center; justify-content: center; padding: 20px; z-index: 100;
 }
 .modal-overlay.is-hidden { display: none; }
+/* The title and close button live in their own non-scrolling head, separate from the scrolling
+   body below — otherwise, on a long entry (e.g. "Full methodology & sources"), scrolling down to
+   read the rest pushes the close button off the top of the screen too, forcing a scroll back up
+   just to dismiss the dialog. */
 .modal {
-  background: var(--surface-1); border-radius: 12px; padding: 24px 26px; max-width: 480px;
-  width: 100%; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  background: var(--surface-1); border-radius: 12px; max-width: 480px;
+  width: 100%; max-height: 80vh; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  display: flex; flex-direction: column;
 }
-.modal h3 { font-size: 1.1rem; margin-bottom: 12px; padding-right: 20px; }
+.modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  flex: none; padding: 24px 26px 12px;
+}
+.modal h3 { font-size: 1.1rem; margin: 0; }
+#modal-body { overflow-y: auto; min-height: 0; padding: 0 26px 24px; }
 .modal p { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 10px; }
 .modal p:last-child { margin-bottom: 0; }
 .modal a { color: var(--brand); }
 .modal-close {
-  position: absolute; top: 14px; right: 14px; background: none; border: none; font-size: 1.4rem;
+  flex: none; background: none; border: none; font-size: 1.4rem;
   line-height: 1; color: var(--text-muted); cursor: pointer; padding: 4px;
 }
 .modal-close:hover { color: var(--text-primary); }
