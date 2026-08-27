@@ -17,6 +17,7 @@ Live site: hosted on GitHub Pages from this repo's `main` branch, `/` root.
 ## Structure
 
 ```
+refresh_data.py             checks DESNZ for new releases and regenerates the data files below if there are any — see "Updating the data for a new year" below
 index.html                 the whole app (dashboard + modal)
 assets/css/style.css       styling, incl. light/dark theme tokens
 assets/js/app.js           data loading, chart rendering (hand-rolled SVG), interactivity
@@ -52,12 +53,21 @@ Each finds the newest release on the relevant DESNZ collection/statistics page, 
 
 ## Updating the data for a new year
 
-DESNZ typically publishes new releases each summer. To refresh:
+DESNZ typically publishes new releases each summer. From the repo root, run:
 
-1. From the `data/` directory, run `python3 fetch_source.py` to pull the latest `emissions_source.csv` (see above).
-2. Still in `data/`, run `python3 process.py`. It filters the CSV to the 14 local authorities needed across every region (see `ALL_LAS` in `data/la_config.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, and builds all 19 regions from the single `REGION_DEFS` list in `data/la_config.py` — each split-district region (Mid-Hampshire, South East Hampshire, South West Hampshire) scales the affected districts' contributions down by their fixed 2021 Census parish-population fractions (`MID_HAMPSHIRE_RETAINED_FRACTION`/`MOVED_FRACTION`) — and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place. It also reads the CSV's per-row `Greenhouse gas` column to compute a parallel 20-year-GWP ("gwp20") view of every figure alongside the official 100-year one — see `GWP100`/`GWP20` in `process.py`.
-3. Run `python3 fetch_energy_source.py` to pull the latest renewable electricity and energy consumption workbooks, then `python3 process_energy.py` to regenerate `mid_hampshire_energy.json`/`.js` — same 14 local authorities and `REGION_DEFS` as above, but two separate DESNZ dataset families (see the in-app generation/consumption charts' own "i" buttons for technology/fuel grouping and disclosure-suppression handling).
-4. Commit the four regenerated output files (not the raw source files, which stay gitignored). No other changes needed — the app reads whatever years/sectors/technologies are in the files.
+```
+python3 refresh_data.py
+```
+
+This checks both DESNZ collections for a newer release than the local copy (comparing file size, same as the fetch scripts below), and only regenerates the data files for whichever dataset actually has new data — if neither has, it exits having changed nothing, including the committed `mid_hampshire_*` files (`process.py`/`process_energy.py` stamp a fresh "generated" date on every run, so running them unconditionally would dirty those files on every check even with no real change). Pass `--force` to re-download and regenerate both unconditionally. Safe to re-run any time, e.g. from a `cron` job checking for a new release.
+
+Under the hood, for whichever dataset changed:
+
+1. `data/fetch_source.py` pulls the latest `emissions_source.csv` (see "Getting the raw source data" below).
+2. `data/process.py` filters the CSV to the 14 local authorities needed across every region (see `ALL_LAS` in `data/la_config.py`), sums territorial emissions across gases and sub-sectors per year/sector, computes per-capita figures, and builds all 19 regions from the single `REGION_DEFS` list in `data/la_config.py` — each split-district region (Mid-Hampshire, South East Hampshire, South West Hampshire) scales the affected districts' contributions down by their fixed 2021 Census parish-population fractions (`MID_HAMPSHIRE_RETAINED_FRACTION`/`MOVED_FRACTION`) — and overwrites both `mid_hampshire_emissions.json` and `mid_hampshire_emissions.js` in place. It also reads the CSV's per-row `Greenhouse gas` column to compute a parallel 20-year-GWP ("gwp20") view of every figure alongside the official 100-year one — see `GWP100`/`GWP20` in `process.py`.
+3. `data/fetch_energy_source.py` pulls the latest renewable electricity and energy consumption workbooks, then `data/process_energy.py` regenerates `mid_hampshire_energy.json`/`.js` — same 14 local authorities and `REGION_DEFS` as above, but two separate DESNZ dataset families (see the in-app generation/consumption charts' own "i" buttons for technology/fuel grouping and disclosure-suppression handling).
+
+Then commit whichever of the four output files `refresh_data.py` reports as regenerated (not the raw source files, which stay gitignored). No other changes needed — the app reads whatever years/sectors/technologies are in the files.
 
 ## Local development
 
