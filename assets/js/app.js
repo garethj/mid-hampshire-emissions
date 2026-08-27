@@ -271,6 +271,11 @@
     return categoryColor(key);
   }
 
+  function formatIsoDate(isoDate) {
+    const d = new Date(isoDate + "T00:00:00Z");
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  }
+
   function fmtKt(n) {
     return Number(n).toLocaleString("en-GB", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
   }
@@ -1939,7 +1944,8 @@
         ["Isle of Wight, Portsmouth, Southampton as current unitaries", "Unaffected by the LGR decision as separate regions in their own right — Isle of Wight stays a standalone unitary under the new structure too; Portsmouth and Southampton are absorbed into South East/South West Hampshire respectively from 1 April 2028, but their own figures here are simply today's DESNZ district totals."],
         ["Hampshire and the Solent boundary", "Hampshire County Council + Portsmouth + Southampton + Isle of Wight, per the Hampshire and the Solent Combined County Authority Regulations 2026 (SI 2026/595). Hampshire CC itself isn't a DESNZ-reporting unit, so this is modelled as the sum of all 11 current Hampshire districts plus Portsmouth, Southampton and Isle of Wight, using whole-district figures throughout (this total doesn't need any parish-level adjustment, since it doesn't matter which new unitary those parishes end up in — they stay inside Hampshire and the Solent either way). Equivalently, it's the sum of the four proposed unitaries plus Isle of Wight, which this site's own data pipeline checks against directly."],
         ["Population / per-person", "DESNZ mid-year population estimates, included in the same dataset, summed the same way as emissions for each region (and scaled down per district for Mid-Hampshire/South East/South West Hampshire, as above)."],
-        ["Update cycle", "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed 4 August 2026 and is updated manually when a new release lands."],
+        ["Update cycle", () => "DESNZ typically publishes new figures each summer, roughly 18–24 months behind the current year. This site's data was last refreshed " + formatIsoDate(DATA.meta.generated) + " and is updated manually when a new release lands."],
+        ["Comparing to other published figures", "DESNZ revises prior years' figures on every release, not just the newest year — so a district's total for a given year (e.g. 2023) can shift slightly between the release that first published it and each subsequent one. A figure quoted elsewhere (a council webpage, a climate action plan) may be citing an earlier DESNZ release than the one this site uses — check the release date before assuming a discrepancy is an error in either source."],
         ["Energy data", "Renewable electricity generation by technology (2014–2024) and energy consumption by fuel (2005–2024), both from DESNZ, at local authority level, aggregated to every region here the same way as the emissions figures above. See each energy chart's own \"i\" button for category grouping and unit conversions."],
         ["Data & code", "Every figure on this site traces back to the single published DESNZ CSV linked below, with the affected districts' contributions scaled using 2021 Census parish population shares (see the boundary notes above) — nothing else here is estimated or modelled."]
       ],
@@ -1969,7 +1975,7 @@
       const dl = document.createElement("dl");
       info.dl.forEach(([dt, dd]) => {
         const dtEl = document.createElement("dt"); dtEl.textContent = dt;
-        const ddEl = document.createElement("dd"); ddEl.textContent = dd;
+        const ddEl = document.createElement("dd"); ddEl.textContent = typeof dd === "function" ? dd() : dd;
         dl.appendChild(dtEl); dl.appendChild(ddEl);
       });
       body.appendChild(dl);
