@@ -106,3 +106,56 @@ test("'Compare all constituents' checkbox changes the number of chart bars/lines
   const after = await page.locator("#trend-chart .legend-item").count();
   expect(after).not.toBe(before);
 });
+
+// Regression test for a real bug: the generation and consumption "latest" bar charts placed each
+// bar's value+unit label in a *fixed*-width right margin. A shorter bar leaves unused plot space
+// for its label to spill into before hitting the SVG's edge, but the chart's longest bar already
+// fills the full plot width, so its label has only that fixed margin to work with — if the label
+// text (e.g. "84,519.7 kWh/person") is wider than the margin, it gets clipped exactly there. Only
+// a real browser can measure actual rendered text width (jsdom's getBBox always returns zeros),
+// which is why this lives here rather than in the jsdom suite.
+async function overflowingValueLabels(page, svgSelector) {
+  return page.locator(svgSelector).evaluate((svg) => {
+    const vb = svg.viewBox.baseVal;
+    return Array.from(svg.querySelectorAll('text[font-weight="700"]'))
+      .map((t) => {
+        const box = t.getBBox();
+        return { text: t.textContent, right: box.x + box.width, vbRight: vb.x + vb.width };
+      })
+      .filter((r) => r.right > r.vbRight + 0.5); // small tolerance for sub-pixel rounding
+  });
+}
+
+test("bar chart value labels never overflow the chart's SVG viewBox, even for the longest bar", async ({ page }) => {
+  // New Forest is the known worst case (its Fossil fuels bar is the longest in the site, and its
+  // value label — "84,519.7 kWh/person" — is one of the widest), but Hampshire and the Solent
+  // (largest totals) and Winchester (the default, smallest numbers) exercise the same code path
+  // at very different magnitudes.
+  for (const region of ["new-forest", "hampshire-solent", "winchester"]) {
+    await page.goto(`index.html?region=${region}`);
+    await page.click('[data-view="latest"]');
+
+    for (const metric of ["per_capita", "total"]) {
+      await page.click(`[data-metric="${metric}"]`);
+      for (const unit of ["kwh", "toe"]) {
+        await page.click(`[data-energy-unit="${unit}"]`);
+
+        let overflow = await overflowingValueLabels(page, "#generation-chart svg");
+        expect(overflow, `generation chart (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+
+        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+        expect(overflow, `consumption chart, By fuel type (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+
+        await page.check("#consumption-detail-toggle");
+        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+        expect(overflow, `consumption chart, all fuel types (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+        await page.uncheck("#consumption-detail-toggle");
+
+        await page.click('[data-consumption-view="sector"]');
+        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+        expect(overflow, `consumption chart, By sector (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+        await page.click('[data-consumption-view="fuel"]');
+      }
+    }
+  }
+});

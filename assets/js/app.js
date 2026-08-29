@@ -260,6 +260,20 @@
 
   // ---------------- helpers ----------------
 
+  // Rough (deliberately generous) estimate of a bold value-label's rendered width in this
+  // chart family's font — used to size a "latest" bar chart's right margin from the actual
+  // label text, rather than a fixed guess. A fixed margin clips the *longest* bar's label
+  // specifically: a shorter bar leaves unused plot space for its label to spill into before
+  // hitting the SVG's edge, but the longest bar's bar already fills the full plot width, so its
+  // label has only the fixed margin to work with — if that's narrower than the label, it's cut
+  // off exactly there (as seen on New Forest's Solar and Fossil fuels bars). Calibrated against
+  // real rendered text (Chromium, Roboto, 12.5px bold): observed ~6.1-6.6 px/char across a range
+  // of formatted value+unit strings; 7.5 leaves headroom for font-rendering differences across
+  // browsers/platforms.
+  function estimateLabelWidth(text) {
+    return text.length * 7.5;
+  }
+
   function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
@@ -1525,9 +1539,13 @@
     const total = generationMetricValue(regionKey, gy, gen.total_mwh, metric);
     const rows = ENERGY_TECH_ORDER.map(t => ({ name: t, value: generationMetricValue(regionKey, gy, gen.by_technology_mwh[t], metric) }))
       .sort((a, b) => b.value - a.value);
+    const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
-    const M = { top: 10, right: 80, bottom: 10, left: 150 };
+    // Right margin sized from the widest value label actually being rendered (see
+    // estimateLabelWidth above) rather than a fixed guess, so the longest bar's label — the one
+    // with no unused plot space to spill into — always has room.
+    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: 150 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
@@ -1551,7 +1569,7 @@
       rect.style.cursor = "pointer";
 
       const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      valText.textContent = fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit);
+      valText.textContent = valueLabels[i];
 
       rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
       rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
@@ -1740,12 +1758,16 @@
     const allFuels = metric === "total" ? allFuelsRaw : allFuelsRaw / regionPopulation(regionKey, cy);
     const rows = cats.map(c => ({ key: c.key, name: c.label, value: consumptionValue(regionKey, cy, c.key, detail, metric, axis) }))
       .sort((a, b) => b.value - a.value);
+    const valueLabels = rows.map(r => fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit));
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
     // The sector axis's "Industrial, commercial & other" label is longer than any fuel-type
     // label this margin was originally sized for (the previous longest, "Manufactured fuels",
     // fits comfortably at 150) — widen it for that axis so the label isn't clipped.
-    const M = { top: 10, right: 80, bottom: 10, left: axis === "sector" ? 230 : 150 };
+    // Right margin sized from the widest value label actually being rendered (see
+    // estimateLabelWidth above) rather than a fixed guess, so the longest bar's label — the one
+    // with no unused plot space to spill into — always has room.
+    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: axis === "sector" ? 230 : 150 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
@@ -1769,7 +1791,7 @@
       rect.style.cursor = "pointer";
 
       const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      valText.textContent = fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit);
+      valText.textContent = valueLabels[i];
 
       rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
       rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
