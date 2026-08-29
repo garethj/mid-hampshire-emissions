@@ -10,6 +10,7 @@
   let currentView = "latest"; // "latest" | "historical"
   let currentDetail = false; // show sector chart as sub-sectors (latest view only)
   let currentConsumptionDetail = false; // show consumption chart as all fuel types instead of simple groups
+  let currentConsumptionView = "fuel"; // "fuel" (by fuel type) | "sector" (by Domestic/Transport/Industrial)
   let currentHorizon = "gwp100"; // "gwp100" (official DESNZ) | "gwp20"
   // "kwh" (GWh / kWh per person) | "toe" (ktoe / toe per person) — shared display unit for the
   // generation and consumption charts, which otherwise show each dataset's own native unit (see
@@ -157,6 +158,20 @@
     "Bioenergy & waste": ["Bioenergy and wastes"]
   };
 
+  // Matches ENERGY_DATA.meta.sector_categories (see process_energy.py) — the consumption chart's
+  // alternate breakdown axis: the same "All fuels: Total" figure split by sector (Domestic /
+  // Transport / Industrial, Commercial and other) instead of by fuel type. Toggled against
+  // FUEL_ORDER/FUEL_SIMPLE_GROUPS above, never shown alongside them, so it doesn't need its own
+  // simple/detailed split. This view exists specifically to make visible when a large industrial
+  // or commercial energy user (not local households) is driving an area's consumption total —
+  // see meta.note_industrial_consumption.
+  const CONSUMPTION_SECTOR_ORDER = ["Domestic", "Transport", "Industrial, Commercial and other"];
+  const CONSUMPTION_SECTOR_LABEL = {
+    Domestic: "Domestic",
+    Transport: "Transport",
+    "Industrial, Commercial and other": "Industrial, commercial & other"
+  };
+
   // ---------------- category colours ----------------
   // Every named category on this site (sector, gas, technology, fuel, region) gets a *fixed*
   // colour by identity, not by its position in whatever array or sort order happens to render
@@ -230,8 +245,17 @@
     // these get their own slot rather than inheriting one component's colour arbitrarily.
     // Violet rather than the more obvious orange ("generic fossil" hue) because this group sits
     // next to Electricity's yellow, and orange-yellow also fails CVD separation.
-    "Fossil fuels": 7   // violet
+    "Fossil fuels": 7,   // violet
     // "Electricity" and "Bioenergy & waste" simple-view groups reuse the slots above directly.
+
+    // Energy consumption by sector — the consumption chart's alternate view (toggled against the
+    // by-fuel-type view above, never shown together). "Domestic" and "Transport" reuse the exact
+    // same slots as their emissions-sector namesakes above, since they're the same real-world
+    // category. "Industrial, Commercial and other" gets its own slot (Industry's red) as the
+    // dominant real-world driver of that bucket — CONSUMPTION_SECTOR_ORDER is deliberately
+    // ordered (Domestic, Transport, Industrial...) so this red slot sits next to Transport's blue
+    // rather than Domestic's orange, since red-orange adjacency fails CVD separation (see above).
+    "Industrial, Commercial and other": 8   // red — shares Industry's slot
   };
 
   // ---------------- helpers ----------------
@@ -587,8 +611,16 @@
   }
 
   // "Simple" categories collapse FUEL_ORDER into FUEL_SIMPLE_GROUPS; "complex" uses FUEL_ORDER
-  // directly. Returns [{key, label}], where key is what consumptionValue expects back.
-  function consumptionCategories(detail) {
+  // directly; "sector" (axis === "sector") ignores detail entirely and uses
+  // CONSUMPTION_SECTOR_ORDER instead — a different breakdown axis of the same total, with no
+  // simple/detailed split of its own. "axis" here is currentConsumptionView (fuel/sector) — kept
+  // as its own name rather than "breakdown" since that word already means something else nearby
+  // (fuelSimpleBreakdown's per-fuel drill-down rows). Returns [{key, label}], where key is what
+  // consumptionValue expects back.
+  function consumptionCategories(detail, axis) {
+    if (axis === "sector") {
+      return CONSUMPTION_SECTOR_ORDER.map(s => ({ key: s, label: CONSUMPTION_SECTOR_LABEL[s] }));
+    }
     return detail
       ? FUEL_ORDER.map(f => ({ key: f, label: FUEL_LABEL[f] }))
       : Object.keys(FUEL_SIMPLE_GROUPS).map(g => ({ key: g, label: g }));
@@ -596,12 +628,14 @@
 
   // Consumption is stored in ktoe. "Totals" keeps that; "Per person" divides by
   // population-in-thousands, cancelling to toe/person (mirrors generationMetricValue above).
-  function consumptionValue(regionKey, year, categoryKey, detail, metric) {
+  function consumptionValue(regionKey, year, categoryKey, detail, metric, axis) {
     const c = energyConsumption(regionKey, year);
     if (!c) return null;
-    const raw = detail
-      ? c.fuels_ktoe[categoryKey]
-      : FUEL_SIMPLE_GROUPS[categoryKey].reduce((sum, f) => sum + c.fuels_ktoe[f], 0);
+    const raw = axis === "sector"
+      ? c.sector_ktoe[categoryKey]
+      : detail
+        ? c.fuels_ktoe[categoryKey]
+        : FUEL_SIMPLE_GROUPS[categoryKey].reduce((sum, f) => sum + c.fuels_ktoe[f], 0);
     return metric === "total" ? raw : raw / regionPopulation(regionKey, year);
   }
 
@@ -1667,6 +1701,7 @@
     const years = energyConsumptionYears();
     const cy = years[years.length - 1];
     const view = currentView;
+    const axis = currentConsumptionView;
     const detail = currentConsumptionDetail;
     const metric = currentMetric;
     const unit = currentEnergyUnit;
@@ -1675,32 +1710,42 @@
     // DOM/JS default, so force it back in line with actual app state on every render (same
     // pattern as the sector chart's sub-sector-detail toggle below) — otherwise a page refresh
     // with this ticked leaves the box looking ticked while currentConsumptionDetail (and thus
-    // the chart) has already reset to the simple view.
+    // the chart) has already reset to the simple view. The "Show all fuel types" checkbox only
+    // means anything in the "by fuel type" axis, so it's disabled (not hidden — its checked
+    // state is preserved for when the user switches back) whenever "by sector" is selected.
     document.getElementById("consumption-detail-toggle").checked = detail;
+    document.getElementById("consumption-detail-toggle").disabled = axis === "sector";
+    document.getElementById("consumption-detail-row").classList.toggle("is-disabled", axis === "sector");
+    document.querySelectorAll("[data-consumption-view]").forEach(b => {
+      b.classList.toggle("is-active", b.dataset.consumptionView === axis);
+    });
 
     const metricLabel = metric === "total"
-      ? "energy consumption by " + (detail ? "fuel type" : "source")
-      : "energy consumption per person by " + (detail ? "fuel type" : "source");
+      ? "energy consumption by " + (axis === "sector" ? "sector" : (detail ? "fuel type" : "source"))
+      : "energy consumption per person by " + (axis === "sector" ? "sector" : (detail ? "fuel type" : "source"));
     document.getElementById("consumption-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " +
       (view === "historical" ? (years[0] + "–" + cy) : cy);
 
     if (view === "historical") {
-      buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit);
+      buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit, axis);
     } else {
-      buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit);
+      buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit, axis);
     }
   }
 
-  function buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit) {
-    const cats = consumptionCategories(detail);
+  function buildConsumptionChartLatest(container, regionKey, cy, detail, metric, unit, axis) {
+    const cats = consumptionCategories(detail, axis);
     const allFuelsRaw = energyConsumption(regionKey, cy).all_fuels_ktoe;
     const allFuels = metric === "total" ? allFuelsRaw : allFuelsRaw / regionPopulation(regionKey, cy);
-    const rows = cats.map(c => ({ key: c.key, name: c.label, value: consumptionValue(regionKey, cy, c.key, detail, metric) }))
+    const rows = cats.map(c => ({ key: c.key, name: c.label, value: consumptionValue(regionKey, cy, c.key, detail, metric, axis) }))
       .sort((a, b) => b.value - a.value);
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
-    const M = { top: 10, right: 80, bottom: 10, left: 150 };
+    // The sector axis's "Industrial, commercial & other" label is longer than any fuel-type
+    // label this margin was originally sized for (the previous longest, "Manufactured fuels",
+    // fits comfortably at 150) — widen it for that axis so the label isn't clipped.
+    const M = { top: 10, right: 80, bottom: 10, left: axis === "sector" ? 230 : 150 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
@@ -1732,7 +1777,7 @@
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
           ttRow(tt, color, cy + "", fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit) + " (" + fmtRatioPct(r.value / allFuels * 100) + " of total)");
-          if (!detail) {
+          if (axis !== "sector" && !detail) {
             const breakdown = fuelSimpleBreakdown(regionKey, cy, r.key, metric);
             if (breakdown) {
               breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
@@ -1746,13 +1791,13 @@
     buildConsumptionTableLatest(cy, rows, metric, unit);
   }
 
-  function buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit) {
-    const cats = consumptionCategories(detail);
+  function buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit, axis) {
+    const cats = consumptionCategories(detail, axis);
     const series = cats.map(c => ({
       key: c.key,
       name: c.label,
       color: categoryColor(c.key),
-      values: years.map(y => consumptionValue(regionKey, y, c.key, detail, metric))
+      values: years.map(y => consumptionValue(regionKey, y, c.key, detail, metric, axis))
     }));
 
     const W = 860, H = 340;
@@ -1809,7 +1854,7 @@
         ttTitle(tt, String(years[idx]));
         series.slice().sort((a, b) => b.values[idx] - a.values[idx]).forEach(s => {
           ttRow(tt, s.color, s.name, fmtConsumptionMetric(metric, unit, s.values[idx]) + " " + consumptionUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
-          if (!detail) {
+          if (axis !== "sector" && !detail) {
             const breakdown = fuelSimpleBreakdown(regionKey, years[idx], s.key, metric);
             if (breakdown) {
               breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
@@ -1961,11 +2006,12 @@
       title: "Energy consumption by fuel",
       body: [
         "Total final energy consumed within the area's boundary, covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation. DESNZ publishes this dataset in ktoe (kilotonnes of oil equivalent) — the energy unit toggle just above lets you view it instead in the same GWh/kWh-per-person units as the generation chart; see that toggle's own \"i\" button for details.",
-        "The default \"simple\" view groups DESNZ's six published fuel categories into three: Fossil fuels (Coal + Manufactured fuels + Petroleum + Gas), Electricity, and Bioenergy & waste. Tick \"Show all fuel types\" for DESNZ's own six categories individually.",
+        "\"By fuel type\" (the default) groups DESNZ's six published fuel categories into three: Fossil fuels (Coal + Manufactured fuels + Petroleum + Gas), Electricity, and Bioenergy & waste — tick \"Show all fuel types\" for DESNZ's own six categories individually. \"By sector\" switches to a different split of the same total: Domestic, Transport, and Industrial, Commercial and other — useful for telling how much of an area's consumption is households and cars versus workplaces and industry.",
         "Electricity is kept separate from both \"Fossil fuels\" and \"Bioenergy & waste\" rather than folded into either — the electricity consumed locally is drawn from Great Britain's national grid, whose generation mix (gas, nuclear, wind, solar, imports, etc.) isn't attributed back to the area consuming it by this dataset, so this site can't honestly label it either way.",
         "Oil (petroleum) is typically the largest category here, dominated by road transport fuel — DESNZ's road transport figures are modelled from national/regional fuel sales data apportioned to local authorities, not measured locally.",
+        "This dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are consumed elsewhere — it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily move in step with this consumption total. New Forest is the clearest example: switch to \"By sector\" there and \"Industrial, Commercial and other\" dwarfs Domestic and Transport combined, driven by oil refining rather than local demand — which is also why New Forest's energy consumption looks high next to its emissions figures elsewhere on this site. A large \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a big non-household energy user, not local demand, is driving an area's total.",
         "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle just above to switch between ktoe/toe-per-person and GWh/kWh-per-person.",
-        "For Mid-Hampshire, each fuel is the sum of that fuel's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
+        "For Mid-Hampshire, each fuel or sector is the sum of that category's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
       ],
       link: { href: "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level", label: "gov.uk statistical release" }
     },
@@ -2197,6 +2243,13 @@
     document.getElementById("consumption-detail-toggle").addEventListener("change", (ev) => {
       currentConsumptionDetail = ev.target.checked;
       buildConsumptionChart(currentRegion);
+    });
+
+    document.querySelectorAll("[data-consumption-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentConsumptionView = btn.dataset.consumptionView;
+        buildConsumptionChart(currentRegion);
+      });
     });
 
     document.querySelectorAll(".info-btn, .link-btn[data-info]").forEach(btn => {

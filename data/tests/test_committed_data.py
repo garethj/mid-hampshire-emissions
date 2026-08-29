@@ -204,6 +204,20 @@ class TestEnergyInvariants(unittest.TestCase):
                                      f"{key} {year}: fuel categories sum ({total}) vs "
                                      f"all_fuels_ktoe ({c['all_fuels_ktoe']}) differ by {rel:.2%}")
 
+    def test_sector_categories_approx_sum_to_all_fuels(self):
+        # Same loose tolerance as test_fuel_categories_approx_sum_to_all_fuels above — this is
+        # DESNZ's other published split of the same "All fuels: Total" figure (Domestic /
+        # Transport / Industrial, Commercial and other instead of by fuel type), so it should tie
+        # out the same way.
+        for key, r in ENERGY["regions"].items():
+            for year, c in r["consumption"].items():
+                total = sum(c["sector_ktoe"].values())
+                if c["all_fuels_ktoe"]:
+                    rel = abs(total - c["all_fuels_ktoe"]) / c["all_fuels_ktoe"]
+                    self.assertLess(rel, 0.01,
+                                     f"{key} {year}: sector categories sum ({total}) vs "
+                                     f"all_fuels_ktoe ({c['all_fuels_ktoe']}) differ by {rel:.2%}")
+
     def test_electricity_consumption_matches_ktoe_conversion(self):
         KTOE_TO_MWH = 11630.0
         for key, r in ENERGY["regions"].items():

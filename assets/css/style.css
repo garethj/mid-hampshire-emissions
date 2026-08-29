@@ -195,7 +195,7 @@ body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 .chart-wrap svg { display: block; width: 100%; height: auto; }
 
 /* ---------- Sector detail toggle ---------- */
-.sector-detail-row { margin: -2px 0 10px; }
+.sector-detail-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: -2px 0 10px; }
 .detail-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
 .detail-toggle input { accent-color: var(--brand); cursor: pointer; }
 .sector-detail-row.is-disabled .detail-toggle { opacity: 0.45; cursor: not-allowed; }

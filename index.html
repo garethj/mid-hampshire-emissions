@@ -132,6 +132,10 @@
         <button class="info-btn" data-info="consumption-chart" aria-label="About this chart">i</button>
       </div>
       <div class="sector-detail-row" id="consumption-detail-row">
+        <div class="seg-toggle" role="group" aria-label="Choose consumption breakdown">
+          <button class="seg-btn is-active" data-consumption-view="fuel">By fuel type</button>
+          <button class="seg-btn" data-consumption-view="sector">By sector</button>
+        </div>
         <label class="detail-toggle">
           <input type="checkbox" id="consumption-detail-toggle" autocomplete="off">
           <span>Show all fuel types</span>

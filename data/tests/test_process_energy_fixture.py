@@ -31,6 +31,7 @@ TFEC_HEADER = [
     "Code", "Region", "Local Authority",
     "Coal: Total", "Manufactured fuels: Total", "Petroleum: Total", "Gas: Total",
     "Electricity: Total", "Bioenergy and wastes: Total", "All fuels: Total",
+    "All fuels: Domestic", "All fuels: Transport", "All fuels: Industrial, Commercial and other",
 ]
 
 
@@ -58,8 +59,11 @@ def build_tfec_workbook(path):
     ws = wb.create_sheet(str(YEAR))
     ws.append(TFEC_HEADER)
     for la in lc.ALL_LAS:
-        # Coal, Manufactured fuels, Petroleum, Gas, Electricity, Bioenergy and wastes, All fuels.
-        ws.append(["C" + la, "South East", la, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 21.0])
+        # Coal, Manufactured fuels, Petroleum, Gas, Electricity, Bioenergy and wastes, All fuels
+        # (1+2+3+4+5+6=21), then the same 21 total split a different way by sector
+        # (Domestic=7, Transport=8, Industrial/Commercial/other=6) — same total, different axis,
+        # matching the two real columns groups process_energy.py reads from the TFEC workbook.
+        ws.append(["C" + la, "South East", la, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 21.0, 7.0, 8.0, 6.0])
     wb.save(path)
 
 
@@ -119,6 +123,19 @@ class TestProcessEnergyFixture(unittest.TestCase):
         c = self.out["regions"]["winchester"]["consumption"][str(YEAR)]
         self.assertAlmostEqual(c["fuels_ktoe"]["Electricity"], 5.0, places=3)
         self.assertAlmostEqual(c["electricity_consumption_mwh"], 5.0 * 11630.0, places=1)
+
+    def test_sector_ktoe_split_matches_all_fuels_total(self):
+        c = self.out["regions"]["winchester"]["consumption"][str(YEAR)]
+        self.assertAlmostEqual(c["sector_ktoe"]["Domestic"], 7.0, places=3)
+        self.assertAlmostEqual(c["sector_ktoe"]["Transport"], 8.0, places=3)
+        self.assertAlmostEqual(c["sector_ktoe"]["Industrial, Commercial and other"], 6.0, places=3)
+        self.assertAlmostEqual(sum(c["sector_ktoe"].values()), c["all_fuels_ktoe"], places=3)
+
+    def test_sector_ktoe_scales_by_retained_fraction_like_fuels_ktoe(self):
+        year = str(YEAR)
+        expected_domestic = sum(7.0 * lc.MID_HAMPSHIRE_RETAINED_FRACTION[la] for la in lc.MID_HAMPSHIRE_LAS)
+        actual_domestic = self.out["regions"]["mid-hampshire"]["consumption"][year]["sector_ktoe"]["Domestic"]
+        self.assertAlmostEqual(actual_domestic, expected_domestic, places=3)
 
     def test_hampshire_solent_generation_sums_all_las_unweighted(self):
         expected = 150.0 + 65.0 + 15.0 * (len(lc.HAMPSHIRE_SOLENT_LAS) - 2)

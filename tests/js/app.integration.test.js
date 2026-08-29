@@ -289,3 +289,82 @@ test("generation chart's info modal shows a % of demand figure consistent with t
   assert.ok(Math.abs(Number(match[1]) - expectedShare) < 0.1,
     `modal shows ${match[1]}%, expected ~${expectedShare.toFixed(1)}%`);
 });
+
+test("consumption chart's 'By sector' view sums to the same all_fuels_ktoe total as 'By fuel type', and disables the fuel-detail checkbox", async () => {
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
+  // Compare against the dataset's native ktoe unit directly, rather than the default GWh-based
+  // display (which would need its own KTOE_TO_MWH conversion to compare against all_fuels_ktoe).
+  fireClick(window, doc.querySelector('[data-energy-unit="toe"]'));
+  fireClick(window, doc.querySelector('.table-toggle[data-target="consumption-table"]'));
+
+  const cy = ENERGY_DATA.meta.consumption_years[ENERGY_DATA.meta.consumption_years.length - 1];
+  const con = ENERGY_DATA.regions["new-forest"].consumption[cy];
+
+  assert.ok(doc.querySelector('[data-consumption-view="fuel"]').classList.contains("is-active"));
+  assert.ok(!doc.getElementById("consumption-detail-toggle").disabled);
+
+  fireClick(window, doc.querySelector('[data-consumption-view="sector"]'));
+  assert.ok(doc.querySelector('[data-consumption-view="sector"]').classList.contains("is-active"));
+  assert.ok(!doc.querySelector('[data-consumption-view="fuel"]').classList.contains("is-active"));
+  assert.ok(doc.getElementById("consumption-detail-toggle").disabled,
+    "the 'Show all fuel types' checkbox should be disabled in the 'By sector' view — it doesn't apply to that axis");
+
+  const rows = tableRows(window, "consumption-table");
+  assert.equal(rows.length, 3, "expected exactly the three sector rows (Domestic, Transport, Industrial/Commercial/other)");
+  const sectorSum = rows.reduce((acc, row) => acc + num(row[1]), 0);
+  assert.ok(Math.abs(sectorSum - con.all_fuels_ktoe) < 0.5,
+    `sector table sums to ${sectorSum} ktoe, expected ~${con.all_fuels_ktoe} (all_fuels_ktoe)`);
+
+  // New Forest's oil refining should make "Industrial, Commercial and other" the dominant row —
+  // this is the anomaly the "By sector" view exists to make visible (see
+  // ENERGY_DATA.meta.note_industrial_consumption).
+  const industrialRow = rows.find(r => /Industrial/.test(r[0]));
+  const domesticRow = rows.find(r => /Domestic/.test(r[0]));
+  assert.ok(industrialRow && domesticRow, `expected Domestic and Industrial rows, got: ${JSON.stringify(rows)}`);
+  assert.ok(num(industrialRow[1]) > num(domesticRow[1]) * 2,
+    `expected New Forest's industrial consumption (${industrialRow[1]}) to dwarf its domestic consumption (${domesticRow[1]})`);
+});
+
+test("switching back to 'By fuel type' from 'By sector' re-enables the fuel-detail checkbox and restores its prior state", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const doc = window.document;
+
+  fireClick(window, doc.getElementById("consumption-detail-toggle"));
+  assert.ok(doc.getElementById("consumption-detail-toggle").checked);
+
+  fireClick(window, doc.querySelector('[data-consumption-view="sector"]'));
+  assert.ok(doc.getElementById("consumption-detail-toggle").disabled);
+  assert.ok(doc.getElementById("consumption-detail-toggle").checked,
+    "checked state should be preserved (not reset) while the checkbox is disabled");
+
+  fireClick(window, doc.querySelector('[data-consumption-view="fuel"]'));
+  assert.ok(!doc.getElementById("consumption-detail-toggle").disabled);
+  assert.ok(doc.getElementById("consumption-detail-toggle").checked);
+});
+
+test("consumption view toggle (By fuel type / By sector) can be switched in every metric/view/energy-unit combination without error", async () => {
+  const dom = await loadApp();
+  const { window } = dom;
+  const doc = window.document;
+
+  for (const view of ["latest", "historical"]) {
+    fireClick(window, doc.querySelector(`[data-view="${view}"]`));
+    for (const metric of ["per_capita", "total"]) {
+      fireClick(window, doc.querySelector(`[data-metric="${metric}"]`));
+      for (const unit of ["kwh", "toe"]) {
+        fireClick(window, doc.querySelector(`[data-energy-unit="${unit}"]`));
+        for (const consView of ["sector", "fuel"]) {
+          fireClick(window, doc.querySelector(`[data-consumption-view="${consView}"]`));
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(dom.errors, [], `unexpected error(s) while cycling consumption view x metric x view x energy unit: ${dom.errors.map(String)}`);
+});

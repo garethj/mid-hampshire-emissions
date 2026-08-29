@@ -55,11 +55,17 @@ window.MHE_ENERGY_DATA = {
    "Electricity",
    "Bioenergy and wastes"
   ],
+  "sector_categories": [
+   "Domestic",
+   "Transport",
+   "Industrial, Commercial and other"
+  ],
   "units_consumption": "ktoe (kilotonnes of oil equivalent), except electricity_consumption_mwh which is MWh",
   "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json \u2014 see that file's note_boundary for the full explanation.",
   "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",
   "note_ktoe_conversion": "Energy consumption is published in ktoe (kilotonnes of oil equivalent); electricity_consumption_mwh converts the Electricity fuel category to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh, for comparison against renewable generation (also in MWh). The consumption-by-fuel chart displays all fuels in ktoe, DESNZ's native unit.",
-  "generated": "2026-08-25"
+  "note_industrial_consumption": "DESNZ's energy consumption dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are then consumed elsewhere \u2014 it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily scale with this consumption total in the same way. So a local authority with a large single industrial site (New Forest's oil refining is the clearest example in this dataset) can show a consumption total that looks disproportionately high next to its emissions total, without either figure being wrong \u2014 they're measuring different things. The consumption chart's \"by sector\" view (Domestic / Transport / Industrial, Commercial and other) exists to make this visible: a high \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a large non-household energy user, rather than local demand, is driving the area's total.",
+  "generated": "2026-08-29"
  },
  "regions": {
   "hampshire-solent": {
@@ -187,6 +193,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 795.806,
       "Bioenergy and wastes": 32.843
      },
+     "sector_ktoe": {
+      "Domestic": 1441.5234,
+      "Transport": 1390.6033,
+      "Industrial, Commercial and other": 2600.0653
+     },
      "all_fuels_ktoe": 5432.1919
     },
     "2006": {
@@ -198,6 +209,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1377.012,
       "Electricity": 778.334,
       "Bioenergy and wastes": 41.8882
+     },
+     "sector_ktoe": {
+      "Domestic": 1418.203,
+      "Transport": 1411.6285,
+      "Industrial, Commercial and other": 2352.3199
      },
      "all_fuels_ktoe": 5182.1514
     },
@@ -211,6 +227,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 753.442,
       "Bioenergy and wastes": 40.084
      },
+     "sector_ktoe": {
+      "Domestic": 1380.3281,
+      "Transport": 1422.8203,
+      "Industrial, Commercial and other": 2295.7454
+     },
      "all_fuels_ktoe": 5098.8938
     },
     "2008": {
@@ -222,6 +243,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1272.599,
       "Electricity": 759.586,
       "Bioenergy and wastes": 54.0588
+     },
+     "sector_ktoe": {
+      "Domestic": 1340.766,
+      "Transport": 1398.7262,
+      "Industrial, Commercial and other": 2068.3244
      },
      "all_fuels_ktoe": 4807.8166
     },
@@ -235,6 +261,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 741.7571,
       "Bioenergy and wastes": 58.1061
      },
+     "sector_ktoe": {
+      "Domestic": 1255.7443,
+      "Transport": 1369.0981,
+      "Industrial, Commercial and other": 2174.8359
+     },
      "all_fuels_ktoe": 4799.6783
     },
     "2010": {
@@ -246,6 +277,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1174.9549,
       "Electricity": 737.3079,
       "Bioenergy and wastes": 68.4846
+     },
+     "sector_ktoe": {
+      "Domestic": 1263.6136,
+      "Transport": 1357.0305,
+      "Industrial, Commercial and other": 2169.1566
      },
      "all_fuels_ktoe": 4789.8008
     },
@@ -259,6 +295,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 721.3967,
       "Bioenergy and wastes": 65.6128
      },
+     "sector_ktoe": {
+      "Domestic": 1192.8667,
+      "Transport": 1341.0036,
+      "Industrial, Commercial and other": 2054.8565
+     },
      "all_fuels_ktoe": 4588.7269
     },
     "2012": {
@@ -270,6 +311,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1103.1744,
       "Electricity": 717.1617,
       "Bioenergy and wastes": 65.04
+     },
+     "sector_ktoe": {
+      "Domestic": 1197.1082,
+      "Transport": 1338.0644,
+      "Industrial, Commercial and other": 1989.3206
      },
      "all_fuels_ktoe": 4524.4932
     },
@@ -283,6 +329,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 707.9055,
       "Bioenergy and wastes": 71.1049
      },
+     "sector_ktoe": {
+      "Domestic": 1176.5241,
+      "Transport": 1332.2394,
+      "Industrial, Commercial and other": 2045.5899
+     },
      "all_fuels_ktoe": 4554.3534
     },
     "2014": {
@@ -294,6 +345,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1071.2992,
       "Electricity": 713.7366,
       "Bioenergy and wastes": 77.7637
+     },
+     "sector_ktoe": {
+      "Domestic": 1169.5567,
+      "Transport": 1358.5854,
+      "Industrial, Commercial and other": 1992.5769
      },
      "all_fuels_ktoe": 4520.7191
     },
@@ -307,6 +363,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 703.634,
       "Bioenergy and wastes": 72.9595
      },
+     "sector_ktoe": {
+      "Domestic": 1161.7806,
+      "Transport": 1384.1063,
+      "Industrial, Commercial and other": 1991.6539
+     },
      "all_fuels_ktoe": 4537.5407
     },
     "2016": {
@@ -318,6 +379,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1057.8199,
       "Electricity": 681.9339,
       "Bioenergy and wastes": 80.0749
+     },
+     "sector_ktoe": {
+      "Domestic": 1160.1308,
+      "Transport": 1403.2865,
+      "Industrial, Commercial and other": 1926.585
      },
      "all_fuels_ktoe": 4490.0023
     },
@@ -331,6 +397,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 685.0076,
       "Bioenergy and wastes": 82.684
      },
+     "sector_ktoe": {
+      "Domestic": 1171.5145,
+      "Transport": 1408.3034,
+      "Industrial, Commercial and other": 1901.7308
+     },
      "all_fuels_ktoe": 4481.5487
     },
     "2018": {
@@ -342,6 +413,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1095.135,
       "Electricity": 685.1344,
       "Bioenergy and wastes": 103.8495
+     },
+     "sector_ktoe": {
+      "Domestic": 1172.6578,
+      "Transport": 1383.4044,
+      "Industrial, Commercial and other": 1936.3912
      },
      "all_fuels_ktoe": 4492.4534
     },
@@ -355,6 +431,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 673.2201,
       "Bioenergy and wastes": 119.5998
      },
+     "sector_ktoe": {
+      "Domestic": 1181.4794,
+      "Transport": 1376.1815,
+      "Industrial, Commercial and other": 1912.1976
+     },
      "all_fuels_ktoe": 4469.8585
     },
     "2020": {
@@ -366,6 +447,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 1122.9407,
       "Electricity": 640.4769,
       "Bioenergy and wastes": 119.019
+     },
+     "sector_ktoe": {
+      "Domestic": 1215.212,
+      "Transport": 1078.6943,
+      "Industrial, Commercial and other": 1721.8788
      },
      "all_fuels_ktoe": 4015.7851
     },
@@ -379,6 +465,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 637.0083,
       "Bioenergy and wastes": 118.4327
      },
+     "sector_ktoe": {
+      "Domestic": 1159.5683,
+      "Transport": 1175.4415,
+      "Industrial, Commercial and other": 1819.8475
+     },
      "all_fuels_ktoe": 4154.8573
     },
     "2022": {
@@ -390,6 +481,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 956.2989,
       "Electricity": 611.0666,
       "Bioenergy and wastes": 135.1351
+     },
+     "sector_ktoe": {
+      "Domestic": 1035.2096,
+      "Transport": 1244.5771,
+      "Industrial, Commercial and other": 1870.5646
      },
      "all_fuels_ktoe": 4150.3512
     },
@@ -403,6 +499,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 610.1914,
       "Bioenergy and wastes": 147.5097
      },
+     "sector_ktoe": {
+      "Domestic": 1052.0264,
+      "Transport": 1238.2738,
+      "Industrial, Commercial and other": 1802.537
+     },
      "all_fuels_ktoe": 4092.8373
     },
     "2024": {
@@ -414,6 +515,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 931.3591,
       "Electricity": 609.4966,
       "Bioenergy and wastes": 145.9048
+     },
+     "sector_ktoe": {
+      "Domestic": 1056.4199,
+      "Transport": 1222.7439,
+      "Industrial, Commercial and other": 1809.1455
      },
      "all_fuels_ktoe": 4088.3093
     }
@@ -544,6 +650,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 151.184,
       "Bioenergy and wastes": 7.2585
      },
+     "sector_ktoe": {
+      "Domestic": 274.072,
+      "Transport": 310.515,
+      "Industrial, Commercial and other": 244.3386
+     },
      "all_fuels_ktoe": 828.9255
     },
     "2006": {
@@ -555,6 +666,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 282.04,
       "Electricity": 152.439,
       "Bioenergy and wastes": 9.0609
+     },
+     "sector_ktoe": {
+      "Domestic": 275.1665,
+      "Transport": 318.8484,
+      "Industrial, Commercial and other": 227.8521
      },
      "all_fuels_ktoe": 821.867
     },
@@ -568,6 +684,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 148.768,
       "Bioenergy and wastes": 8.6148
      },
+     "sector_ktoe": {
+      "Domestic": 271.2528,
+      "Transport": 320.5914,
+      "Industrial, Commercial and other": 222.7812
+     },
      "all_fuels_ktoe": 814.6254
     },
     "2008": {
@@ -579,6 +700,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 267.219,
       "Electricity": 149.597,
       "Bioenergy and wastes": 11.8744
+     },
+     "sector_ktoe": {
+      "Domestic": 263.8372,
+      "Transport": 319.6219,
+      "Industrial, Commercial and other": 214.434
      },
      "all_fuels_ktoe": 797.8931
     },
@@ -592,6 +718,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 148.1138,
       "Bioenergy and wastes": 12.6906
      },
+     "sector_ktoe": {
+      "Domestic": 247.2416,
+      "Transport": 309.5441,
+      "Industrial, Commercial and other": 200.8261
+     },
      "all_fuels_ktoe": 757.6118
     },
     "2010": {
@@ -603,6 +734,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 243.2686,
       "Electricity": 145.7579,
       "Bioenergy and wastes": 14.7962
+     },
+     "sector_ktoe": {
+      "Domestic": 248.357,
+      "Transport": 306.8955,
+      "Industrial, Commercial and other": 205.2652
      },
      "all_fuels_ktoe": 760.5177
     },
@@ -616,6 +752,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 144.5577,
       "Bioenergy and wastes": 14.1298
      },
+     "sector_ktoe": {
+      "Domestic": 237.4648,
+      "Transport": 301.3136,
+      "Industrial, Commercial and other": 192.0892
+     },
      "all_fuels_ktoe": 730.8676
     },
     "2012": {
@@ -627,6 +768,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 228.1856,
       "Electricity": 139.5975,
       "Bioenergy and wastes": 13.6452
+     },
+     "sector_ktoe": {
+      "Domestic": 237.9663,
+      "Transport": 297.5213,
+      "Industrial, Commercial and other": 187.7321
      },
      "all_fuels_ktoe": 723.2197
     },
@@ -640,6 +786,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 136.4134,
       "Bioenergy and wastes": 14.9948
      },
+     "sector_ktoe": {
+      "Domestic": 235.2539,
+      "Transport": 296.578,
+      "Industrial, Commercial and other": 183.3084
+     },
      "all_fuels_ktoe": 715.1402
     },
     "2014": {
@@ -651,6 +802,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 225.6629,
       "Electricity": 138.7129,
       "Bioenergy and wastes": 16.8262
+     },
+     "sector_ktoe": {
+      "Domestic": 233.5775,
+      "Transport": 303.1874,
+      "Industrial, Commercial and other": 188.9033
      },
      "all_fuels_ktoe": 725.6681
     },
@@ -664,6 +820,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 140.1338,
       "Bioenergy and wastes": 15.7109
      },
+     "sector_ktoe": {
+      "Domestic": 232.3008,
+      "Transport": 309.01,
+      "Industrial, Commercial and other": 190.1989
+     },
      "all_fuels_ktoe": 731.5097
     },
     "2016": {
@@ -675,6 +836,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 219.3191,
       "Electricity": 137.25,
       "Bioenergy and wastes": 17.7317
+     },
+     "sector_ktoe": {
+      "Domestic": 232.4167,
+      "Transport": 313.728,
+      "Industrial, Commercial and other": 184.0013
      },
      "all_fuels_ktoe": 730.1459
     },
@@ -688,6 +854,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 137.4539,
       "Bioenergy and wastes": 18.1862
      },
+     "sector_ktoe": {
+      "Domestic": 232.8093,
+      "Transport": 313.9944,
+      "Industrial, Commercial and other": 176.7915
+     },
      "all_fuels_ktoe": 723.5952
     },
     "2018": {
@@ -699,6 +870,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 224.3067,
       "Electricity": 138.0909,
       "Bioenergy and wastes": 22.5262
+     },
+     "sector_ktoe": {
+      "Domestic": 234.7616,
+      "Transport": 310.7489,
+      "Industrial, Commercial and other": 191.1325
      },
      "all_fuels_ktoe": 736.643
     },
@@ -712,6 +888,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 137.7605,
       "Bioenergy and wastes": 25.679
      },
+     "sector_ktoe": {
+      "Domestic": 237.9704,
+      "Transport": 311.3421,
+      "Industrial, Commercial and other": 188.0923
+     },
      "all_fuels_ktoe": 737.4047
     },
     "2020": {
@@ -723,6 +904,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 228.9745,
       "Electricity": 135.1136,
       "Bioenergy and wastes": 24.654
+     },
+     "sector_ktoe": {
+      "Domestic": 244.0714,
+      "Transport": 240.5523,
+      "Industrial, Commercial and other": 182.9252
      },
      "all_fuels_ktoe": 667.549
     },
@@ -736,6 +922,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 134.5506,
       "Bioenergy and wastes": 23.5365
      },
+     "sector_ktoe": {
+      "Domestic": 235.272,
+      "Transport": 266.2364,
+      "Industrial, Commercial and other": 182.623
+     },
      "all_fuels_ktoe": 684.1314
     },
     "2022": {
@@ -747,6 +938,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 188.3868,
       "Electricity": 128.3409,
       "Bioenergy and wastes": 27.2704
+     },
+     "sector_ktoe": {
+      "Domestic": 210.011,
+      "Transport": 281.0594,
+      "Industrial, Commercial and other": 158.3944
      },
      "all_fuels_ktoe": 649.4648
     },
@@ -760,6 +956,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 127.0509,
       "Bioenergy and wastes": 29.8636
      },
+     "sector_ktoe": {
+      "Domestic": 212.9235,
+      "Transport": 279.8133,
+      "Industrial, Commercial and other": 151.2991
+     },
      "all_fuels_ktoe": 644.0359
     },
     "2024": {
@@ -771,6 +972,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 182.4293,
       "Electricity": 129.3253,
       "Bioenergy and wastes": 29.1689
+     },
+     "sector_ktoe": {
+      "Domestic": 216.4689,
+      "Transport": 277.3117,
+      "Industrial, Commercial and other": 153.9166
      },
      "all_fuels_ktoe": 647.6971
     }
@@ -901,6 +1107,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 180.1797,
       "Bioenergy and wastes": 8.5442
      },
+     "sector_ktoe": {
+      "Domestic": 348.5582,
+      "Transport": 468.897,
+      "Industrial, Commercial and other": 1137.3718
+     },
      "all_fuels_ktoe": 1954.827
     },
     "2006": {
@@ -912,6 +1123,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 296.3962,
       "Electricity": 175.558,
       "Bioenergy and wastes": 11.0997
+     },
+     "sector_ktoe": {
+      "Domestic": 346.1247,
+      "Transport": 475.9581,
+      "Industrial, Commercial and other": 1009.5461
      },
      "all_fuels_ktoe": 1831.629
     },
@@ -925,6 +1141,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 173.5345,
       "Bioenergy and wastes": 11.6592
      },
+     "sector_ktoe": {
+      "Domestic": 335.6295,
+      "Transport": 482.3871,
+      "Industrial, Commercial and other": 992.3786
+     },
      "all_fuels_ktoe": 1810.3952
     },
     "2008": {
@@ -936,6 +1157,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 271.2702,
       "Electricity": 173.7952,
       "Bioenergy and wastes": 16.82
+     },
+     "sector_ktoe": {
+      "Domestic": 328.0282,
+      "Transport": 476.6309,
+      "Industrial, Commercial and other": 876.0137
      },
      "all_fuels_ktoe": 1680.6728
     },
@@ -949,6 +1175,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 173.0856,
       "Bioenergy and wastes": 18.5799
      },
+     "sector_ktoe": {
+      "Domestic": 309.6985,
+      "Transport": 464.9341,
+      "Industrial, Commercial and other": 969.3991
+     },
      "all_fuels_ktoe": 1744.0316
     },
     "2010": {
@@ -960,6 +1191,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 249.5563,
       "Electricity": 173.2372,
       "Bioenergy and wastes": 21.733
+     },
+     "sector_ktoe": {
+      "Domestic": 315.6903,
+      "Transport": 460.7082,
+      "Industrial, Commercial and other": 950.2755
      },
      "all_fuels_ktoe": 1726.6741
     },
@@ -973,6 +1209,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 171.2156,
       "Bioenergy and wastes": 20.8767
      },
+     "sector_ktoe": {
+      "Domestic": 296.9511,
+      "Transport": 456.0581,
+      "Industrial, Commercial and other": 898.7762
+     },
      "all_fuels_ktoe": 1651.7853
     },
     "2012": {
@@ -984,6 +1225,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 239.7387,
       "Electricity": 171.5226,
       "Bioenergy and wastes": 20.4236
+     },
+     "sector_ktoe": {
+      "Domestic": 298.453,
+      "Transport": 453.4127,
+      "Industrial, Commercial and other": 870.8144
      },
      "all_fuels_ktoe": 1622.6801
     },
@@ -997,6 +1243,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 170.6336,
       "Bioenergy and wastes": 22.621
      },
+     "sector_ktoe": {
+      "Domestic": 296.1515,
+      "Transport": 455.3035,
+      "Industrial, Commercial and other": 915.426
+     },
      "all_fuels_ktoe": 1666.881
     },
     "2014": {
@@ -1008,6 +1259,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 236.8621,
       "Electricity": 171.5501,
       "Bioenergy and wastes": 24.6712
+     },
+     "sector_ktoe": {
+      "Domestic": 293.1791,
+      "Transport": 467.622,
+      "Industrial, Commercial and other": 872.6123
      },
      "all_fuels_ktoe": 1633.4134
     },
@@ -1021,6 +1277,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 167.6466,
       "Bioenergy and wastes": 22.8506
      },
+     "sector_ktoe": {
+      "Domestic": 292.0906,
+      "Transport": 478.333,
+      "Industrial, Commercial and other": 871.8743
+     },
      "all_fuels_ktoe": 1642.298
     },
     "2016": {
@@ -1032,6 +1293,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 233.1407,
       "Electricity": 162.0129,
       "Bioenergy and wastes": 24.7339
+     },
+     "sector_ktoe": {
+      "Domestic": 293.3437,
+      "Transport": 487.009,
+      "Industrial, Commercial and other": 844.4909
      },
      "all_fuels_ktoe": 1624.8437
     },
@@ -1045,6 +1311,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 164.5611,
       "Bioenergy and wastes": 25.3715
      },
+     "sector_ktoe": {
+      "Domestic": 295.3106,
+      "Transport": 490.9836,
+      "Industrial, Commercial and other": 838.2099
+     },
      "all_fuels_ktoe": 1624.5041
     },
     "2018": {
@@ -1056,6 +1327,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 247.0134,
       "Electricity": 163.7193,
       "Bioenergy and wastes": 31.8546
+     },
+     "sector_ktoe": {
+      "Domestic": 297.2502,
+      "Transport": 486.5519,
+      "Industrial, Commercial and other": 842.5033
      },
      "all_fuels_ktoe": 1626.3055
     },
@@ -1069,6 +1345,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 161.2798,
       "Bioenergy and wastes": 37.7292
      },
+     "sector_ktoe": {
+      "Domestic": 298.6459,
+      "Transport": 483.7868,
+      "Industrial, Commercial and other": 839.6406
+     },
      "all_fuels_ktoe": 1622.0733
     },
     "2020": {
@@ -1080,6 +1361,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 244.6124,
       "Electricity": 156.253,
       "Bioenergy and wastes": 37.3275
+     },
+     "sector_ktoe": {
+      "Domestic": 308.0381,
+      "Transport": 380.493,
+      "Industrial, Commercial and other": 733.338
      },
      "all_fuels_ktoe": 1421.869
     },
@@ -1093,6 +1379,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 155.8654,
       "Bioenergy and wastes": 37.8704
      },
+     "sector_ktoe": {
+      "Domestic": 295.2083,
+      "Transport": 421.4478,
+      "Industrial, Commercial and other": 790.3157
+     },
      "all_fuels_ktoe": 1506.9718
     },
     "2022": {
@@ -1104,6 +1395,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 210.7164,
       "Electricity": 149.8689,
       "Bioenergy and wastes": 44.2313
+     },
+     "sector_ktoe": {
+      "Domestic": 262.5052,
+      "Transport": 444.3088,
+      "Industrial, Commercial and other": 846.5774
      },
      "all_fuels_ktoe": 1553.3914
     },
@@ -1117,6 +1413,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 149.6836,
       "Bioenergy and wastes": 48.079
      },
+     "sector_ktoe": {
+      "Domestic": 267.1008,
+      "Transport": 443.1172,
+      "Industrial, Commercial and other": 815.5562
+     },
      "all_fuels_ktoe": 1525.7742
     },
     "2024": {
@@ -1128,6 +1429,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 208.6508,
       "Electricity": 148.6908,
       "Bioenergy and wastes": 45.3695
+     },
+     "sector_ktoe": {
+      "Domestic": 271.2042,
+      "Transport": 441.1811,
+      "Industrial, Commercial and other": 819.7388
      },
      "all_fuels_ktoe": 1532.1242
     }
@@ -1258,6 +1564,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 219.5558,
       "Bioenergy and wastes": 8.2941
      },
+     "sector_ktoe": {
+      "Domestic": 392.3729,
+      "Transport": 289.2695,
+      "Industrial, Commercial and other": 289.3828
+     },
      "all_fuels_ktoe": 971.0252
     },
     "2006": {
@@ -1269,6 +1580,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 376.4287,
       "Electricity": 213.7875,
       "Bioenergy and wastes": 11.0615
+     },
+     "sector_ktoe": {
+      "Domestic": 381.5145,
+      "Transport": 291.6045,
+      "Industrial, Commercial and other": 278.3343
      },
      "all_fuels_ktoe": 951.4534
     },
@@ -1282,6 +1598,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 205.547,
       "Bioenergy and wastes": 9.4453
      },
+     "sector_ktoe": {
+      "Domestic": 369.5812,
+      "Transport": 292.4065,
+      "Industrial, Commercial and other": 266.4004
+     },
      "all_fuels_ktoe": 928.3881
     },
     "2008": {
@@ -1293,6 +1614,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 350.3821,
       "Electricity": 207.3093,
       "Bioenergy and wastes": 12.178
+     },
+     "sector_ktoe": {
+      "Domestic": 357.9794,
+      "Transport": 284.4338,
+      "Industrial, Commercial and other": 257.4561
      },
      "all_fuels_ktoe": 899.8693
     },
@@ -1306,6 +1632,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 200.0882,
       "Bioenergy and wastes": 12.494
      },
+     "sector_ktoe": {
+      "Domestic": 333.8052,
+      "Transport": 281.9509,
+      "Industrial, Commercial and other": 237.9539
+     },
      "all_fuels_ktoe": 853.71
     },
     "2010": {
@@ -1317,6 +1648,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 317.3499,
       "Electricity": 200.9592,
       "Bioenergy and wastes": 15.0623
+     },
+     "sector_ktoe": {
+      "Domestic": 334.5988,
+      "Transport": 278.3028,
+      "Industrial, Commercial and other": 244.6787
      },
      "all_fuels_ktoe": 857.5803
     },
@@ -1330,6 +1666,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 194.4972,
       "Bioenergy and wastes": 14.4525
      },
+     "sector_ktoe": {
+      "Domestic": 315.3162,
+      "Transport": 275.0858,
+      "Industrial, Commercial and other": 235.1478
+     },
      "all_fuels_ktoe": 825.5499
     },
     "2012": {
@@ -1341,6 +1682,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 293.435,
       "Electricity": 193.8368,
       "Bioenergy and wastes": 14.7867
+     },
+     "sector_ktoe": {
+      "Domestic": 316.13,
+      "Transport": 281.0883,
+      "Industrial, Commercial and other": 226.4376
      },
      "all_fuels_ktoe": 823.6558
     },
@@ -1354,6 +1700,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 192.8557,
       "Bioenergy and wastes": 15.8375
      },
+     "sector_ktoe": {
+      "Domestic": 308.3014,
+      "Transport": 277.0334,
+      "Industrial, Commercial and other": 230.727
+     },
      "all_fuels_ktoe": 816.0617
     },
     "2014": {
@@ -1365,6 +1716,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 282.9598,
       "Electricity": 193.0419,
       "Bioenergy and wastes": 17.53
+     },
+     "sector_ktoe": {
+      "Domestic": 307.6174,
+      "Transport": 279.1615,
+      "Industrial, Commercial and other": 228.8978
      },
      "all_fuels_ktoe": 815.6766
     },
@@ -1378,6 +1734,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 190.0689,
       "Bioenergy and wastes": 16.5657
      },
+     "sector_ktoe": {
+      "Domestic": 305.3293,
+      "Transport": 282.968,
+      "Industrial, Commercial and other": 224.058
+     },
      "all_fuels_ktoe": 812.3553
     },
     "2016": {
@@ -1389,6 +1750,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 278.8129,
       "Electricity": 183.411,
       "Bioenergy and wastes": 18.4701
+     },
+     "sector_ktoe": {
+      "Domestic": 303.1042,
+      "Transport": 285.1287,
+      "Industrial, Commercial and other": 217.9477
      },
      "all_fuels_ktoe": 806.1805
     },
@@ -1402,6 +1768,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 181.2972,
       "Bioenergy and wastes": 19.653
      },
+     "sector_ktoe": {
+      "Domestic": 307.8391,
+      "Transport": 285.9729,
+      "Industrial, Commercial and other": 213.1113
+     },
      "all_fuels_ktoe": 806.9233
     },
     "2018": {
@@ -1413,6 +1784,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 293.0589,
       "Electricity": 181.318,
       "Bioenergy and wastes": 25.8858
+     },
+     "sector_ktoe": {
+      "Domestic": 305.2369,
+      "Transport": 276.1083,
+      "Industrial, Commercial and other": 229.2699
      },
      "all_fuels_ktoe": 810.615
     },
@@ -1426,6 +1802,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 176.7146,
       "Bioenergy and wastes": 28.9542
      },
+     "sector_ktoe": {
+      "Domestic": 307.5004,
+      "Transport": 275.6532,
+      "Industrial, Commercial and other": 215.9442
+     },
      "all_fuels_ktoe": 799.0979
     },
     "2020": {
@@ -1437,6 +1818,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 306.7721,
       "Electricity": 163.2601,
       "Bioenergy and wastes": 30.1181
+     },
+     "sector_ktoe": {
+      "Domestic": 315.4325,
+      "Transport": 216.4091,
+      "Industrial, Commercial and other": 213.5528
      },
      "all_fuels_ktoe": 745.3945
     },
@@ -1450,6 +1836,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 161.3173,
       "Bioenergy and wastes": 27.7803
      },
+     "sector_ktoe": {
+      "Domestic": 298.3142,
+      "Transport": 231.7384,
+      "Industrial, Commercial and other": 212.3664
+     },
      "all_fuels_ktoe": 742.419
     },
     "2022": {
@@ -1461,6 +1852,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 257.0377,
       "Electricity": 154.6287,
       "Bioenergy and wastes": 30.9328
+     },
+     "sector_ktoe": {
+      "Domestic": 266.2754,
+      "Transport": 247.8094,
+      "Industrial, Commercial and other": 197.2262
      },
      "all_fuels_ktoe": 711.3109
     },
@@ -1474,6 +1870,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 154.8325,
       "Bioenergy and wastes": 33.7694
      },
+     "sector_ktoe": {
+      "Domestic": 271.488,
+      "Transport": 245.1363,
+      "Industrial, Commercial and other": 190.7212
+     },
      "all_fuels_ktoe": 707.3455
     },
     "2024": {
@@ -1485,6 +1886,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 251.5444,
       "Electricity": 153.3606,
       "Bioenergy and wastes": 33.9569
+     },
+     "sector_ktoe": {
+      "Domestic": 269.2807,
+      "Transport": 237.3063,
+      "Industrial, Commercial and other": 190.4149
      },
      "all_fuels_ktoe": 697.002
     }
@@ -1615,6 +2021,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 191.1146,
       "Bioenergy and wastes": 6.6586
      },
+     "sector_ktoe": {
+      "Domestic": 316.6636,
+      "Transport": 276.0733,
+      "Industrial, Commercial and other": 842.6731
+     },
      "all_fuels_ktoe": 1435.4099
     },
     "2006": {
@@ -1626,6 +2037,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 311.1711,
       "Electricity": 184.8095,
       "Bioenergy and wastes": 8.0793
+     },
+     "sector_ktoe": {
+      "Domestic": 308.0264,
+      "Transport": 277.9742,
+      "Industrial, Commercial and other": 757.6548
      },
      "all_fuels_ktoe": 1343.6554
     },
@@ -1639,6 +2055,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 176.1045,
       "Bioenergy and wastes": 7.8983
      },
+     "sector_ktoe": {
+      "Domestic": 299.9788,
+      "Transport": 280.1927,
+      "Industrial, Commercial and other": 736.8675
+     },
      "all_fuels_ktoe": 1317.039
     },
     "2008": {
@@ -1650,6 +2071,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 284.0607,
       "Electricity": 178.3306,
       "Bioenergy and wastes": 10.3571
+     },
+     "sector_ktoe": {
+      "Domestic": 290.2087,
+      "Transport": 272.2761,
+      "Industrial, Commercial and other": 649.8668
      },
      "all_fuels_ktoe": 1212.3515
     },
@@ -1663,6 +2089,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 171.5812,
       "Bioenergy and wastes": 11.3608
      },
+     "sector_ktoe": {
+      "Domestic": 270.6729,
+      "Transport": 267.9061,
+      "Industrial, Commercial and other": 705.7996
+     },
      "all_fuels_ktoe": 1244.3785
     },
     "2010": {
@@ -1674,6 +2105,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 260.8494,
       "Electricity": 168.0365,
       "Bioenergy and wastes": 13.3494
+     },
+     "sector_ktoe": {
+      "Domestic": 269.8303,
+      "Transport": 266.6772,
+      "Industrial, Commercial and other": 688.4243
      },
      "all_fuels_ktoe": 1224.9318
     },
@@ -1687,6 +2123,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 164.6367,
       "Bioenergy and wastes": 12.769
      },
+     "sector_ktoe": {
+      "Domestic": 254.3584,
+      "Transport": 264.4419,
+      "Industrial, Commercial and other": 652.2025
+     },
      "all_fuels_ktoe": 1171.0028
     },
     "2012": {
@@ -1698,6 +2139,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 245.8383,
       "Electricity": 164.4208,
       "Bioenergy and wastes": 12.5843
+     },
+     "sector_ktoe": {
+      "Domestic": 254.2652,
+      "Transport": 262.2357,
+      "Industrial, Commercial and other": 630.6458
      },
      "all_fuels_ktoe": 1147.1468
     },
@@ -1711,6 +2157,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 161.0722,
       "Bioenergy and wastes": 13.7853
      },
+     "sector_ktoe": {
+      "Domestic": 248.7462,
+      "Transport": 259.9509,
+      "Industrial, Commercial and other": 648.0036
+     },
      "all_fuels_ktoe": 1156.7007
     },
     "2014": {
@@ -1722,6 +2173,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 234.7313,
       "Electricity": 161.905,
       "Bioenergy and wastes": 14.7961
+     },
+     "sector_ktoe": {
+      "Domestic": 247.7323,
+      "Transport": 264.5944,
+      "Industrial, Commercial and other": 629.9882
      },
      "all_fuels_ktoe": 1142.315
     },
@@ -1735,6 +2191,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 158.1429,
       "Bioenergy and wastes": 13.9076
      },
+     "sector_ktoe": {
+      "Domestic": 244.5708,
+      "Transport": 269.2055,
+      "Industrial, Commercial and other": 629.1671
+     },
      "all_fuels_ktoe": 1142.9434
     },
     "2016": {
@@ -1746,6 +2207,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 231.0597,
       "Electricity": 152.4472,
       "Bioenergy and wastes": 15.0086
+     },
+     "sector_ktoe": {
+      "Domestic": 244.5647,
+      "Transport": 272.315,
+      "Industrial, Commercial and other": 604.3775
      },
      "all_fuels_ktoe": 1121.2572
     },
@@ -1759,6 +2225,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 154.6523,
       "Bioenergy and wastes": 15.1506
      },
+     "sector_ktoe": {
+      "Domestic": 247.4444,
+      "Transport": 272.1119,
+      "Industrial, Commercial and other": 601.4271
+     },
      "all_fuels_ktoe": 1120.9834
     },
     "2018": {
@@ -1770,6 +2241,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 237.3959,
       "Electricity": 155.1539,
       "Bioenergy and wastes": 18.488
+     },
+     "sector_ktoe": {
+      "Domestic": 247.9823,
+      "Transport": 265.3036,
+      "Industrial, Commercial and other": 601.4833
      },
      "all_fuels_ktoe": 1114.7692
     },
@@ -1783,6 +2259,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 151.4287,
       "Bioenergy and wastes": 21.3695
      },
+     "sector_ktoe": {
+      "Domestic": 249.2323,
+      "Transport": 261.0867,
+      "Industrial, Commercial and other": 599.7218
+     },
      "all_fuels_ktoe": 1110.0409
     },
     "2020": {
@@ -1794,6 +2275,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 246.797,
       "Electricity": 142.4217,
       "Bioenergy and wastes": 21.051
+     },
+     "sector_ktoe": {
+      "Domestic": 257.0644,
+      "Transport": 206.9431,
+      "Industrial, Commercial and other": 524.479
      },
      "all_fuels_ktoe": 988.4865
     },
@@ -1807,6 +2293,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 141.8647,
       "Bioenergy and wastes": 22.5758
      },
+     "sector_ktoe": {
+      "Domestic": 245.0027,
+      "Transport": 218.0564,
+      "Industrial, Commercial and other": 563.1874
+     },
      "all_fuels_ktoe": 1026.2465
     },
     "2022": {
@@ -1818,6 +2309,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 215.9094,
       "Electricity": 136.7405,
       "Bioenergy and wastes": 25.3942
+     },
+     "sector_ktoe": {
+      "Domestic": 220.791,
+      "Transport": 230.5036,
+      "Industrial, Commercial and other": 600.1292
      },
      "all_fuels_ktoe": 1051.4238
     },
@@ -1831,6 +2327,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 137.3826,
       "Bioenergy and wastes": 28.0561
      },
+     "sector_ktoe": {
+      "Domestic": 223.5939,
+      "Transport": 229.3819,
+      "Industrial, Commercial and other": 578.5958
+     },
      "all_fuels_ktoe": 1031.5716
     },
     "2024": {
@@ -1842,6 +2343,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 205.8512,
       "Electricity": 137.5874,
       "Bioenergy and wastes": 28.588
+     },
+     "sector_ktoe": {
+      "Domestic": 223.0277,
+      "Transport": 226.7956,
+      "Industrial, Commercial and other": 577.4533
      },
      "all_fuels_ktoe": 1027.2767
     }
@@ -1972,6 +2478,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 53.772,
       "Bioenergy and wastes": 2.0876
      },
+     "sector_ktoe": {
+      "Domestic": 109.8568,
+      "Transport": 45.8485,
+      "Industrial, Commercial and other": 86.299
+     },
      "all_fuels_ktoe": 242.0043
     },
     "2006": {
@@ -1983,6 +2494,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 110.976,
       "Electricity": 51.74,
       "Bioenergy and wastes": 2.5868
+     },
+     "sector_ktoe": {
+      "Domestic": 107.3707,
+      "Transport": 47.2433,
+      "Industrial, Commercial and other": 78.9326
      },
      "all_fuels_ktoe": 233.5466
     },
@@ -1996,6 +2512,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 49.488,
       "Bioenergy and wastes": 2.4664
      },
+     "sector_ktoe": {
+      "Domestic": 103.8857,
+      "Transport": 47.2427,
+      "Industrial, Commercial and other": 77.3178
+     },
      "all_fuels_ktoe": 228.4461
     },
     "2008": {
@@ -2007,6 +2528,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 99.667,
       "Electricity": 50.554,
       "Bioenergy and wastes": 2.8294
+     },
+     "sector_ktoe": {
+      "Domestic": 100.7125,
+      "Transport": 45.7635,
+      "Industrial, Commercial and other": 70.5539
      },
      "all_fuels_ktoe": 217.0298
     },
@@ -2020,6 +2546,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 48.8883,
       "Bioenergy and wastes": 2.9808
      },
+     "sector_ktoe": {
+      "Domestic": 94.3262,
+      "Transport": 44.7629,
+      "Industrial, Commercial and other": 60.8573
+     },
      "all_fuels_ktoe": 199.9464
     },
     "2010": {
@@ -2031,6 +2562,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 103.9308,
       "Electricity": 49.3171,
       "Bioenergy and wastes": 3.5436
+     },
+     "sector_ktoe": {
+      "Domestic": 95.1372,
+      "Transport": 44.4468,
+      "Industrial, Commercial and other": 80.5129
      },
      "all_fuels_ktoe": 220.0969
     },
@@ -2044,6 +2580,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.4896,
       "Bioenergy and wastes": 3.3848
      },
+     "sector_ktoe": {
+      "Domestic": 88.7762,
+      "Transport": 44.1043,
+      "Industrial, Commercial and other": 76.6409
+     },
      "all_fuels_ktoe": 209.5213
     },
     "2012": {
@@ -2055,6 +2596,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 95.9767,
       "Electricity": 47.7839,
       "Bioenergy and wastes": 3.6003
+     },
+     "sector_ktoe": {
+      "Domestic": 90.2936,
+      "Transport": 43.8064,
+      "Industrial, Commercial and other": 73.6908
      },
      "all_fuels_ktoe": 207.7907
     },
@@ -2068,6 +2614,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.9306,
       "Bioenergy and wastes": 3.8662
      },
+     "sector_ktoe": {
+      "Domestic": 88.0711,
+      "Transport": 43.3737,
+      "Industrial, Commercial and other": 68.1249
+     },
      "all_fuels_ktoe": 199.5697
     },
     "2014": {
@@ -2079,6 +2630,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 91.0831,
       "Electricity": 48.5267,
       "Bioenergy and wastes": 3.9401
+     },
+     "sector_ktoe": {
+      "Domestic": 87.4505,
+      "Transport": 44.0202,
+      "Industrial, Commercial and other": 72.1753
      },
      "all_fuels_ktoe": 203.646
     },
@@ -2092,6 +2648,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.6417,
       "Bioenergy and wastes": 3.9247
      },
+     "sector_ktoe": {
+      "Domestic": 87.4891,
+      "Transport": 44.5897,
+      "Industrial, Commercial and other": 76.3555
+     },
      "all_fuels_ktoe": 208.4343
     },
     "2016": {
@@ -2103,6 +2664,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 95.4874,
       "Electricity": 46.8129,
       "Bioenergy and wastes": 4.1306
+     },
+     "sector_ktoe": {
+      "Domestic": 86.7016,
+      "Transport": 45.1058,
+      "Industrial, Commercial and other": 75.7676
      },
      "all_fuels_ktoe": 207.575
     },
@@ -2116,6 +2682,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.0431,
       "Bioenergy and wastes": 4.3226
      },
+     "sector_ktoe": {
+      "Domestic": 88.111,
+      "Transport": 45.2406,
+      "Industrial, Commercial and other": 72.1911
+     },
      "all_fuels_ktoe": 205.5427
     },
     "2018": {
@@ -2127,6 +2698,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 93.3601,
       "Electricity": 46.8523,
       "Bioenergy and wastes": 5.0948
+     },
+     "sector_ktoe": {
+      "Domestic": 87.4268,
+      "Transport": 44.6917,
+      "Industrial, Commercial and other": 72.0023
      },
      "all_fuels_ktoe": 204.1208
     },
@@ -2140,6 +2716,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.0366,
       "Bioenergy and wastes": 5.868
      },
+     "sector_ktoe": {
+      "Domestic": 88.1303,
+      "Transport": 44.3127,
+      "Industrial, Commercial and other": 68.7987
+     },
      "all_fuels_ktoe": 201.2417
     },
     "2020": {
@@ -2151,6 +2732,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 95.7846,
       "Electricity": 43.4286,
       "Bioenergy and wastes": 5.8684
+     },
+     "sector_ktoe": {
+      "Domestic": 90.6056,
+      "Transport": 34.2968,
+      "Industrial, Commercial and other": 67.5837
      },
      "all_fuels_ktoe": 192.4861
     },
@@ -2164,6 +2750,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 43.4104,
       "Bioenergy and wastes": 6.6697
      },
+     "sector_ktoe": {
+      "Domestic": 85.7711,
+      "Transport": 37.9625,
+      "Industrial, Commercial and other": 71.355
+     },
      "all_fuels_ktoe": 195.0886
     },
     "2022": {
@@ -2175,6 +2766,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 84.2486,
       "Electricity": 41.4876,
       "Bioenergy and wastes": 7.3064
+     },
+     "sector_ktoe": {
+      "Domestic": 75.627,
+      "Transport": 40.8959,
+      "Industrial, Commercial and other": 68.2374
      },
      "all_fuels_ktoe": 184.7602
     },
@@ -2188,6 +2784,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 41.2418,
       "Bioenergy and wastes": 7.7416
      },
+     "sector_ktoe": {
+      "Domestic": 76.9202,
+      "Transport": 40.8251,
+      "Industrial, Commercial and other": 66.3648
+     },
      "all_fuels_ktoe": 184.1101
     },
     "2024": {
@@ -2199,6 +2800,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 82.8834,
       "Electricity": 40.5325,
       "Bioenergy and wastes": 8.8215
+     },
+     "sector_ktoe": {
+      "Domestic": 76.4384,
+      "Transport": 40.1491,
+      "Industrial, Commercial and other": 67.6218
      },
      "all_fuels_ktoe": 184.2093
     }
@@ -2329,6 +2935,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 92.645,
       "Bioenergy and wastes": 2.6653
      },
+     "sector_ktoe": {
+      "Domestic": 136.1594,
+      "Transport": 102.9962,
+      "Industrial, Commercial and other": 132.5287
+     },
      "all_fuels_ktoe": 371.6844
     },
     "2006": {
@@ -2340,6 +2951,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 141.329,
       "Electricity": 89.405,
       "Bioenergy and wastes": 3.6314
+     },
+     "sector_ktoe": {
+      "Domestic": 129.5321,
+      "Transport": 103.8101,
+      "Industrial, Commercial and other": 125.4501
      },
      "all_fuels_ktoe": 358.7924
     },
@@ -2353,6 +2969,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 85.012,
       "Bioenergy and wastes": 2.8462
      },
+     "sector_ktoe": {
+      "Domestic": 125.2114,
+      "Transport": 103.5918,
+      "Industrial, Commercial and other": 117.7519
+     },
      "all_fuels_ktoe": 346.555
     },
     "2008": {
@@ -2364,6 +2985,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 130.75,
       "Electricity": 87.118,
       "Bioenergy and wastes": 3.7812
+     },
+     "sector_ktoe": {
+      "Domestic": 121.6859,
+      "Transport": 99.9835,
+      "Industrial, Commercial and other": 115.3013
      },
      "all_fuels_ktoe": 336.9708
     },
@@ -2377,6 +3003,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 85.6225,
       "Bioenergy and wastes": 3.8097
      },
+     "sector_ktoe": {
+      "Domestic": 113.3801,
+      "Transport": 99.7013,
+      "Industrial, Commercial and other": 111.2524
+     },
      "all_fuels_ktoe": 324.3338
     },
     "2010": {
@@ -2388,6 +3019,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 122.5887,
       "Electricity": 85.8068,
       "Bioenergy and wastes": 4.7412
+     },
+     "sector_ktoe": {
+      "Domestic": 113.6978,
+      "Transport": 99.3158,
+      "Industrial, Commercial and other": 115.2514
      },
      "all_fuels_ktoe": 328.265
     },
@@ -2401,6 +3037,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 86.781,
       "Bioenergy and wastes": 4.4732
      },
+     "sector_ktoe": {
+      "Domestic": 106.5666,
+      "Transport": 97.9394,
+      "Industrial, Commercial and other": 111.9637
+     },
      "all_fuels_ktoe": 316.4698
     },
     "2012": {
@@ -2412,6 +3053,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 110.916,
       "Electricity": 86.253,
       "Bioenergy and wastes": 4.5034
+     },
+     "sector_ktoe": {
+      "Domestic": 106.4348,
+      "Transport": 100.2445,
+      "Industrial, Commercial and other": 108.0493
      },
      "all_fuels_ktoe": 314.7286
     },
@@ -2425,6 +3071,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 85.6576,
       "Bioenergy and wastes": 4.8515
      },
+     "sector_ktoe": {
+      "Domestic": 103.7003,
+      "Transport": 98.722,
+      "Industrial, Commercial and other": 110.1931
+     },
      "all_fuels_ktoe": 312.6154
     },
     "2014": {
@@ -2436,6 +3087,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 107.1293,
       "Electricity": 85.1276,
       "Bioenergy and wastes": 5.4497
+     },
+     "sector_ktoe": {
+      "Domestic": 103.3253,
+      "Transport": 98.6456,
+      "Industrial, Commercial and other": 109.6867
      },
      "all_fuels_ktoe": 311.6577
     },
@@ -2449,6 +3105,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 82.5484,
       "Bioenergy and wastes": 5.0251
      },
+     "sector_ktoe": {
+      "Domestic": 102.1204,
+      "Transport": 99.8938,
+      "Industrial, Commercial and other": 107.4403
+     },
      "all_fuels_ktoe": 309.4545
     },
     "2016": {
@@ -2460,6 +3121,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 107.1275,
       "Electricity": 79.0096,
       "Bioenergy and wastes": 5.748
+     },
+     "sector_ktoe": {
+      "Domestic": 101.2956,
+      "Transport": 101.0684,
+      "Industrial, Commercial and other": 104.2869
      },
      "all_fuels_ktoe": 306.6509
     },
@@ -2473,6 +3139,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 76.5161,
       "Bioenergy and wastes": 6.463
      },
+     "sector_ktoe": {
+      "Domestic": 103.1872,
+      "Transport": 100.6412,
+      "Industrial, Commercial and other": 99.6005
+     },
      "all_fuels_ktoe": 303.429
     },
     "2018": {
@@ -2484,6 +3155,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 108.6885,
       "Electricity": 78.2148,
       "Bioenergy and wastes": 8.9347
+     },
+     "sector_ktoe": {
+      "Domestic": 102.2273,
+      "Transport": 96.7969,
+      "Industrial, Commercial and other": 104.8872
      },
      "all_fuels_ktoe": 303.9114
     },
@@ -2497,6 +3173,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 75.9131,
       "Bioenergy and wastes": 9.9605
      },
+     "sector_ktoe": {
+      "Domestic": 103.1593,
+      "Transport": 97.0574,
+      "Industrial, Commercial and other": 102.4209
+     },
      "all_fuels_ktoe": 302.6376
     },
     "2020": {
@@ -2508,6 +3189,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 126.7949,
       "Electricity": 66.6438,
       "Bioenergy and wastes": 11.0375
+     },
+     "sector_ktoe": {
+      "Domestic": 105.9341,
+      "Transport": 75.5893,
+      "Industrial, Commercial and other": 108.3117
      },
      "all_fuels_ktoe": 289.8351
     },
@@ -2521,6 +3207,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 66.4477,
       "Bioenergy and wastes": 10.333
      },
+     "sector_ktoe": {
+      "Domestic": 100.4378,
+      "Transport": 81.1843,
+      "Industrial, Commercial and other": 105.6029
+     },
      "all_fuels_ktoe": 287.225
     },
     "2022": {
@@ -2532,6 +3223,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 106.8223,
       "Electricity": 64.5559,
       "Bioenergy and wastes": 11.4689
+     },
+     "sector_ktoe": {
+      "Domestic": 89.9853,
+      "Transport": 88.7291,
+      "Industrial, Commercial and other": 100.1829
      },
      "all_fuels_ktoe": 278.8973
     },
@@ -2545,6 +3241,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 64.2591,
       "Bioenergy and wastes": 12.541
      },
+     "sector_ktoe": {
+      "Domestic": 91.4868,
+      "Transport": 86.0134,
+      "Industrial, Commercial and other": 95.2061
+     },
      "all_fuels_ktoe": 272.7062
     },
     "2024": {
@@ -2556,6 +3257,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 102.0473,
       "Electricity": 63.2919,
       "Bioenergy and wastes": 10.7687
+     },
+     "sector_ktoe": {
+      "Domestic": 90.8101,
+      "Transport": 82.8598,
+      "Industrial, Commercial and other": 93.1042
      },
      "all_fuels_ktoe": 266.7742
     }
@@ -2686,6 +3392,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 107.672,
       "Bioenergy and wastes": 2.6871
      },
+     "sector_ktoe": {
+      "Domestic": 152.5004,
+      "Transport": 101.9892,
+      "Industrial, Commercial and other": 165.0428
+     },
      "all_fuels_ktoe": 419.5324
     },
     "2006": {
@@ -2697,6 +3408,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 161.55,
       "Electricity": 103.273,
       "Bioenergy and wastes": 3.2137
+     },
+     "sector_ktoe": {
+      "Domestic": 147.0673,
+      "Transport": 101.7267,
+      "Industrial, Commercial and other": 157.1277
      },
      "all_fuels_ktoe": 405.9218
     },
@@ -2710,6 +3426,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 96.688,
       "Bioenergy and wastes": 2.9576
      },
+     "sector_ktoe": {
+      "Domestic": 142.7822,
+      "Transport": 102.0787,
+      "Industrial, Commercial and other": 146.0831
+     },
      "all_fuels_ktoe": 390.9441
     },
     "2008": {
@@ -2721,6 +3442,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 147.82,
       "Electricity": 98.367,
       "Bioenergy and wastes": 3.729
+     },
+     "sector_ktoe": {
+      "Domestic": 138.5773,
+      "Transport": 98.439,
+      "Industrial, Commercial and other": 135.0199
      },
      "all_fuels_ktoe": 372.0362
     },
@@ -2734,6 +3460,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 93.1865,
       "Bioenergy and wastes": 4.0123
      },
+     "sector_ktoe": {
+      "Domestic": 128.6753,
+      "Transport": 95.8172,
+      "Industrial, Commercial and other": 133.3858
+     },
      "all_fuels_ktoe": 357.8783
     },
     "2010": {
@@ -2745,6 +3476,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 138.0802,
       "Electricity": 89.8702,
       "Bioenergy and wastes": 4.7433
+     },
+     "sector_ktoe": {
+      "Domestic": 127.3209,
+      "Transport": 94.2196,
+      "Industrial, Commercial and other": 128.5802
      },
      "all_fuels_ktoe": 350.1206
     },
@@ -2758,6 +3494,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 87.2197,
       "Bioenergy and wastes": 4.5396
      },
+     "sector_ktoe": {
+      "Domestic": 119.8253,
+      "Transport": 93.7581,
+      "Industrial, Commercial and other": 122.7395
+     },
      "all_fuels_ktoe": 336.3229
     },
     "2012": {
@@ -2769,6 +3510,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 130.3413,
       "Electricity": 87.8996,
       "Bioenergy and wastes": 4.5828
+     },
+     "sector_ktoe": {
+      "Domestic": 119.0345,
+      "Transport": 94.3789,
+      "Industrial, Commercial and other": 124.5982
      },
      "all_fuels_ktoe": 338.0116
     },
@@ -2782,6 +3528,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 84.2006,
       "Bioenergy and wastes": 4.9746
      },
+     "sector_ktoe": {
+      "Domestic": 116.0925,
+      "Transport": 92.8653,
+      "Industrial, Commercial and other": 111.3755
+     },
      "all_fuels_ktoe": 320.3333
     },
     "2014": {
@@ -2793,6 +3544,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 119.7491,
       "Electricity": 84.1749,
       "Bioenergy and wastes": 5.2529
+     },
+     "sector_ktoe": {
+      "Domestic": 115.8798,
+      "Transport": 93.3748,
+      "Industrial, Commercial and other": 116.2129
      },
      "all_fuels_ktoe": 325.4675
     },
@@ -2806,6 +3562,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 81.874,
       "Bioenergy and wastes": 4.9497
      },
+     "sector_ktoe": {
+      "Domestic": 114.3433,
+      "Transport": 93.9118,
+      "Industrial, Commercial and other": 115.56
+     },
      "all_fuels_ktoe": 323.8152
     },
     "2016": {
@@ -2817,6 +3578,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 119.8138,
       "Electricity": 78.0741,
       "Bioenergy and wastes": 5.314
+     },
+     "sector_ktoe": {
+      "Domestic": 113.7258,
+      "Transport": 93.9072,
+      "Industrial, Commercial and other": 107.8857
      },
      "all_fuels_ktoe": 315.5188
     },
@@ -2830,6 +3596,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 79.0633,
       "Bioenergy and wastes": 5.4007
      },
+     "sector_ktoe": {
+      "Domestic": 115.1483,
+      "Transport": 93.3157,
+      "Industrial, Commercial and other": 106.4503
+     },
      "all_fuels_ktoe": 314.9143
     },
     "2018": {
@@ -2841,6 +3612,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 120.6953,
       "Electricity": 79.7285,
       "Bioenergy and wastes": 6.5659
+     },
+     "sector_ktoe": {
+      "Domestic": 114.6201,
+      "Transport": 90.9924,
+      "Industrial, Commercial and other": 109.6153
      },
      "all_fuels_ktoe": 315.2278
     },
@@ -2854,6 +3630,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 76.2927,
       "Bioenergy and wastes": 7.5432
      },
+     "sector_ktoe": {
+      "Domestic": 115.1447,
+      "Transport": 88.9424,
+      "Industrial, Commercial and other": 106.3316
+     },
      "all_fuels_ktoe": 310.4187
     },
     "2020": {
@@ -2865,6 +3646,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 122.9699,
       "Electricity": 70.8323,
       "Bioenergy and wastes": 7.497
+     },
+     "sector_ktoe": {
+      "Domestic": 118.7989,
+      "Transport": 70.1836,
+      "Industrial, Commercial and other": 94.3527
      },
      "all_fuels_ktoe": 283.3352
     },
@@ -2878,6 +3664,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 71.2186,
       "Bioenergy and wastes": 7.2633
      },
+     "sector_ktoe": {
+      "Domestic": 113.3538,
+      "Transport": 69.5895,
+      "Industrial, Commercial and other": 98.3827
+     },
      "all_fuels_ktoe": 281.326
     },
     "2022": {
@@ -2889,6 +3680,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 111.3679,
       "Electricity": 69.2335,
       "Bioenergy and wastes": 8.4269
+     },
+     "sector_ktoe": {
+      "Domestic": 102.9389,
+      "Transport": 73.8423,
+      "Industrial, Commercial and other": 96.83
      },
      "all_fuels_ktoe": 273.6112
     },
@@ -2902,6 +3698,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 70.5477,
       "Bioenergy and wastes": 9.2464
      },
+     "sector_ktoe": {
+      "Domestic": 103.7723,
+      "Transport": 72.9904,
+      "Industrial, Commercial and other": 97.0283
+     },
      "all_fuels_ktoe": 273.7909
     },
     "2024": {
@@ -2913,6 +3714,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 104.4514,
       "Electricity": 71.5442,
       "Bioenergy and wastes": 8.687
+     },
+     "sector_ktoe": {
+      "Domestic": 103.2498,
+      "Transport": 72.6349,
+      "Industrial, Commercial and other": 93.3208
      },
      "all_fuels_ktoe": 269.2055
     }
@@ -3043,6 +3849,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 56.023,
       "Bioenergy and wastes": 2.4864
      },
+     "sector_ktoe": {
+      "Domestic": 95.1114,
+      "Transport": 154.49,
+      "Industrial, Commercial and other": 92.1993
+     },
      "all_fuels_ktoe": 341.8007
     },
     "2006": {
@@ -3054,6 +3865,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 82.43,
       "Electricity": 55.193,
       "Bioenergy and wastes": 3.3978
+     },
+     "sector_ktoe": {
+      "Domestic": 95.3335,
+      "Transport": 156.372,
+      "Industrial, Commercial and other": 78.4202
      },
      "all_fuels_ktoe": 330.1257
     },
@@ -3067,6 +3883,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 55.101,
       "Bioenergy and wastes": 3.4966
      },
+     "sector_ktoe": {
+      "Domestic": 91.6402,
+      "Transport": 158.5648,
+      "Industrial, Commercial and other": 77.833
+     },
      "all_fuels_ktoe": 328.0379
     },
     "2008": {
@@ -3078,6 +3899,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 76.512,
       "Electricity": 56.124,
       "Bioenergy and wastes": 5.3781
+     },
+     "sector_ktoe": {
+      "Domestic": 90.3105,
+      "Transport": 157.7529,
+      "Industrial, Commercial and other": 76.4529
      },
      "all_fuels_ktoe": 324.5163
     },
@@ -3091,6 +3917,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 56.6493,
       "Bioenergy and wastes": 5.8797
      },
+     "sector_ktoe": {
+      "Domestic": 85.5223,
+      "Transport": 153.3867,
+      "Industrial, Commercial and other": 75.1808
+     },
      "all_fuels_ktoe": 314.0898
     },
     "2010": {
@@ -3102,6 +3933,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 70.7993,
       "Electricity": 57.1056,
       "Bioenergy and wastes": 6.7998
+     },
+     "sector_ktoe": {
+      "Domestic": 87.5417,
+      "Transport": 151.1758,
+      "Industrial, Commercial and other": 76.4462
      },
      "all_fuels_ktoe": 315.1638
     },
@@ -3115,6 +3951,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 55.836,
       "Bioenergy and wastes": 6.584
      },
+     "sector_ktoe": {
+      "Domestic": 82.2816,
+      "Transport": 150.7265,
+      "Industrial, Commercial and other": 72.2313
+     },
      "all_fuels_ktoe": 305.2394
     },
     "2012": {
@@ -3126,6 +3967,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 68.2351,
       "Electricity": 55.6658,
       "Bioenergy and wastes": 6.2649
+     },
+     "sector_ktoe": {
+      "Domestic": 82.689,
+      "Transport": 148.7674,
+      "Industrial, Commercial and other": 74.7103
      },
      "all_fuels_ktoe": 306.1666
     },
@@ -3139,6 +3985,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 55.0319,
       "Bioenergy and wastes": 6.9488
      },
+     "sector_ktoe": {
+      "Domestic": 82.1924,
+      "Transport": 149.5987,
+      "Industrial, Commercial and other": 73.9453
+     },
      "all_fuels_ktoe": 305.7365
     },
     "2014": {
@@ -3150,6 +4001,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 68.617,
       "Electricity": 54.68,
       "Bioenergy and wastes": 7.8584
+     },
+     "sector_ktoe": {
+      "Domestic": 81.3398,
+      "Transport": 153.5282,
+      "Industrial, Commercial and other": 73.5258
      },
      "all_fuels_ktoe": 308.3938
     },
@@ -3163,6 +4019,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 53.0903,
       "Bioenergy and wastes": 7.1993
      },
+     "sector_ktoe": {
+      "Domestic": 81.0237,
+      "Transport": 156.7577,
+      "Industrial, Commercial and other": 71.8052
+     },
      "all_fuels_ktoe": 309.5866
     },
     "2016": {
@@ -3174,6 +4035,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 66.3642,
       "Electricity": 51.0728,
       "Bioenergy and wastes": 8.0089
+     },
+     "sector_ktoe": {
+      "Domestic": 81.3511,
+      "Transport": 158.7181,
+      "Industrial, Commercial and other": 68.9977
      },
      "all_fuels_ktoe": 309.0668
     },
@@ -3187,6 +4053,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 51.4135,
       "Bioenergy and wastes": 8.1413
      },
+     "sector_ktoe": {
+      "Domestic": 81.8554,
+      "Transport": 160.5214,
+      "Industrial, Commercial and other": 69.4089
+     },
      "all_fuels_ktoe": 311.7857
     },
     "2018": {
@@ -3198,6 +4069,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 70.4859,
       "Electricity": 51.1786,
       "Bioenergy and wastes": 10.2439
+     },
+     "sector_ktoe": {
+      "Domestic": 82.2027,
+      "Transport": 159.4055,
+      "Industrial, Commercial and other": 72.4155
      },
      "all_fuels_ktoe": 314.0238
     },
@@ -3211,6 +4087,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 50.2275,
       "Bioenergy and wastes": 11.8216
      },
+     "sector_ktoe": {
+      "Domestic": 82.7739,
+      "Transport": 157.912,
+      "Industrial, Commercial and other": 67.2751
+     },
      "all_fuels_ktoe": 307.961
     },
     "2020": {
@@ -3222,6 +4103,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 69.0996,
       "Electricity": 47.7935,
       "Bioenergy and wastes": 11.474
+     },
+     "sector_ktoe": {
+      "Domestic": 85.8657,
+      "Transport": 123.1385,
+      "Industrial, Commercial and other": 64.4154
      },
      "all_fuels_ktoe": 273.4196
     },
@@ -3235,6 +4121,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 48.1166,
       "Bioenergy and wastes": 11.1607
      },
+     "sector_ktoe": {
+      "Domestic": 83.079,
+      "Transport": 136.7891,
+      "Industrial, Commercial and other": 66.1829
+     },
      "all_fuels_ktoe": 286.051
     },
     "2022": {
@@ -3246,6 +4137,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.5186,
       "Electricity": 47.2469,
       "Bioenergy and wastes": 13.4547
+     },
+     "sector_ktoe": {
+      "Domestic": 74.5527,
+      "Transport": 145.8063,
+      "Industrial, Commercial and other": 63.6535
      },
      "all_fuels_ktoe": 284.0125
     },
@@ -3259,6 +4155,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.7736,
       "Bioenergy and wastes": 14.5804
      },
+     "sector_ktoe": {
+      "Domestic": 75.9852,
+      "Transport": 145.1695,
+      "Industrial, Commercial and other": 64.67
+     },
      "all_fuels_ktoe": 285.8247
     },
     "2024": {
@@ -3270,6 +4171,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.9255,
       "Electricity": 48.1727,
       "Bioenergy and wastes": 13.2009
+     },
+     "sector_ktoe": {
+      "Domestic": 77.7394,
+      "Transport": 145.4986,
+      "Industrial, Commercial and other": 67.6274
      },
      "all_fuels_ktoe": 290.8654
     }
@@ -3400,6 +4306,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 43.727,
       "Bioenergy and wastes": 2.1142
      },
+     "sector_ktoe": {
+      "Domestic": 99.7129,
+      "Transport": 109.2008,
+      "Industrial, Commercial and other": 59.1658
+     },
      "all_fuels_ktoe": 268.0796
     },
     "2006": {
@@ -3411,6 +4322,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 84.372,
       "Electricity": 42.489,
       "Bioenergy and wastes": 2.8121
+     },
+     "sector_ktoe": {
+      "Domestic": 98.7837,
+      "Transport": 108.5859,
+      "Industrial, Commercial and other": 56.4291
      },
      "all_fuels_ktoe": 263.7987
     },
@@ -3424,6 +4340,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 41.268,
       "Bioenergy and wastes": 2.9182
      },
+     "sector_ktoe": {
+      "Domestic": 97.2374,
+      "Transport": 109.9601,
+      "Industrial, Commercial and other": 55.2067
+     },
      "all_fuels_ktoe": 262.4042
     },
     "2008": {
@@ -3435,6 +4356,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 80.992,
       "Electricity": 41.628,
       "Bioenergy and wastes": 4.0794
+     },
+     "sector_ktoe": {
+      "Domestic": 94.9034,
+      "Transport": 109.0236,
+      "Industrial, Commercial and other": 54.6997
      },
      "all_fuels_ktoe": 258.6267
     },
@@ -3448,6 +4374,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 41.9712,
       "Bioenergy and wastes": 4.4578
      },
+     "sector_ktoe": {
+      "Domestic": 89.2477,
+      "Transport": 106.1887,
+      "Industrial, Commercial and other": 51.8425
+     },
      "all_fuels_ktoe": 247.2789
     },
     "2010": {
@@ -3459,6 +4390,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 72.9995,
       "Electricity": 41.135,
       "Bioenergy and wastes": 5.3013
+     },
+     "sector_ktoe": {
+      "Domestic": 90.6739,
+      "Transport": 105.4693,
+      "Industrial, Commercial and other": 52.1215
      },
      "all_fuels_ktoe": 248.2646
     },
@@ -3472,6 +4408,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 40.409,
       "Bioenergy and wastes": 5.0912
      },
+     "sector_ktoe": {
+      "Domestic": 85.9606,
+      "Transport": 104.3646,
+      "Industrial, Commercial and other": 50.1755
+     },
      "all_fuels_ktoe": 240.5008
     },
     "2012": {
@@ -3483,6 +4424,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 70.1502,
       "Electricity": 40.3343,
       "Bioenergy and wastes": 5.2108
+     },
+     "sector_ktoe": {
+      "Domestic": 86.3601,
+      "Transport": 105.9083,
+      "Industrial, Commercial and other": 50.2628
      },
      "all_fuels_ktoe": 242.5312
     },
@@ -3496,6 +4442,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 39.7712,
       "Bioenergy and wastes": 5.7623
      },
+     "sector_ktoe": {
+      "Domestic": 85.5188,
+      "Transport": 108.0572,
+      "Industrial, Commercial and other": 49.5645
+     },
      "all_fuels_ktoe": 243.1405
     },
     "2014": {
@@ -3507,6 +4458,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 65.7805,
       "Electricity": 39.8571,
       "Bioenergy and wastes": 6.0785
+     },
+     "sector_ktoe": {
+      "Domestic": 84.9168,
+      "Transport": 111.1913,
+      "Industrial, Commercial and other": 45.3006
      },
      "all_fuels_ktoe": 241.4086
     },
@@ -3520,6 +4476,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 39.1462,
       "Bioenergy and wastes": 5.6513
      },
+     "sector_ktoe": {
+      "Domestic": 84.9452,
+      "Transport": 113.6642,
+      "Industrial, Commercial and other": 43.2045
+     },
      "all_fuels_ktoe": 241.8139
     },
     "2016": {
@@ -3531,6 +4492,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.4796,
       "Electricity": 37.3758,
       "Bioenergy and wastes": 5.9992
+     },
+     "sector_ktoe": {
+      "Domestic": 84.7622,
+      "Transport": 116.5819,
+      "Industrial, Commercial and other": 40.9284
      },
      "all_fuels_ktoe": 242.2725
     },
@@ -3544,6 +4510,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 38.192,
       "Bioenergy and wastes": 6.343
      },
+     "sector_ktoe": {
+      "Domestic": 85.7147,
+      "Transport": 116.2244,
+      "Industrial, Commercial and other": 42.2382
+     },
      "all_fuels_ktoe": 244.1773
     },
     "2018": {
@@ -3555,6 +4526,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 66.0401,
       "Electricity": 37.9524,
       "Bioenergy and wastes": 8.0126
+     },
+     "sector_ktoe": {
+      "Domestic": 86.5499,
+      "Transport": 114.0233,
+      "Industrial, Commercial and other": 43.0864
      },
      "all_fuels_ktoe": 243.6596
     },
@@ -3568,6 +4544,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.7942,
       "Bioenergy and wastes": 9.9568
      },
+     "sector_ktoe": {
+      "Domestic": 87.2107,
+      "Transport": 113.2922,
+      "Industrial, Commercial and other": 41.6558
+     },
      "all_fuels_ktoe": 242.1587
     },
     "2020": {
@@ -3579,6 +4560,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 66.0247,
       "Electricity": 37.1907,
       "Bioenergy and wastes": 10.2636
+     },
+     "sector_ktoe": {
+      "Domestic": 89.661,
+      "Transport": 89.3273,
+      "Industrial, Commercial and other": 39.4677
      },
      "all_fuels_ktoe": 218.4561
     },
@@ -3592,6 +4578,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.6919,
       "Bioenergy and wastes": 10.8033
      },
+     "sector_ktoe": {
+      "Domestic": 85.9997,
+      "Transport": 99.6174,
+      "Industrial, Commercial and other": 40.1994
+     },
      "all_fuels_ktoe": 225.8165
     },
     "2022": {
@@ -3603,6 +4594,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 56.4738,
       "Electricity": 34.7844,
       "Bioenergy and wastes": 12.3455
+     },
+     "sector_ktoe": {
+      "Domestic": 76.4204,
+      "Transport": 103.4113,
+      "Industrial, Commercial and other": 37.9587
      },
      "all_fuels_ktoe": 217.7904
     },
@@ -3616,6 +4612,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 34.5667,
       "Bioenergy and wastes": 13.3647
      },
+     "sector_ktoe": {
+      "Domestic": 77.8353,
+      "Transport": 105.2149,
+      "Industrial, Commercial and other": 37.8111
+     },
      "all_fuels_ktoe": 220.8613
     },
     "2024": {
@@ -3627,6 +4628,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 57.555,
       "Electricity": 34.3112,
       "Bioenergy and wastes": 13.6759
+     },
+     "sector_ktoe": {
+      "Domestic": 79.2008,
+      "Transport": 103.0666,
+      "Industrial, Commercial and other": 39.462
      },
      "all_fuels_ktoe": 221.7294
     }
@@ -3757,6 +4763,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 74.208,
       "Bioenergy and wastes": 3.8522
      },
+     "sector_ktoe": {
+      "Domestic": 151.9116,
+      "Transport": 163.239,
+      "Industrial, Commercial and other": 1535.9921
+     },
      "all_fuels_ktoe": 1851.1426
     },
     "2006": {
@@ -3768,6 +4779,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 133.592,
       "Electricity": 69.996,
       "Bioenergy and wastes": 4.6124
+     },
+     "sector_ktoe": {
+      "Domestic": 148.3059,
+      "Transport": 168.122,
+      "Industrial, Commercial and other": 1349.2618
      },
      "all_fuels_ktoe": 1665.6896
     },
@@ -3781,6 +4797,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 68.671,
       "Bioenergy and wastes": 4.7509
      },
+     "sector_ktoe": {
+      "Domestic": 144.1094,
+      "Transport": 168.256,
+      "Industrial, Commercial and other": 1331.315
+     },
      "all_fuels_ktoe": 1643.6804
     },
     "2008": {
@@ -3792,6 +4813,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 119.82,
       "Electricity": 69.199,
       "Bioenergy and wastes": 6.3631
+     },
+     "sector_ktoe": {
+      "Domestic": 139.8002,
+      "Transport": 169.0466,
+      "Industrial, Commercial and other": 1147.3216
      },
      "all_fuels_ktoe": 1456.1685
     },
@@ -3805,6 +4831,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 68.1034,
       "Bioenergy and wastes": 7.0065
      },
+     "sector_ktoe": {
+      "Domestic": 130.9414,
+      "Transport": 163.041,
+      "Industrial, Commercial and other": 1306.1173
+     },
      "all_fuels_ktoe": 1600.0997
     },
     "2010": {
@@ -3816,6 +4847,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 105.9287,
       "Electricity": 67.8968,
       "Bioenergy and wastes": 8.2091
+     },
+     "sector_ktoe": {
+      "Domestic": 131.7337,
+      "Transport": 162.3036,
+      "Industrial, Commercial and other": 1269.1627
      },
      "all_fuels_ktoe": 1563.2
     },
@@ -3829,6 +4865,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 67.6186,
       "Bioenergy and wastes": 7.8929
      },
+     "sector_ktoe": {
+      "Domestic": 123.743,
+      "Transport": 160.5017,
+      "Industrial, Commercial and other": 1197.4171
+     },
      "all_fuels_ktoe": 1481.6618
     },
     "2012": {
@@ -3840,6 +4881,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 100.0618,
       "Electricity": 65.504,
       "Bioenergy and wastes": 7.6928
+     },
+     "sector_ktoe": {
+      "Domestic": 124.3437,
+      "Transport": 154.8476,
+      "Industrial, Commercial and other": 1141.5477
      },
      "all_fuels_ktoe": 1420.739
     },
@@ -3853,6 +4899,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 65.4967,
       "Bioenergy and wastes": 8.4448
      },
+     "sector_ktoe": {
+      "Domestic": 122.2107,
+      "Transport": 153.8708,
+      "Industrial, Commercial and other": 1216.7913
+     },
      "all_fuels_ktoe": 1492.8728
     },
     "2014": {
@@ -3864,6 +4915,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 101.292,
       "Electricity": 67.1655,
       "Bioenergy and wastes": 9.1814
+     },
+     "sector_ktoe": {
+      "Domestic": 121.2646,
+      "Transport": 161.5962,
+      "Industrial, Commercial and other": 1154.8671
      },
      "all_fuels_ktoe": 1437.7278
     },
@@ -3877,6 +4933,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 66.0168,
       "Bioenergy and wastes": 8.6579
      },
+     "sector_ktoe": {
+      "Domestic": 119.9638,
+      "Transport": 164.9765,
+      "Industrial, Commercial and other": 1158.1523
+     },
      "all_fuels_ktoe": 1443.0926
     },
     "2016": {
@@ -3888,6 +4949,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 98.1126,
       "Electricity": 63.5454,
       "Bioenergy and wastes": 9.2897
+     },
+     "sector_ktoe": {
+      "Domestic": 119.8082,
+      "Transport": 167.941,
+      "Industrial, Commercial and other": 1120.1817
      },
      "all_fuels_ktoe": 1407.9309
     },
@@ -3901,6 +4967,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 64.5305,
       "Bioenergy and wastes": 9.3009
      },
+     "sector_ktoe": {
+      "Domestic": 120.598,
+      "Transport": 168.002,
+      "Industrial, Commercial and other": 1112.8803
+     },
      "all_fuels_ktoe": 1401.4803
     },
     "2018": {
@@ -3912,6 +4983,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 100.1292,
       "Electricity": 65.0284,
       "Bioenergy and wastes": 11.3328
+     },
+     "sector_ktoe": {
+      "Domestic": 120.6521,
+      "Transport": 166.3536,
+      "Industrial, Commercial and other": 1101.5422
      },
      "all_fuels_ktoe": 1388.5478
     },
@@ -3925,6 +5001,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 64.0981,
       "Bioenergy and wastes": 13.1364
      },
+     "sector_ktoe": {
+      "Domestic": 120.8255,
+      "Transport": 162.6209,
+      "Industrial, Commercial and other": 1112.2444
+     },
      "all_fuels_ktoe": 1395.6908
     },
     "2020": {
@@ -3936,6 +5017,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 101.3092,
       "Electricity": 62.4982,
       "Bioenergy and wastes": 12.9295
+     },
+     "sector_ktoe": {
+      "Domestic": 123.8851,
+      "Transport": 131.3848,
+      "Industrial, Commercial and other": 949.5511
      },
      "all_fuels_ktoe": 1204.821
     },
@@ -3949,6 +5035,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 62.0123,
       "Bioenergy and wastes": 12.9837
      },
+     "sector_ktoe": {
+      "Domestic": 117.3936,
+      "Transport": 144.0823,
+      "Industrial, Commercial and other": 1035.1022
+     },
      "all_fuels_ktoe": 1296.5781
     },
     "2022": {
@@ -3960,6 +5051,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 85.0889,
       "Electricity": 58.7858,
       "Bioenergy and wastes": 14.7138
+     },
+     "sector_ktoe": {
+      "Domestic": 104.0558,
+      "Transport": 148.7744,
+      "Industrial, Commercial and other": 1144.1045
      },
      "all_fuels_ktoe": 1396.9348
     },
@@ -3973,6 +5069,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 57.9405,
       "Bioenergy and wastes": 15.8522
      },
+     "sector_ktoe": {
+      "Domestic": 105.5579,
+      "Transport": 147.8145,
+      "Industrial, Commercial and other": 1096.2705
+     },
      "all_fuels_ktoe": 1349.6429
     },
     "2024": {
@@ -3984,6 +5085,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 83.4019,
       "Electricity": 56.2554,
       "Bioenergy and wastes": 14.8555
+     },
+     "sector_ktoe": {
+      "Domestic": 105.3267,
+      "Transport": 147.2123,
+      "Industrial, Commercial and other": 1098.4754
      },
      "all_fuels_ktoe": 1351.0143
     }
@@ -4114,6 +5220,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 49.95,
       "Bioenergy and wastes": 2.2897
      },
+     "sector_ktoe": {
+      "Domestic": 91.5339,
+      "Transport": 145.1698,
+      "Industrial, Commercial and other": 70.2803
+     },
      "all_fuels_ktoe": 306.984
     },
     "2006": {
@@ -4125,6 +5236,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 73.484,
       "Electricity": 49.693,
       "Bioenergy and wastes": 2.9986
+     },
+     "sector_ktoe": {
+      "Domestic": 91.882,
+      "Transport": 148.2655,
+      "Industrial, Commercial and other": 72.2141
      },
      "all_fuels_ktoe": 312.3616
     },
@@ -4138,6 +5254,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 49.552,
       "Bioenergy and wastes": 3.3268
      },
+     "sector_ktoe": {
+      "Domestic": 88.4358,
+      "Transport": 151.7318,
+      "Industrial, Commercial and other": 66.9765
+     },
      "all_fuels_ktoe": 307.144
     },
     "2008": {
@@ -4149,6 +5270,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 64.276,
       "Electricity": 48.025,
       "Bioenergy and wastes": 4.8895
+     },
+     "sector_ktoe": {
+      "Domestic": 86.4514,
+      "Transport": 146.4647,
+      "Industrial, Commercial and other": 64.2348
      },
      "all_fuels_ktoe": 297.1508
     },
@@ -4162,6 +5288,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.0833,
       "Bioenergy and wastes": 5.5284
      },
+     "sector_ktoe": {
+      "Domestic": 82.3806,
+      "Transport": 144.837,
+      "Industrial, Commercial and other": 64.4207
+     },
      "all_fuels_ktoe": 291.6383
     },
     "2010": {
@@ -4173,6 +5304,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.0231,
       "Electricity": 47.6653,
       "Bioenergy and wastes": 6.4625
+     },
+     "sector_ktoe": {
+      "Domestic": 85.0456,
+      "Transport": 143.6814,
+      "Industrial, Commercial and other": 66.6047
      },
      "all_fuels_ktoe": 295.3316
     },
@@ -4186,6 +5322,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.647,
       "Bioenergy and wastes": 6.1466
      },
+     "sector_ktoe": {
+      "Domestic": 79.5673,
+      "Transport": 141.1959,
+      "Industrial, Commercial and other": 64.2984
+     },
      "all_fuels_ktoe": 285.0616
     },
     "2012": {
@@ -4197,6 +5338,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.4464,
       "Electricity": 49.7006,
       "Bioenergy and wastes": 6.0145
+     },
+     "sector_ktoe": {
+      "Domestic": 80.0293,
+      "Transport": 142.8298,
+      "Industrial, Commercial and other": 68.3559
      },
      "all_fuels_ktoe": 291.215
     },
@@ -4210,6 +5356,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 49.9218,
       "Bioenergy and wastes": 6.7113
      },
+     "sector_ktoe": {
+      "Domestic": 80.2247,
+      "Transport": 142.7315,
+      "Industrial, Commercial and other": 68.4252
+     },
      "all_fuels_ktoe": 291.3813
     },
     "2014": {
@@ -4221,6 +5372,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 60.975,
       "Electricity": 50.1162,
       "Bioenergy and wastes": 7.2216
+     },
+     "sector_ktoe": {
+      "Domestic": 79.0209,
+      "Transport": 144.0832,
+      "Industrial, Commercial and other": 67.12
      },
      "all_fuels_ktoe": 290.2241
     },
@@ -4234,6 +5390,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 48.9147,
       "Bioenergy and wastes": 6.6502
      },
+     "sector_ktoe": {
+      "Domestic": 79.0098,
+      "Transport": 147.9881,
+      "Industrial, Commercial and other": 67.8615
+     },
      "all_fuels_ktoe": 294.8594
     },
     "2016": {
@@ -4245,6 +5406,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.5696,
       "Electricity": 48.1211,
       "Bioenergy and wastes": 7.1253
+     },
+     "sector_ktoe": {
+      "Domestic": 80.3363,
+      "Transport": 150.8731,
+      "Industrial, Commercial and other": 68.2818
      },
      "all_fuels_ktoe": 299.4911
     },
@@ -4258,6 +5424,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 49.1864,
       "Bioenergy and wastes": 7.3727
      },
+     "sector_ktoe": {
+      "Domestic": 80.575,
+      "Transport": 153.6523,
+      "Industrial, Commercial and other": 64.5597
+     },
      "all_fuels_ktoe": 298.787
     },
     "2018": {
@@ -4269,6 +5440,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 70.9083,
       "Electricity": 48.3761,
       "Bioenergy and wastes": 9.4237
+     },
+     "sector_ktoe": {
+      "Domestic": 81.569,
+      "Transport": 153.0528,
+      "Industrial, Commercial and other": 73.0866
      },
      "all_fuels_ktoe": 307.7084
     },
@@ -4282,6 +5458,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.4603,
       "Bioenergy and wastes": 11.2704
      },
+     "sector_ktoe": {
+      "Domestic": 81.7832,
+      "Transport": 154.8197,
+      "Industrial, Commercial and other": 69.4932
+     },
      "all_fuels_ktoe": 306.096
     },
     "2020": {
@@ -4293,6 +5474,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 68.9343,
       "Electricity": 46.1335,
       "Bioenergy and wastes": 11.0595
+     },
+     "sector_ktoe": {
+      "Domestic": 84.5955,
+      "Transport": 120.3282,
+      "Industrial, Commercial and other": 66.64
      },
      "all_fuels_ktoe": 271.5637
     },
@@ -4306,6 +5492,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.1353,
       "Bioenergy and wastes": 11.4803
      },
+     "sector_ktoe": {
+      "Domestic": 81.05,
+      "Transport": 133.2121,
+      "Industrial, Commercial and other": 69.4519
+     },
      "all_fuels_ktoe": 283.714
     },
     "2022": {
@@ -4317,6 +5508,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 59.0562,
       "Electricity": 44.3152,
       "Bioenergy and wastes": 13.5079
+     },
+     "sector_ktoe": {
+      "Domestic": 71.6029,
+      "Transport": 142.3101,
+      "Industrial, Commercial and other": 62.8304
      },
      "all_fuels_ktoe": 276.7434
     },
@@ -4330,6 +5526,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 44.3081,
       "Bioenergy and wastes": 14.8799
      },
+     "sector_ktoe": {
+      "Domestic": 72.8646,
+      "Transport": 140.6634,
+      "Industrial, Commercial and other": 59.7527
+     },
      "all_fuels_ktoe": 273.2806
     },
     "2024": {
@@ -4341,6 +5542,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 54.2417,
       "Electricity": 44.1434,
       "Bioenergy and wastes": 13.7439
+     },
+     "sector_ktoe": {
+      "Domestic": 74.4535,
+      "Transport": 140.5171,
+      "Industrial, Commercial and other": 58.171
      },
      "all_fuels_ktoe": 273.1416
     }
@@ -4471,6 +5677,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 76.553,
       "Bioenergy and wastes": 3.6004
      },
+     "sector_ktoe": {
+      "Domestic": 125.5813,
+      "Transport": 175.7317,
+      "Industrial, Commercial and other": 136.9387
+     },
      "all_fuels_ktoe": 438.2518
     },
     "2006": {
@@ -4482,6 +5693,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 131.571,
       "Electricity": 77.256,
       "Bioenergy and wastes": 4.5532
+     },
+     "sector_ktoe": {
+      "Domestic": 127.3732,
+      "Transport": 181.5959,
+      "Industrial, Commercial and other": 121.5197
      },
      "all_fuels_ktoe": 430.4887
     },
@@ -4495,6 +5711,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 75.934,
       "Bioenergy and wastes": 4.3956
      },
+     "sector_ktoe": {
+      "Domestic": 125.7791,
+      "Transport": 181.4711,
+      "Industrial, Commercial and other": 119.1788
+     },
      "all_fuels_ktoe": 426.429
     },
     "2008": {
@@ -4506,6 +5727,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 123.704,
       "Electricity": 78.161,
       "Bioenergy and wastes": 6.3534
+     },
+     "sector_ktoe": {
+      "Domestic": 122.9698,
+      "Transport": 181.9177,
+      "Industrial, Commercial and other": 116.2181
      },
      "all_fuels_ktoe": 421.1056
     },
@@ -4519,6 +5745,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 77.2484,
       "Bioenergy and wastes": 6.8657
      },
+     "sector_ktoe": {
+      "Domestic": 116.1925,
+      "Transport": 175.8046,
+      "Industrial, Commercial and other": 111.1119
+     },
      "all_fuels_ktoe": 403.1089
     },
     "2010": {
@@ -4530,6 +5761,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 113.8168,
       "Electricity": 76.5832,
       "Bioenergy and wastes": 7.9811
+     },
+     "sector_ktoe": {
+      "Domestic": 118.1935,
+      "Transport": 175.8893,
+      "Industrial, Commercial and other": 111.3613
      },
      "all_fuels_ktoe": 405.4442
     },
@@ -4543,6 +5779,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 79.0103,
       "Bioenergy and wastes": 7.634
      },
+     "sector_ktoe": {
+      "Domestic": 112.3997,
+      "Transport": 172.1716,
+      "Industrial, Commercial and other": 105.1509
+     },
      "all_fuels_ktoe": 389.7222
     },
     "2012": {
@@ -4554,6 +5795,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 107.2119,
       "Electricity": 74.6132,
       "Bioenergy and wastes": 7.3146
+     },
+     "sector_ktoe": {
+      "Domestic": 112.6577,
+      "Transport": 170.3173,
+      "Industrial, Commercial and other": 104.6413
      },
      "all_fuels_ktoe": 387.6163
     },
@@ -4567,6 +5813,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 72.8492,
       "Bioenergy and wastes": 8.0688
      },
+     "sector_ktoe": {
+      "Domestic": 111.7674,
+      "Transport": 169.756,
+      "Industrial, Commercial and other": 103.04
+     },
      "all_fuels_ktoe": 384.5635
     },
     "2014": {
@@ -4578,6 +5829,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 106.3963,
       "Electricity": 73.5289,
       "Bioenergy and wastes": 9.1608
+     },
+     "sector_ktoe": {
+      "Domestic": 110.3206,
+      "Transport": 174.0183,
+      "Industrial, Commercial and other": 104.1773
      },
      "all_fuels_ktoe": 388.5161
     },
@@ -4591,6 +5847,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 73.0136,
       "Bioenergy and wastes": 8.5232
      },
+     "sector_ktoe": {
+      "Domestic": 110.0849,
+      "Transport": 177.8867,
+      "Industrial, Commercial and other": 102.5577
+     },
      "all_fuels_ktoe": 390.5292
     },
     "2016": {
@@ -4602,6 +5863,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 102.5119,
       "Electricity": 71.5454,
       "Bioenergy and wastes": 9.6925
+     },
+     "sector_ktoe": {
+      "Domestic": 109.9313,
+      "Transport": 180.8904,
+      "Industrial, Commercial and other": 99.9334
      },
      "all_fuels_ktoe": 390.7551
     },
@@ -4615,6 +5881,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 71.1446,
       "Bioenergy and wastes": 9.6585
      },
+     "sector_ktoe": {
+      "Domestic": 110.5004,
+      "Transport": 180.5063,
+      "Industrial, Commercial and other": 90.8258
+     },
      "all_fuels_ktoe": 381.8325
     },
     "2018": {
@@ -4626,6 +5897,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 105.4177,
       "Electricity": 69.6443,
       "Bioenergy and wastes": 11.5041
+     },
+     "sector_ktoe": {
+      "Domestic": 111.6766,
+      "Transport": 179.0348,
+      "Industrial, Commercial and other": 99.6049
      },
      "all_fuels_ktoe": 390.3163
     },
@@ -4639,6 +5915,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 69.6258,
       "Bioenergy and wastes": 14.1574
      },
+     "sector_ktoe": {
+      "Domestic": 113.2358,
+      "Transport": 177.3352,
+      "Industrial, Commercial and other": 100.4525
+     },
      "all_fuels_ktoe": 391.0236
     },
     "2020": {
@@ -4650,6 +5931,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 105.423,
       "Electricity": 67.2098,
       "Bioenergy and wastes": 13.5881
+     },
+     "sector_ktoe": {
+      "Domestic": 116.3401,
+      "Transport": 136.5565,
+      "Industrial, Commercial and other": 95.0654
      },
      "all_fuels_ktoe": 347.9621
     },
@@ -4663,6 +5949,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 65.8219,
       "Bioenergy and wastes": 13.117
      },
+     "sector_ktoe": {
+      "Domestic": 111.6974,
+      "Transport": 153.9825,
+      "Industrial, Commercial and other": 93.2542
+     },
      "all_fuels_ktoe": 358.9342
     },
     "2022": {
@@ -4674,6 +5965,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 82.5848,
       "Electricity": 62.5098,
       "Bioenergy and wastes": 15.174
+     },
+     "sector_ktoe": {
+      "Domestic": 99.6662,
+      "Transport": 163.0482,
+      "Industrial, Commercial and other": 76.6562
      },
      "all_fuels_ktoe": 339.3706
     },
@@ -4687,6 +5983,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 60.2706,
       "Bioenergy and wastes": 16.555
      },
+     "sector_ktoe": {
+      "Domestic": 101.35,
+      "Transport": 162.5621,
+      "Industrial, Commercial and other": 70.2447
+     },
      "all_fuels_ktoe": 334.1569
     },
     "2024": {
@@ -4698,6 +5999,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 79.1155,
       "Electricity": 60.0853,
       "Bioenergy and wastes": 16.5378
+     },
+     "sector_ktoe": {
+      "Domestic": 103.366,
+      "Transport": 162.3614,
+      "Industrial, Commercial and other": 72.4546
      },
      "all_fuels_ktoe": 338.1819
     }
@@ -4828,6 +6134,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 32.338,
       "Bioenergy and wastes": 1.8198
      },
+     "sector_ktoe": {
+      "Domestic": 80.9106,
+      "Transport": 83.6376,
+      "Industrial, Commercial and other": 42.7776
+     },
      "all_fuels_ktoe": 207.3258
     },
     "2006": {
@@ -4839,6 +6150,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 74.998,
       "Electricity": 31.994,
       "Bioenergy and wastes": 2.1633
+     },
+     "sector_ktoe": {
+      "Domestic": 80.4957,
+      "Transport": 84.5287,
+      "Industrial, Commercial and other": 42.9195
      },
      "all_fuels_ktoe": 207.9439
     },
@@ -4852,6 +6168,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 31.237,
       "Bioenergy and wastes": 2.3112
      },
+     "sector_ktoe": {
+      "Domestic": 79.2078,
+      "Transport": 86.2228,
+      "Industrial, Commercial and other": 42.308
+     },
      "all_fuels_ktoe": 207.7386
     },
     "2008": {
@@ -4863,6 +6184,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 71.848,
       "Electricity": 31.634,
       "Bioenergy and wastes": 3.1496
+     },
+     "sector_ktoe": {
+      "Domestic": 77.0388,
+      "Transport": 85.2562,
+      "Industrial, Commercial and other": 40.8656
      },
      "all_fuels_ktoe": 203.1606
     },
@@ -4876,6 +6202,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 31.4492,
       "Bioenergy and wastes": 3.5109
      },
+     "sector_ktoe": {
+      "Domestic": 71.9163,
+      "Transport": 82.8406,
+      "Industrial, Commercial and other": 38.4348
+     },
      "all_fuels_ktoe": 193.1917
     },
     "2010": {
@@ -4887,6 +6218,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 64.1433,
       "Electricity": 31.3328,
       "Bioenergy and wastes": 3.9983
+     },
+     "sector_ktoe": {
+      "Domestic": 71.7575,
+      "Transport": 80.6828,
+      "Industrial, Commercial and other": 38.2911
      },
      "all_fuels_ktoe": 190.7314
     },
@@ -4900,6 +6236,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 30.1989,
       "Bioenergy and wastes": 3.8115
      },
+     "sector_ktoe": {
+      "Domestic": 68.746,
+      "Transport": 79.9885,
+      "Industrial, Commercial and other": 35.8854
+     },
      "all_fuels_ktoe": 184.6199
     },
     "2012": {
@@ -4911,6 +6252,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.345,
       "Electricity": 29.407,
       "Bioenergy and wastes": 3.6723
+     },
+     "sector_ktoe": {
+      "Domestic": 68.8746,
+      "Transport": 77.7703,
+      "Industrial, Commercial and other": 35.001
      },
      "all_fuels_ktoe": 181.6459
     },
@@ -4924,6 +6270,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 29.3758,
       "Bioenergy and wastes": 4.061
      },
+     "sector_ktoe": {
+      "Domestic": 68.0985,
+      "Transport": 77.7276,
+      "Industrial, Commercial and other": 34.9383
+     },
      "all_fuels_ktoe": 180.7645
     },
     "2014": {
@@ -4935,6 +6286,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 62.0215,
       "Electricity": 29.8121,
       "Bioenergy and wastes": 4.2753
+     },
+     "sector_ktoe": {
+      "Domestic": 68.0563,
+      "Transport": 78.9467,
+      "Industrial, Commercial and other": 36.2247
      },
      "all_fuels_ktoe": 183.2277
     },
@@ -4948,6 +6304,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 32.2631,
       "Bioenergy and wastes": 3.973
      },
+     "sector_ktoe": {
+      "Domestic": 67.8252,
+      "Transport": 80.2613,
+      "Industrial, Commercial and other": 37.6599
+     },
      "all_fuels_ktoe": 185.7464
     },
     "2016": {
@@ -4959,6 +6320,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 60.3255,
       "Electricity": 32.1604,
       "Bioenergy and wastes": 4.2194
+     },
+     "sector_ktoe": {
+      "Domestic": 68.423,
+      "Transport": 82.0404,
+      "Industrial, Commercial and other": 37.18
      },
      "all_fuels_ktoe": 187.6435
     },
@@ -4972,6 +6338,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 34.0224,
       "Bioenergy and wastes": 4.2434
      },
+     "sector_ktoe": {
+      "Domestic": 68.3894,
+      "Transport": 82.1503,
+      "Industrial, Commercial and other": 40.2027
+     },
      "all_fuels_ktoe": 190.7424
     },
     "2018": {
@@ -4983,6 +6354,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.4153,
       "Electricity": 35.2316,
       "Bioenergy and wastes": 5.0832
+     },
+     "sector_ktoe": {
+      "Domestic": 68.9247,
+      "Transport": 80.4263,
+      "Industrial, Commercial and other": 41.7019
      },
      "all_fuels_ktoe": 191.0529
     },
@@ -4996,6 +6372,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.6494,
       "Bioenergy and wastes": 6.1084
      },
+     "sector_ktoe": {
+      "Domestic": 69.9803,
+      "Transport": 82.6466,
+      "Industrial, Commercial and other": 41.6805
+     },
      "all_fuels_ktoe": 194.3074
     },
     "2020": {
@@ -5007,6 +6388,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 62.5002,
       "Electricity": 37.4449,
       "Bioenergy and wastes": 5.7894
+     },
+     "sector_ktoe": {
+      "Domestic": 71.6376,
+      "Transport": 64.2819,
+      "Industrial, Commercial and other": 42.0287
      },
      "all_fuels_ktoe": 177.9482
     },
@@ -5020,6 +6406,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 38.6863,
       "Bioenergy and wastes": 5.8882
      },
+     "sector_ktoe": {
+      "Domestic": 69.4915,
+      "Transport": 70.5872,
+      "Industrial, Commercial and other": 42.9912
+     },
      "all_fuels_ktoe": 183.0699
     },
     "2022": {
@@ -5031,6 +6422,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 53.367,
       "Electricity": 37.1157,
       "Bioenergy and wastes": 7.0987
+     },
+     "sector_ktoe": {
+      "Domestic": 61.8298,
+      "Transport": 74.4081,
+      "Industrial, Commercial and other": 40.4498
      },
      "all_fuels_ktoe": 176.6877
     },
@@ -5044,6 +6440,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.2668,
       "Bioenergy and wastes": 7.8054
      },
+     "sector_ktoe": {
+      "Domestic": 62.3753,
+      "Transport": 74.0767,
+      "Industrial, Commercial and other": 40.4828
+     },
      "all_fuels_ktoe": 176.9348
     },
     "2024": {
@@ -5055,6 +6456,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 53.8329,
       "Electricity": 38.3915,
       "Bioenergy and wastes": 7.7836
+     },
+     "sector_ktoe": {
+      "Domestic": 63.484,
+      "Transport": 71.8191,
+      "Industrial, Commercial and other": 40.87
      },
      "all_fuels_ktoe": 176.1731
     }
@@ -5185,6 +6591,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 42.293,
       "Bioenergy and wastes": 1.8383
      },
+     "sector_ktoe": {
+      "Domestic": 67.5801,
+      "Transport": 51.1457,
+      "Industrial, Commercial and other": 64.6222
+     },
      "all_fuels_ktoe": 183.348
     },
     "2006": {
@@ -5196,6 +6607,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 75.471,
       "Electricity": 43.189,
       "Bioenergy and wastes": 2.3443
+     },
+     "sector_ktoe": {
+      "Domestic": 67.2977,
+      "Transport": 52.7238,
+      "Industrial, Commercial and other": 63.4129
      },
      "all_fuels_ktoe": 183.4344
     },
@@ -5209,6 +6625,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 41.597,
       "Bioenergy and wastes": 1.908
      },
+     "sector_ktoe": {
+      "Domestic": 66.266,
+      "Transport": 52.8975,
+      "Industrial, Commercial and other": 61.2943
+     },
      "all_fuels_ktoe": 180.4578
     },
     "2008": {
@@ -5220,6 +6641,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 71.667,
       "Electricity": 39.802,
       "Bioenergy and wastes": 2.3715
+     },
+     "sector_ktoe": {
+      "Domestic": 63.8285,
+      "Transport": 52.4481,
+      "Industrial, Commercial and other": 57.3503
      },
      "all_fuels_ktoe": 173.627
     },
@@ -5233,6 +6659,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 39.4162,
       "Bioenergy and wastes": 2.3139
      },
+     "sector_ktoe": {
+      "Domestic": 59.1328,
+      "Transport": 50.899,
+      "Industrial, Commercial and other": 51.2794
+     },
      "all_fuels_ktoe": 161.3112
     },
     "2010": {
@@ -5244,6 +6675,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 65.3086,
       "Electricity": 37.8419,
       "Bioenergy and wastes": 2.8169
+     },
+     "sector_ktoe": {
+      "Domestic": 58.406,
+      "Transport": 50.3234,
+      "Industrial, Commercial and other": 55.6128
      },
      "all_fuels_ktoe": 164.3422
     },
@@ -5257,6 +6693,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 35.3486,
       "Bioenergy and wastes": 2.6843
      },
+     "sector_ktoe": {
+      "Domestic": 56.3192,
+      "Transport": 49.1535,
+      "Industrial, Commercial and other": 51.0529
+     },
      "all_fuels_ktoe": 156.5255
     },
     "2012": {
@@ -5268,6 +6709,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 59.6287,
       "Electricity": 35.5773,
       "Bioenergy and wastes": 2.6583
+     },
+     "sector_ktoe": {
+      "Domestic": 56.434,
+      "Transport": 49.4337,
+      "Industrial, Commercial and other": 48.0898
      },
      "all_fuels_ktoe": 153.9575
     },
@@ -5281,6 +6727,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 34.1885,
       "Bioenergy and wastes": 2.8651
      },
+     "sector_ktoe": {
+      "Domestic": 55.3879,
+      "Transport": 49.0944,
+      "Industrial, Commercial and other": 45.33
+     },
      "all_fuels_ktoe": 149.8123
     },
     "2014": {
@@ -5292,6 +6743,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 57.2451,
       "Electricity": 35.3719,
       "Bioenergy and wastes": 3.3901
+     },
+     "sector_ktoe": {
+      "Domestic": 55.2005,
+      "Transport": 50.2224,
+      "Industrial, Commercial and other": 48.5013
      },
      "all_fuels_ktoe": 153.9243
     },
@@ -5305,6 +6761,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 34.857,
       "Bioenergy and wastes": 3.2147
      },
+     "sector_ktoe": {
+      "Domestic": 54.3907,
+      "Transport": 50.862,
+      "Industrial, Commercial and other": 49.9814
+     },
      "all_fuels_ktoe": 155.234
     },
     "2016": {
@@ -5316,6 +6777,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 56.4817,
       "Electricity": 33.5442,
       "Bioenergy and wastes": 3.8198
+     },
+     "sector_ktoe": {
+      "Domestic": 54.0623,
+      "Transport": 50.7971,
+      "Industrial, Commercial and other": 46.8879
      },
      "all_fuels_ktoe": 151.7473
     },
@@ -5329,6 +6795,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 32.287,
       "Bioenergy and wastes": 4.2843
      },
+     "sector_ktoe": {
+      "Domestic": 53.9195,
+      "Transport": 51.3379,
+      "Industrial, Commercial and other": 45.763
+     },
      "all_fuels_ktoe": 151.0204
     },
     "2018": {
@@ -5340,6 +6811,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 57.4738,
       "Electricity": 33.215,
       "Bioenergy and wastes": 5.939
+     },
+     "sector_ktoe": {
+      "Domestic": 54.1603,
+      "Transport": 51.2879,
+      "Industrial, Commercial and other": 49.8256
      },
      "all_fuels_ktoe": 155.2738
     },
@@ -5353,6 +6829,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 31.4854,
       "Bioenergy and wastes": 5.4132
      },
+     "sector_ktoe": {
+      "Domestic": 54.7542,
+      "Transport": 51.3603,
+      "Industrial, Commercial and other": 45.9592
+     },
      "all_fuels_ktoe": 152.0737
     },
     "2020": {
@@ -5364,6 +6845,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.0512,
       "Electricity": 30.4589,
       "Bioenergy and wastes": 5.2764
+     },
+     "sector_ktoe": {
+      "Domestic": 56.0936,
+      "Transport": 39.714,
+      "Industrial, Commercial and other": 45.8311
      },
      "all_fuels_ktoe": 141.6387
     },
@@ -5377,6 +6863,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 30.0424,
       "Bioenergy and wastes": 4.5313
      },
+     "sector_ktoe": {
+      "Domestic": 54.0831,
+      "Transport": 41.6667,
+      "Industrial, Commercial and other": 46.3776
+     },
      "all_fuels_ktoe": 142.1273
     },
     "2022": {
@@ -5388,6 +6879,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 52.4349,
       "Electricity": 28.7154,
       "Bioenergy and wastes": 4.9977
+     },
+     "sector_ktoe": {
+      "Domestic": 48.515,
+      "Transport": 43.6031,
+      "Industrial, Commercial and other": 41.2884
      },
      "all_fuels_ktoe": 133.4065
     },
@@ -5401,6 +6897,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 29.5135,
       "Bioenergy and wastes": 5.5031
      },
+     "sector_ktoe": {
+      "Domestic": 49.1982,
+      "Transport": 43.1744,
+      "Industrial, Commercial and other": 40.5715
+     },
      "all_fuels_ktoe": 132.9442
     },
     "2024": {
@@ -5412,6 +6913,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 49.4809,
       "Electricity": 30.8486,
       "Bioenergy and wastes": 4.8476
+     },
+     "sector_ktoe": {
+      "Domestic": 49.6189,
+      "Transport": 43.1312,
+      "Industrial, Commercial and other": 40.592
      },
      "all_fuels_ktoe": 133.3421
     }
@@ -5542,6 +7048,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.809,
       "Bioenergy and wastes": 1.7226
      },
+     "sector_ktoe": {
+      "Domestic": 87.0754,
+      "Transport": 78.1105,
+      "Industrial, Commercial and other": 57.699
+     },
      "all_fuels_ktoe": 222.885
     },
     "2006": {
@@ -5553,6 +7064,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 80.634,
       "Electricity": 45.807,
       "Bioenergy and wastes": 2.1611
+     },
+     "sector_ktoe": {
+      "Domestic": 85.5569,
+      "Transport": 79.3661,
+      "Industrial, Commercial and other": 55.5267
      },
      "all_fuels_ktoe": 220.4496
     },
@@ -5566,6 +7082,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 44.561,
       "Bioenergy and wastes": 2.3324
      },
+     "sector_ktoe": {
+      "Domestic": 83.3136,
+      "Transport": 78.9471,
+      "Industrial, Commercial and other": 54.0253
+     },
      "all_fuels_ktoe": 216.286
     },
     "2008": {
@@ -5577,6 +7098,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 75.098,
       "Electricity": 45.499,
       "Bioenergy and wastes": 3.0714
+     },
+     "sector_ktoe": {
+      "Domestic": 80.6959,
+      "Transport": 77.4509,
+      "Industrial, Commercial and other": 52.3451
      },
      "all_fuels_ktoe": 210.4919
     },
@@ -5590,6 +7116,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 43.0672,
       "Bioenergy and wastes": 3.4153
      },
+     "sector_ktoe": {
+      "Domestic": 75.1656,
+      "Transport": 77.2582,
+      "Industrial, Commercial and other": 47.1829
+     },
      "all_fuels_ktoe": 199.6067
     },
     "2010": {
@@ -5601,6 +7132,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 66.9635,
       "Electricity": 43.8531,
       "Bioenergy and wastes": 3.9951
+     },
+     "sector_ktoe": {
+      "Domestic": 75.3168,
+      "Transport": 75.5089,
+      "Industrial, Commercial and other": 48.5131
      },
      "all_fuels_ktoe": 199.3388
     },
@@ -5614,6 +7150,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 38.7414,
       "Bioenergy and wastes": 3.7768
      },
+     "sector_ktoe": {
+      "Domestic": 71.0896,
+      "Transport": 74.2628,
+      "Industrial, Commercial and other": 46.0723
+     },
      "all_fuels_ktoe": 191.4247
     },
     "2012": {
@@ -5625,6 +7166,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 65.5939,
       "Electricity": 37.9121,
       "Bioenergy and wastes": 3.8209
+     },
+     "sector_ktoe": {
+      "Domestic": 71.8994,
+      "Transport": 76.1428,
+      "Industrial, Commercial and other": 42.8694
      },
      "all_fuels_ktoe": 190.9117
     },
@@ -5638,6 +7184,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.7915,
       "Bioenergy and wastes": 4.18
      },
+     "sector_ktoe": {
+      "Domestic": 70.1591,
+      "Transport": 74.4332,
+      "Industrial, Commercial and other": 42.7992
+     },
      "all_fuels_ktoe": 187.3916
     },
     "2014": {
@@ -5649,6 +7200,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 62.6189,
       "Electricity": 37.5678,
       "Bioenergy and wastes": 4.3513
+     },
+     "sector_ktoe": {
+      "Domestic": 69.886,
+      "Transport": 75.2846,
+      "Industrial, Commercial and other": 42.8427
      },
      "all_fuels_ktoe": 188.0133
     },
@@ -5662,6 +7218,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.7555,
       "Bioenergy and wastes": 4.0924
      },
+     "sector_ktoe": {
+      "Domestic": 69.2859,
+      "Transport": 76.8772,
+      "Industrial, Commercial and other": 43.0223
+     },
      "all_fuels_ktoe": 189.1854
     },
     "2016": {
@@ -5673,6 +7234,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.3696,
       "Electricity": 36.6983,
       "Bioenergy and wastes": 4.1637
+     },
+     "sector_ktoe": {
+      "Domestic": 68.7775,
+      "Transport": 76.8054,
+      "Industrial, Commercial and other": 41.8106
      },
      "all_fuels_ktoe": 187.3935
     },
@@ -5686,6 +7252,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.036,
       "Bioenergy and wastes": 4.3532
      },
+     "sector_ktoe": {
+      "Domestic": 69.6095,
+      "Transport": 77.7009,
+      "Industrial, Commercial and other": 40.238
+     },
      "all_fuels_ktoe": 187.5483
     },
     "2018": {
@@ -5697,6 +7268,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 71.8931,
       "Electricity": 36.7616,
       "Bioenergy and wastes": 5.5015
+     },
+     "sector_ktoe": {
+      "Domestic": 69.0848,
+      "Transport": 74.0684,
+      "Industrial, Commercial and other": 51.6101
      },
      "all_fuels_ktoe": 194.7632
     },
@@ -5710,6 +7286,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.005,
       "Bioenergy and wastes": 6.3725
      },
+     "sector_ktoe": {
+      "Domestic": 69.5798,
+      "Transport": 73.5425,
+      "Industrial, Commercial and other": 44.8658
+     },
      "all_fuels_ktoe": 187.9881
     },
     "2020": {
@@ -5721,6 +7302,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 65.6632,
       "Electricity": 34.5699,
       "Bioenergy and wastes": 6.3799
+     },
+     "sector_ktoe": {
+      "Domestic": 71.1971,
+      "Transport": 56.3854,
+      "Industrial, Commercial and other": 40.5189
      },
      "all_fuels_ktoe": 168.1014
     },
@@ -5734,6 +7320,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 33.9805,
       "Bioenergy and wastes": 6.0037
      },
+     "sector_ktoe": {
+      "Domestic": 66.9903,
+      "Transport": 61.871,
+      "Industrial, Commercial and other": 42.4725
+     },
      "all_fuels_ktoe": 171.3337
     },
     "2022": {
@@ -5745,6 +7336,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 53.8027,
       "Electricity": 32.6961,
       "Bioenergy and wastes": 7.2922
+     },
+     "sector_ktoe": {
+      "Domestic": 59.7511,
+      "Transport": 66.2213,
+      "Industrial, Commercial and other": 37.4686
      },
      "all_fuels_ktoe": 163.441
     },
@@ -5758,6 +7354,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 33.2812,
       "Bioenergy and wastes": 8.0397
      },
+     "sector_ktoe": {
+      "Domestic": 61.2091,
+      "Transport": 66.4983,
+      "Industrial, Commercial and other": 37.3312
+     },
      "all_fuels_ktoe": 165.0385
     },
     "2024": {
@@ -5769,6 +7370,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 53.6689,
       "Electricity": 33.6198,
       "Bioenergy and wastes": 7.3425
+     },
+     "sector_ktoe": {
+      "Domestic": 60.5537,
+      "Transport": 65.0307,
+      "Industrial, Commercial and other": 38.2601
      },
      "all_fuels_ktoe": 163.8445
     }
@@ -5899,6 +7505,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 28.679,
       "Bioenergy and wastes": 1.5884
      },
+     "sector_ktoe": {
+      "Domestic": 54.4643,
+      "Transport": 25.1466,
+      "Industrial, Commercial and other": 36.8806
+     },
      "all_fuels_ktoe": 116.4915
     },
     "2006": {
@@ -5910,6 +7521,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 54.599,
       "Electricity": 27.983,
       "Bioenergy and wastes": 1.9207
+     },
+     "sector_ktoe": {
+      "Domestic": 54.7643,
+      "Transport": 24.8365,
+      "Industrial, Commercial and other": 36.0056
      },
      "all_fuels_ktoe": 115.6064
     },
@@ -5923,6 +7539,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 26.915,
       "Bioenergy and wastes": 1.318
      },
+     "sector_ktoe": {
+      "Domestic": 52.5742,
+      "Transport": 25.4677,
+      "Industrial, Commercial and other": 34.1111
+     },
      "all_fuels_ktoe": 112.153
     },
     "2008": {
@@ -5934,6 +7555,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 50.135,
       "Electricity": 26.781,
       "Bioenergy and wastes": 1.4198
+     },
+     "sector_ktoe": {
+      "Domestic": 50.9529,
+      "Transport": 24.3854,
+      "Industrial, Commercial and other": 32.2357
      },
      "all_fuels_ktoe": 107.574
     },
@@ -5947,6 +7573,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 25.4721,
       "Bioenergy and wastes": 1.3056
      },
+     "sector_ktoe": {
+      "Domestic": 47.6974,
+      "Transport": 23.8392,
+      "Industrial, Commercial and other": 26.855
+     },
      "all_fuels_ktoe": 98.3915
     },
     "2010": {
@@ -5958,6 +7589,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 42.888,
       "Electricity": 25.1138,
       "Bioenergy and wastes": 1.5808
+     },
+     "sector_ktoe": {
+      "Domestic": 47.6036,
+      "Transport": 23.4023,
+      "Industrial, Commercial and other": 26.6379
      },
      "all_fuels_ktoe": 97.6437
     },
@@ -5971,6 +7607,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 24.2552,
       "Bioenergy and wastes": 1.622
      },
+     "sector_ktoe": {
+      "Domestic": 44.9783,
+      "Transport": 23.1187,
+      "Industrial, Commercial and other": 25.9013
+     },
      "all_fuels_ktoe": 93.9982
     },
     "2012": {
@@ -5982,6 +7623,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 39.3738,
       "Electricity": 24.5492,
       "Bioenergy and wastes": 1.6116
+     },
+     "sector_ktoe": {
+      "Domestic": 44.7693,
+      "Transport": 23.2115,
+      "Industrial, Commercial and other": 25.559
      },
      "all_fuels_ktoe": 93.5397
     },
@@ -5995,6 +7641,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 24.5227,
       "Bioenergy and wastes": 1.7225
      },
+     "sector_ktoe": {
+      "Domestic": 43.4101,
+      "Transport": 22.8217,
+      "Industrial, Commercial and other": 27.651
+     },
      "all_fuels_ktoe": 93.8828
     },
     "2014": {
@@ -6006,6 +7657,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 38.5394,
       "Electricity": 24.7098,
       "Bioenergy and wastes": 2.4321
+     },
+     "sector_ktoe": {
+      "Domestic": 43.2479,
+      "Transport": 23.1102,
+      "Industrial, Commercial and other": 27.8406
      },
      "all_fuels_ktoe": 94.1987
     },
@@ -6019,6 +7675,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 24.7762,
       "Bioenergy and wastes": 2.5145
      },
+     "sector_ktoe": {
+      "Domestic": 43.276,
+      "Transport": 23.1967,
+      "Industrial, Commercial and other": 26.5761
+     },
      "all_fuels_ktoe": 93.0488
     },
     "2016": {
@@ -6030,6 +7691,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 37.1477,
       "Electricity": 24.0819,
       "Bioenergy and wastes": 3.3855
+     },
+     "sector_ktoe": {
+      "Domestic": 42.6359,
+      "Transport": 23.7451,
+      "Industrial, Commercial and other": 26.5947
      },
      "all_fuels_ktoe": 92.9757
     },
@@ -6043,6 +7709,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 24.2306,
       "Bioenergy and wastes": 3.1354
      },
+     "sector_ktoe": {
+      "Domestic": 43.0971,
+      "Transport": 23.7758,
+      "Industrial, Commercial and other": 26.4923
+     },
      "all_fuels_ktoe": 93.3653
     },
     "2018": {
@@ -6054,6 +7725,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 37.1171,
       "Electricity": 23.6002,
       "Bioenergy and wastes": 3.9754
+     },
+     "sector_ktoe": {
+      "Domestic": 42.4769,
+      "Transport": 23.2042,
+      "Industrial, Commercial and other": 25.0781
      },
      "all_fuels_ktoe": 90.7592
     },
@@ -6067,6 +7743,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 23.0731,
       "Bioenergy and wastes": 4.1881
      },
+     "sector_ktoe": {
+      "Domestic": 42.734,
+      "Transport": 23.1793,
+      "Industrial, Commercial and other": 24.0229
+     },
      "all_fuels_ktoe": 89.9361
     },
     "2020": {
@@ -6078,6 +7759,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 37.816,
       "Electricity": 21.9776,
       "Bioenergy and wastes": 4.0164
+     },
+     "sector_ktoe": {
+      "Domestic": 43.6928,
+      "Transport": 18.9114,
+      "Industrial, Commercial and other": 22.5556
      },
      "all_fuels_ktoe": 85.1598
     },
@@ -6091,6 +7777,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 21.4542,
       "Bioenergy and wastes": 3.2703
      },
+     "sector_ktoe": {
+      "Domestic": 40.9652,
+      "Transport": 18.8761,
+      "Industrial, Commercial and other": 22.2496
+     },
      "all_fuels_ktoe": 82.0909
     },
     "2022": {
@@ -6102,6 +7793,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 31.9924,
       "Electricity": 20.1465,
       "Bioenergy and wastes": 3.1814
+     },
+     "sector_ktoe": {
+      "Domestic": 36.4528,
+      "Transport": 19.1423,
+      "Industrial, Commercial and other": 20.82
      },
      "all_fuels_ktoe": 76.4151
     },
@@ -6115,6 +7811,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 20.0714,
       "Bioenergy and wastes": 3.3487
      },
+     "sector_ktoe": {
+      "Domestic": 37.0786,
+      "Transport": 18.7229,
+      "Industrial, Commercial and other": 20.0722
+     },
      "all_fuels_ktoe": 75.8738
     },
     "2024": {
@@ -6126,6 +7827,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 31.41,
       "Electricity": 19.7221,
       "Bioenergy and wastes": 3.0965
+     },
+     "sector_ktoe": {
+      "Domestic": 36.4688,
+      "Transport": 18.2907,
+      "Industrial, Commercial and other": 19.4971
      },
      "all_fuels_ktoe": 74.2566
     }
@@ -6256,6 +7962,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 42.257,
       "Bioenergy and wastes": 1.8797
      },
+     "sector_ktoe": {
+      "Domestic": 94.5149,
+      "Transport": 59.7946,
+      "Industrial, Commercial and other": 49.4996
+     },
      "all_fuels_ktoe": 203.8091
     },
     "2006": {
@@ -6267,6 +7978,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 82.765,
       "Electricity": 41.669,
       "Bioenergy and wastes": 2.7634
+     },
+     "sector_ktoe": {
+      "Domestic": 91.6651,
+      "Transport": 60.4383,
+      "Industrial, Commercial and other": 49.3844
      },
      "all_fuels_ktoe": 201.4878
     },
@@ -6280,6 +7996,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 40.358,
       "Bioenergy and wastes": 2.3426
      },
+     "sector_ktoe": {
+      "Domestic": 88.849,
+      "Transport": 60.9486,
+      "Industrial, Commercial and other": 48.7785
+     },
      "all_fuels_ktoe": 198.5761
     },
     "2008": {
@@ -6291,6 +8012,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 78.042,
       "Electricity": 39.122,
       "Bioenergy and wastes": 3.047
+     },
+     "sector_ktoe": {
+      "Domestic": 85.4632,
+      "Transport": 59.3501,
+      "Industrial, Commercial and other": 45.9632
      },
      "all_fuels_ktoe": 190.7765
     },
@@ -6304,6 +8030,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 37.0632,
       "Bioenergy and wastes": 3.0251
      },
+     "sector_ktoe": {
+      "Domestic": 79.5102,
+      "Transport": 58.4992,
+      "Industrial, Commercial and other": 41.5975
+     },
      "all_fuels_ktoe": 179.6069
     },
     "2010": {
@@ -6315,6 +8046,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 70.1249,
       "Electricity": 37.4629,
       "Bioenergy and wastes": 3.6338
+     },
+     "sector_ktoe": {
+      "Domestic": 79.6255,
+      "Transport": 57.603,
+      "Industrial, Commercial and other": 43.131
      },
      "all_fuels_ktoe": 180.3595
     },
@@ -6328,6 +8064,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.1569,
       "Bioenergy and wastes": 3.512
      },
+     "sector_ktoe": {
+      "Domestic": 75.2967,
+      "Transport": 57.5016,
+      "Industrial, Commercial and other": 40.5123
+     },
      "all_fuels_ktoe": 173.3106
     },
     "2012": {
@@ -6339,6 +8080,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.3391,
       "Electricity": 36.5772,
       "Bioenergy and wastes": 3.7678
+     },
+     "sector_ktoe": {
+      "Domestic": 75.5602,
+      "Transport": 58.9921,
+      "Industrial, Commercial and other": 39.1895
      },
      "all_fuels_ktoe": 173.7418
     },
@@ -6352,6 +8098,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.4546,
       "Bioenergy and wastes": 3.8855
      },
+     "sector_ktoe": {
+      "Domestic": 73.7287,
+      "Transport": 58.1524,
+      "Industrial, Commercial and other": 39.4567
+     },
      "all_fuels_ktoe": 171.3377
     },
     "2014": {
@@ -6363,6 +8114,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.2399,
       "Electricity": 37.2,
       "Bioenergy and wastes": 4.0212
+     },
+     "sector_ktoe": {
+      "Domestic": 73.983,
+      "Transport": 58.5621,
+      "Industrial, Commercial and other": 38.6798
      },
      "all_fuels_ktoe": 171.2248
     },
@@ -6376,6 +8132,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 36.7164,
       "Bioenergy and wastes": 3.7501
      },
+     "sector_ktoe": {
+      "Domestic": 73.4739,
+      "Transport": 58.9216,
+      "Industrial, Commercial and other": 37.5888
+     },
      "all_fuels_ktoe": 169.9842
     },
     "2016": {
@@ -6387,6 +8148,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 60.2023,
       "Electricity": 35.7143,
       "Bioenergy and wastes": 3.908
+     },
+     "sector_ktoe": {
+      "Domestic": 73.2476,
+      "Transport": 58.8599,
+      "Industrial, Commercial and other": 36.2996
      },
      "all_fuels_ktoe": 168.4071
     },
@@ -6400,6 +8166,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 35.4525,
       "Bioenergy and wastes": 4.3715
      },
+     "sector_ktoe": {
+      "Domestic": 74.6144,
+      "Transport": 59.2286,
+      "Industrial, Commercial and other": 37.5789
+     },
      "all_fuels_ktoe": 171.4218
     },
     "2018": {
@@ -6411,6 +8182,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 61.8386,
       "Electricity": 34.728,
       "Bioenergy and wastes": 5.7952
+     },
+     "sector_ktoe": {
+      "Domestic": 73.9583,
+      "Transport": 57.835,
+      "Industrial, Commercial and other": 38.2715
      },
      "all_fuels_ktoe": 170.0648
     },
@@ -6424,6 +8200,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 33.7602,
       "Bioenergy and wastes": 6.3673
      },
+     "sector_ktoe": {
+      "Domestic": 74.4056,
+      "Transport": 57.8361,
+      "Industrial, Commercial and other": 35.5867
+     },
      "all_fuels_ktoe": 167.8284
     },
     "2020": {
@@ -6435,6 +8216,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 63.0108,
       "Electricity": 32.2697,
       "Bioenergy and wastes": 6.571
+     },
+     "sector_ktoe": {
+      "Domestic": 76.4742,
+      "Transport": 46.601,
+      "Industrial, Commercial and other": 33.5787
      },
      "all_fuels_ktoe": 156.6539
     },
@@ -6448,6 +8234,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 31.7186,
       "Bioenergy and wastes": 5.9698
      },
+     "sector_ktoe": {
+      "Domestic": 72.5107,
+      "Transport": 48.7175,
+      "Industrial, Commercial and other": 33.2811
+     },
      "all_fuels_ktoe": 154.5094
     },
     "2022": {
@@ -6459,6 +8250,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 52.8291,
       "Electricity": 29.8779,
       "Bioenergy and wastes": 6.4562
+     },
+     "sector_ktoe": {
+      "Domestic": 64.5988,
+      "Transport": 51.7374,
+      "Industrial, Commercial and other": 30.4563
      },
      "all_fuels_ktoe": 146.7924
     },
@@ -6472,6 +8268,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 29.8959,
       "Bioenergy and wastes": 7.0964
      },
+     "sector_ktoe": {
+      "Domestic": 65.9381,
+      "Transport": 51.6114,
+      "Industrial, Commercial and other": 29.8169
+     },
      "all_fuels_ktoe": 147.3664
     },
     "2024": {
@@ -6483,6 +8284,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 52.5771,
       "Electricity": 29.4389,
       "Bioenergy and wastes": 9.9808
+     },
+     "sector_ktoe": {
+      "Domestic": 65.3864,
+      "Transport": 49.215,
+      "Industrial, Commercial and other": 30.8935
      },
      "all_fuels_ktoe": 145.4948
     }
@@ -6613,6 +8419,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 48.88,
       "Bioenergy and wastes": 2.2112
      },
+     "sector_ktoe": {
+      "Domestic": 94.6103,
+      "Transport": 94.1032,
+      "Industrial, Commercial and other": 70.1395
+     },
      "all_fuels_ktoe": 258.853
     },
     "2006": {
@@ -6624,6 +8435,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 89.241,
       "Electricity": 48.647,
       "Bioenergy and wastes": 2.7292
+     },
+     "sector_ktoe": {
+      "Domestic": 92.7748,
+      "Transport": 94.0138,
+      "Industrial, Commercial and other": 65.7156
      },
      "all_fuels_ktoe": 252.5042
     },
@@ -6637,6 +8453,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 47.06,
       "Bioenergy and wastes": 2.7134
      },
+     "sector_ktoe": {
+      "Domestic": 91.0365,
+      "Transport": 95.4398,
+      "Industrial, Commercial and other": 63.5655
+     },
      "all_fuels_ktoe": 250.0417
     },
     "2008": {
@@ -6648,6 +8469,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 82.268,
       "Electricity": 47.572,
       "Bioenergy and wastes": 3.5965
+     },
+     "sector_ktoe": {
+      "Domestic": 87.3756,
+      "Transport": 91.444,
+      "Industrial, Commercial and other": 59.7624
      },
      "all_fuels_ktoe": 238.5821
     },
@@ -6661,6 +8487,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 46.5363,
       "Bioenergy and wastes": 3.9943
      },
+     "sector_ktoe": {
+      "Domestic": 81.6559,
+      "Transport": 92.2226,
+      "Industrial, Commercial and other": 55.3177
+     },
      "all_fuels_ktoe": 229.1963
     },
     "2010": {
@@ -6672,6 +8503,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 74.3596,
       "Electricity": 46.3233,
       "Bioenergy and wastes": 4.6778
+     },
+     "sector_ktoe": {
+      "Domestic": 81.5601,
+      "Transport": 93.0086,
+      "Industrial, Commercial and other": 56.9299
      },
      "all_fuels_ktoe": 231.4986
     },
@@ -6685,6 +8521,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 45.6847,
       "Bioenergy and wastes": 4.4599
      },
+     "sector_ktoe": {
+      "Domestic": 77.3165,
+      "Transport": 92.2165,
+      "Industrial, Commercial and other": 54.8151
+     },
      "all_fuels_ktoe": 224.3481
     },
     "2012": {
@@ -6696,6 +8537,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 69.5543,
       "Electricity": 45.3845,
       "Bioenergy and wastes": 4.3249
+     },
+     "sector_ktoe": {
+      "Domestic": 77.728,
+      "Transport": 91.4138,
+      "Industrial, Commercial and other": 52.7557
      },
      "all_fuels_ktoe": 221.8975
     },
@@ -6709,6 +8555,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 45.7129,
       "Bioenergy and wastes": 4.7625
      },
+     "sector_ktoe": {
+      "Domestic": 75.9618,
+      "Transport": 91.035,
+      "Industrial, Commercial and other": 53.9548
+     },
      "all_fuels_ktoe": 220.9515
     },
     "2014": {
@@ -6720,6 +8571,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 68.612,
       "Electricity": 45.8982,
       "Bioenergy and wastes": 5.1504
+     },
+     "sector_ktoe": {
+      "Domestic": 75.6648,
+      "Transport": 92.0018,
+      "Industrial, Commercial and other": 55.4221
      },
      "all_fuels_ktoe": 223.0887
     },
@@ -6733,6 +8589,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 45.02,
       "Bioenergy and wastes": 4.8334
      },
+     "sector_ktoe": {
+      "Domestic": 74.5488,
+      "Transport": 94.319,
+      "Industrial, Commercial and other": 53.8884
+     },
      "all_fuels_ktoe": 222.7561
     },
     "2016": {
@@ -6744,6 +8605,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 65.8264,
       "Electricity": 44.1778,
       "Bioenergy and wastes": 5.2702
+     },
+     "sector_ktoe": {
+      "Domestic": 75.0724,
+      "Transport": 95.9527,
+      "Industrial, Commercial and other": 51.5489
      },
      "all_fuels_ktoe": 222.574
     },
@@ -6757,6 +8623,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 44.8899,
       "Bioenergy and wastes": 5.2934
      },
+     "sector_ktoe": {
+      "Domestic": 76.1946,
+      "Transport": 96.0061,
+      "Industrial, Commercial and other": 53.301
+     },
      "all_fuels_ktoe": 225.5017
     },
     "2018": {
@@ -6768,6 +8639,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 69.672,
       "Electricity": 44.6226,
       "Bioenergy and wastes": 6.4428
+     },
+     "sector_ktoe": {
+      "Domestic": 77.1282,
+      "Transport": 92.2318,
+      "Industrial, Commercial and other": 53.6636
      },
      "all_fuels_ktoe": 223.0237
     },
@@ -6781,6 +8657,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 44.7989,
       "Bioenergy and wastes": 7.4361
      },
+     "sector_ktoe": {
+      "Domestic": 77.762,
+      "Transport": 91.3242,
+      "Industrial, Commercial and other": 51.4103
+     },
      "all_fuels_ktoe": 220.4965
     },
     "2020": {
@@ -6792,6 +8673,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 76.559,
       "Electricity": 42.0255,
       "Bioenergy and wastes": 7.2682
+     },
+     "sector_ktoe": {
+      "Domestic": 80.4305,
+      "Transport": 71.9955,
+      "Industrial, Commercial and other": 51.9782
      },
      "all_fuels_ktoe": 204.4043
     },
@@ -6805,6 +8691,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 41.2716,
       "Bioenergy and wastes": 8.9584
      },
+     "sector_ktoe": {
+      "Domestic": 76.7451,
+      "Transport": 77.3034,
+      "Industrial, Commercial and other": 52.9442
+     },
      "all_fuels_ktoe": 206.9927
     },
     "2022": {
@@ -6816,6 +8707,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 64.7116,
       "Electricity": 39.596,
       "Bioenergy and wastes": 9.7108
+     },
+     "sector_ktoe": {
+      "Domestic": 69.2129,
+      "Transport": 82.6473,
+      "Industrial, Commercial and other": 49.6279
      },
      "all_fuels_ktoe": 201.4881
     },
@@ -6829,6 +8725,11 @@ window.MHE_ENERGY_DATA = {
       "Electricity": 39.2547,
       "Bioenergy and wastes": 10.9551
      },
+     "sector_ktoe": {
+      "Domestic": 70.4548,
+      "Transport": 82.9367,
+      "Industrial, Commercial and other": 46.9142
+     },
      "all_fuels_ktoe": 200.3057
     },
     "2024": {
@@ -6840,6 +8741,11 @@ window.MHE_ENERGY_DATA = {
       "Gas": 62.7675,
       "Electricity": 39.1392,
       "Bioenergy and wastes": 12.5627
+     },
+     "sector_ktoe": {
+      "Domestic": 70.3234,
+      "Transport": 80.9574,
+      "Industrial, Commercial and other": 48.7956
      },
      "all_fuels_ktoe": 200.0764
     }

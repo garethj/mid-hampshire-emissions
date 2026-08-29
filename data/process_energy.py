@@ -28,6 +28,14 @@ def normalize_header(h):
 # in this dataset (unlike renewable generation above), so these are used as published.
 FUEL_CATEGORIES = ["Coal", "Manufactured fuels", "Petroleum", "Gas", "Electricity", "Bioenergy and wastes"]
 
+# DESNZ's alternate split of the same total — by *sector* (Domestic / Transport / Industrial,
+# Commercial and other) rather than by fuel type. Both splits sum to the same "All fuels: Total"
+# figure; this one exists so the consumption chart can offer a "by sector" view alongside its
+# "by fuel type" one, mainly to make visible how much of an area's consumption total is driven by
+# large industrial/commercial energy users (e.g. New Forest's oil refining) rather than households
+# — see note_industrial_consumption below for why that distinction matters.
+SECTOR_CATEGORIES = ["Domestic", "Transport", "Industrial, Commercial and other"]
+
 # Groups the workbook's 12 raw technology columns into a handful of chart-friendly buckets.
 # Wave/Tidal is folded into "Other" rather than "Wind" since it's a distinct (marine, not wind)
 # technology that's negligible in these local authorities. "Other" also absorbs the gap between
@@ -97,9 +105,11 @@ def read_tfec_year(wb, year):
             continue
         cols = {header[i]: row[i] for i in range(len(header)) if header[i]}
         fuels_ktoe = {f: numeric(cols.get(f"{f}: Total")) for f in FUEL_CATEGORIES}
+        sector_ktoe = {s: numeric(cols.get(f"All fuels: {s}")) for s in SECTOR_CATEGORIES}
         by_la[la] = {
             "electricity_consumption_mwh": fuels_ktoe["Electricity"] * KTOE_TO_MWH,
             "fuels_ktoe": fuels_ktoe,
+            "sector_ktoe": sector_ktoe,
             "all_fuels_ktoe": numeric(cols.get("All fuels: Total")),
         }
     return by_la
@@ -127,10 +137,15 @@ def build_region_series(per_year_la, la_list, la_weight, value_key):
                 f: round(sum(by_la[la]["fuels_ktoe"][f] * weight(la) for la in present), 4)
                 for f in FUEL_CATEGORIES
             }
+            sectors = {
+                s: round(sum(by_la[la]["sector_ktoe"][s] * weight(la) for la in present), 4)
+                for s in SECTOR_CATEGORIES
+            }
             all_fuels = round(sum(by_la[la]["all_fuels_ktoe"] * weight(la) for la in present), 4)
             out[year] = {
                 "electricity_consumption_mwh": round(total, 3),
                 "fuels_ktoe": fuels,
+                "sector_ktoe": sectors,
                 "all_fuels_ktoe": all_fuels,
             }
     return out
@@ -170,10 +185,12 @@ def main():
             "consumption_years": consumption_years,
             "technology_groups": TECH_GROUP_NAMES,
             "fuel_categories": FUEL_CATEGORIES,
+            "sector_categories": SECTOR_CATEGORIES,
             "units_consumption": "ktoe (kilotonnes of oil equivalent), except electricity_consumption_mwh which is MWh",
             "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json — see that file's note_boundary for the full explanation.",
             "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",
             "note_ktoe_conversion": "Energy consumption is published in ktoe (kilotonnes of oil equivalent); electricity_consumption_mwh converts the Electricity fuel category to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh, for comparison against renewable generation (also in MWh). The consumption-by-fuel chart displays all fuels in ktoe, DESNZ's native unit.",
+            "note_industrial_consumption": "DESNZ's energy consumption dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are then consumed elsewhere — it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily scale with this consumption total in the same way. So a local authority with a large single industrial site (New Forest's oil refining is the clearest example in this dataset) can show a consumption total that looks disproportionately high next to its emissions total, without either figure being wrong — they're measuring different things. The consumption chart's \"by sector\" view (Domestic / Transport / Industrial, Commercial and other) exists to make this visible: a high \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a large non-household energy user, rather than local demand, is driving the area's total.",
             "generated": date.today().isoformat(),
         },
         "regions": {},
