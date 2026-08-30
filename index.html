@@ -114,6 +114,11 @@
         <button class="seg-btn" data-energy-unit="toe">ktoe-based</button>
       </div>
       <button class="info-btn" data-info="energy-unit-toggle" aria-label="About this unit toggle">i</button>
+      <div class="seg-toggle">
+        <button class="seg-btn is-active" data-scale-mode="fixed">Fixed scale</button>
+        <button class="seg-btn" data-scale-mode="auto">Auto scale</button>
+      </div>
+      <button class="info-btn" data-info="scale-mode-toggle" aria-label="About this scale toggle">i</button>
     </div>
 
     <div class="card">
@@ -144,6 +149,16 @@
       <div class="chart-wrap" id="consumption-chart"></div>
       <button class="table-toggle" data-target="consumption-table">Show as table</button>
       <div class="table-scroll is-hidden" id="consumption-table"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 id="green-fossil-chart-title">Winchester electricity consumption: green vs fossil, 2024</h2>
+        <button class="info-btn" data-info="green-fossil-chart" aria-label="About this chart">i</button>
+      </div>
+      <div class="chart-wrap" id="green-fossil-chart"></div>
+      <button class="table-toggle" data-target="green-fossil-table">Show as table</button>
+      <div class="table-scroll is-hidden" id="green-fossil-table"></div>
     </div>
 
     </div>

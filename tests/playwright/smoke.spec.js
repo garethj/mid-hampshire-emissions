@@ -135,26 +135,35 @@ test("bar chart value labels never overflow the chart's SVG viewBox, even for th
     await page.goto(`index.html?region=${region}`);
     await page.click('[data-view="latest"]');
 
-    for (const metric of ["per_capita", "total"]) {
-      await page.click(`[data-metric="${metric}"]`);
-      for (const unit of ["kwh", "toe"]) {
-        await page.click(`[data-energy-unit="${unit}"]`);
+    // Both scale modes: fixed mode's margin is sized from the tier's peak value/label rather
+    // than the current region's own (see latestBarRightMargin in app.js), a different code path
+    // worth its own overflow check.
+    for (const scaleMode of ["fixed", "auto"]) {
+      await page.click(`[data-scale-mode="${scaleMode}"]`);
+      for (const metric of ["per_capita", "total"]) {
+        await page.click(`[data-metric="${metric}"]`);
+        for (const unit of ["kwh", "toe"]) {
+          await page.click(`[data-energy-unit="${unit}"]`);
 
-        let overflow = await overflowingValueLabels(page, "#generation-chart svg");
-        expect(overflow, `generation chart (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+          let overflow = await overflowingValueLabels(page, "#generation-chart svg");
+          expect(overflow, `generation chart (${region}, ${scaleMode}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
 
-        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
-        expect(overflow, `consumption chart, By fuel type (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+          overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+          expect(overflow, `consumption chart, By fuel type (${region}, ${scaleMode}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
 
-        await page.check("#consumption-detail-toggle");
-        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
-        expect(overflow, `consumption chart, all fuel types (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
-        await page.uncheck("#consumption-detail-toggle");
+          await page.check("#consumption-detail-toggle");
+          overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+          expect(overflow, `consumption chart, all fuel types (${region}, ${scaleMode}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+          await page.uncheck("#consumption-detail-toggle");
 
-        await page.click('[data-consumption-view="sector"]');
-        overflow = await overflowingValueLabels(page, "#consumption-chart svg");
-        expect(overflow, `consumption chart, By sector (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
-        await page.click('[data-consumption-view="fuel"]');
+          await page.click('[data-consumption-view="sector"]');
+          overflow = await overflowingValueLabels(page, "#consumption-chart svg");
+          expect(overflow, `consumption chart, By sector (${region}, ${scaleMode}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+          await page.click('[data-consumption-view="fuel"]');
+
+          overflow = await overflowingValueLabels(page, "#green-fossil-chart svg");
+          expect(overflow, `green/fossil chart (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
+        }
       }
     }
   }

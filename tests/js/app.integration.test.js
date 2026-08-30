@@ -368,3 +368,148 @@ test("consumption view toggle (By fuel type / By sector) can be switched in ever
 
   assert.deepEqual(dom.errors, [], `unexpected error(s) while cycling consumption view x metric x view x energy unit: ${dom.errors.map(String)}`);
 });
+
+// Pairs each bar's label <text> (text-anchor="end") with the <rect> immediately after it in the
+// same row — matches the render order in buildGenerationChartLatest/buildConsumptionChartLatest
+// (label, then rect, then value text, per row), so the Nth label corresponds to the Nth rect.
+function barWidthsByLabel(window, chartId) {
+  const svg = window.document.querySelector(`#${chartId} svg`);
+  const labels = Array.from(svg.querySelectorAll('text[text-anchor="end"]')).map((t) => t.textContent);
+  const rects = Array.from(svg.querySelectorAll("rect"));
+  const out = {};
+  labels.forEach((name, i) => { out[name] = Number(rects[i].getAttribute("width")); });
+  return out;
+}
+
+test("fixed scale mode is the default, and gives regions in the same tier the same px-per-unit axis (generation chart)", async () => {
+  const dom = await loadApp({ region: "gosport" });
+  const { window } = dom;
+  const { DATA, ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  assert.ok(doc.querySelector('[data-scale-mode="fixed"]').classList.contains("is-active"),
+    "fixed scale should be the default, not auto");
+
+  const gy = ENERGY_DATA.meta.generation_years[ENERGY_DATA.meta.generation_years.length - 1];
+  const perCapita = (regionKey) => ENERGY_DATA.regions[regionKey].generation[gy].by_technology_mwh.Solar
+    / DATA.regions[regionKey].years[gy].population_thousands;
+
+  const gosportWidths = barWidthsByLabel(window, "generation-chart");
+  doc.getElementById("region-select").value = "test-valley";
+  fireChange(window, doc.getElementById("region-select"));
+  const testValleyWidths = barWidthsByLabel(window, "generation-chart");
+
+  // Gosport and Test Valley are both historic districts (same tier) with a genuinely large
+  // (~20x) difference in per-capita solar generation — the exact "Gosport vs Test Valley" example
+  // from the feedback this feature was built for. Under a shared (fixed) axis, the same
+  // real-world quantity should occupy the same pixels-per-unit regardless of which region's
+  // screen you're looking at.
+  const gosportPxPerUnit = gosportWidths.Solar / perCapita("gosport");
+  const testValleyPxPerUnit = testValleyWidths.Solar / perCapita("test-valley");
+  assert.ok(Math.abs(gosportPxPerUnit - testValleyPxPerUnit) < 0.01,
+    `expected the same px/unit scale in fixed mode, got Gosport=${gosportPxPerUnit} vs Test Valley=${testValleyPxPerUnit}`);
+
+  // Switching to "Auto scale" should break that equality for Gosport — the small region, not Test
+  // Valley (which happens to *be* the tier's own largest region for per-capita solar generation,
+  // so fixed and auto scale are legitimately identical for it; that's not a bug, just a
+  // coincidence of the data, so it's the wrong region to prove the toggle does anything).
+  // Gosport's own auto-scaled max is far smaller than the tier max, so its bar should visibly
+  // widen once "Auto scale" refits the axis to its own (much smaller) figures — this is the
+  // regression check: without the toggle actually doing anything, this would stay unchanged.
+  doc.getElementById("region-select").value = "gosport";
+  fireChange(window, doc.getElementById("region-select"));
+  fireClick(window, doc.querySelector('[data-scale-mode="auto"]'));
+  const gosportAutoWidths = barWidthsByLabel(window, "generation-chart");
+  const gosportAutoPxPerUnit = gosportAutoWidths.Solar / perCapita("gosport");
+  assert.ok(Math.abs(gosportAutoPxPerUnit - gosportPxPerUnit) > 1,
+    "expected auto scale to render a visibly different bar width than fixed scale for Gosport");
+});
+
+test("fixed scale mode also applies to the historical trend line (consumption chart, 'By sector' axis)", async () => {
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { DATA, ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-consumption-view="sector"]'));
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+  fireClick(window, doc.querySelector('[data-energy-unit="toe"]')); // native ktoe/toe-per-person units, to compare directly against raw sector_ktoe
+
+  // Independently recompute the expected tier-wide axis max: the largest per-capita value of any
+  // sector, in any year, for any historic district — the same scope consumptionTierMax uses in
+  // app.js — then compare against the historical chart's actual rendered axis. The y-axis max
+  // itself isn't exposed in the DOM, so read it back off the topmost gridline label instead.
+  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
+  let expectedTierMax = 0;
+  for (const r of historicDistricts) {
+    for (const year of Object.keys(ENERGY_DATA.regions[r].consumption)) {
+      const sectors = ENERGY_DATA.regions[r].consumption[year].sector_ktoe;
+      const pop = DATA.regions[r].years[year].population_thousands;
+      for (const v of Object.values(sectors)) {
+        const perCapita = v / pop;
+        if (perCapita > expectedTierMax) expectedTierMax = perCapita;
+      }
+    }
+  }
+
+  const svg = doc.querySelector("#consumption-chart svg");
+  const gridlineValues = Array.from(svg.querySelectorAll('text[font-size="11"]'))
+    .map((t) => t.textContent)
+    .filter((t) => t.includes(".")) // excludes the x-axis year labels (plain integers, e.g. "2024")
+    .map((t) => Number(t.replace(/,/g, "")));
+  const renderedAxisMax = Math.max(...gridlineValues);
+
+  // New Forest's own oil-refining-driven peak should dominate this tier's max, so this is also an
+  // implicit check that New Forest itself is the region setting the shared scale here.
+  assert.ok(Math.abs(renderedAxisMax - expectedTierMax * 1.08) < 1,
+    `rendered axis max ${renderedAxisMax} toe/person, expected ~${(expectedTierMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+});
+
+test("electricity green vs fossil chart: green + fossil sums to total electricity consumption, matching the DUKES-based formula", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const { DATA, ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
+  fireClick(window, doc.querySelector('[data-energy-unit="kwh"]'));
+  fireClick(window, doc.querySelector('.table-toggle[data-target="green-fossil-table"]'));
+
+  const rows = tableRows(window, "green-fossil-table");
+  assert.equal(rows.length, 2, `expected exactly Green and Fossil rows, got: ${JSON.stringify(rows)}`);
+  const greenRow = rows.find((r) => /Green/.test(r[0]));
+  const fossilRow = rows.find((r) => /Fossil/.test(r[0]));
+  assert.ok(greenRow && fossilRow, `expected a Green and a Fossil row, got: ${JSON.stringify(rows)}`);
+
+  // Independently recompute Phil Gagg's formula from raw ENERGY_DATA (not by calling app.js's own
+  // functions), same pattern as the demand-comparison test above: local green generation nets off
+  // first, the 2024 DUKES 6.5a ratio (50.8% green / 49.2% fossil) applies to the remainder.
+  const con = ENERGY_DATA.regions.winchester.consumption["2024"];
+  const gen = ENERGY_DATA.regions.winchester.generation["2024"];
+  const totalMwh = con.electricity_consumption_mwh;
+  const localGreenMwh = Math.min(gen.total_mwh, totalMwh);
+  const gridMwh = totalMwh - localGreenMwh;
+  const expectedGreenGwh = (localGreenMwh + gridMwh * 0.508) / 1000;
+  const expectedFossilGwh = (gridMwh * 0.492) / 1000;
+
+  const greenGwh = num(greenRow[1]);
+  const fossilGwh = num(fossilRow[1]);
+  assert.ok(Math.abs(greenGwh - expectedGreenGwh) < 0.5,
+    `green = ${greenGwh} GWh, expected ~${expectedGreenGwh.toFixed(1)}`);
+  assert.ok(Math.abs(fossilGwh - expectedFossilGwh) < 0.5,
+    `fossil = ${fossilGwh} GWh, expected ~${expectedFossilGwh.toFixed(1)}`);
+  assert.ok(Math.abs((greenGwh + fossilGwh) - totalMwh / 1000) < 0.5,
+    `green + fossil (${greenGwh + fossilGwh} GWh) should sum to total electricity consumption (${(totalMwh / 1000).toFixed(1)} GWh)`);
+});
+
+test("electricity green vs fossil chart doesn't respond to the page-wide Latest year/Historical trend toggle", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const doc = window.document;
+  const before = doc.getElementById("green-fossil-chart-title").textContent;
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  const after = doc.getElementById("green-fossil-chart-title").textContent;
+  assert.equal(before, after, "this chart only has one year of DUKES data, so it should show the same single-year title regardless of the page-wide view toggle");
+  assert.deepEqual(dom.errors, []);
+});

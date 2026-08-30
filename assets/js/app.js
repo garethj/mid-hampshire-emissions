@@ -16,6 +16,17 @@
   // generation and consumption charts, which otherwise show each dataset's own native unit (see
   // KTOE_TO_MWH below).
   let currentEnergyUnit = "kwh";
+  // "fixed" (default) or "auto" — governs the y/x-axis scale of the generation and consumption
+  // charts. "fixed" uses one shared axis max per region tier (historic districts / current
+  // unitaries / proposed unitaries / Hampshire and the Solent) so switching between regions in
+  // the same tier doesn't rescale the chart and hide a real difference in volume — e.g. Gosport's
+  // renewable generation is genuinely ~30x smaller than Test Valley's, not just differently
+  // proportioned. Defaults to "fixed" (not a toggle defaulting to "auto") because a chart that
+  // sometimes rescales and sometimes doesn't, depending on a control elsewhere on the page, reads
+  // as more confusing than one that's always comparable — "auto" stays available as an escape
+  // hatch for the (rarer) case where a small region's own internal composition needs the full
+  // width to read clearly. See generationTierMax/consumptionTierMax below.
+  let currentScaleMode = "fixed";
   // "context" (self + ancestors up to Hampshire and the Solent, the default) or "constituents"
   // (all siblings at the nearest level with children — see nearestHub() below) — drives the top
   // trend chart's region set. Reset to "context" on every region change, since carrying
@@ -85,6 +96,16 @@
   // its parent, so picking a leaf and toggling "constituents" shows its siblings, not itself.
   function nearestHub(key) {
     return regionChildren(key).length > 0 ? key : regionParent(key);
+  }
+
+  // All regions sharing a region's tier ("group": historic-district / current-unitary /
+  // proposed-unitary / aggregate) — the "fixed scale" comparison set for generationTierMax and
+  // consumptionTierMax below. Hampshire and the Solent is the only "aggregate" region, so its own
+  // tier is just itself (fixed scale there is a no-op, same as auto).
+  function regionsInTier(key) {
+    const r = REGION_BY_KEY[key];
+    if (!r) return [key];
+    return REGIONS.filter(x => x.group === r.group).map(x => x.key);
   }
 
   // Display heading + explicit order for the region select's <optgroup>s. "aggregate"
@@ -255,7 +276,15 @@
     // dominant real-world driver of that bucket — CONSUMPTION_SECTOR_ORDER is deliberately
     // ordered (Domestic, Transport, Industrial...) so this red slot sits next to Transport's blue
     // rather than Domestic's orange, since red-orange adjacency fails CVD separation (see above).
-    "Industrial, Commercial and other": 8   // red — shares Industry's slot
+    "Industrial, Commercial and other": 8,  // red — shares Industry's slot
+
+    // Electricity green/fossil split (DUKES 6.5a-derived, its own small chart — never shown
+    // alongside the by-fuel/by-sector views above, so no adjacency constraint with them). "Green"
+    // reuses Bioenergy & waste/Agriculture's green slot (the obvious real-world association);
+    // "Fossil" reuses the "Fossil fuels" simple-view group's violet slot above, since it's the
+    // same real-world concept.
+    "Green": 6,     // green
+    "Fossil": 7     // violet
   };
 
   // ---------------- helpers ----------------
@@ -272,6 +301,19 @@
   // browsers/platforms.
   function estimateLabelWidth(text) {
     return text.length * 7.5;
+  }
+
+  // Right margin for a "latest" bar chart's value+unit labels. In auto mode, sizing it from just
+  // the rows actually on screen is enough (see estimateLabelWidth's own comment). In fixed mode
+  // it isn't: two regions in the same tier share an axis maxVal, but if each region's margin were
+  // still sized from its own (smaller-magnitude) labels, their drawable plot widths would differ
+  // slightly, so the same shared value would render at very slightly different pixel widths
+  // between regions — undermining the whole point of a "fixed" scale. Sizing the margin from the
+  // tier's own peak value instead (formatted the same way) gives every region in the tier an
+  // identical margin, and therefore an identical plot width.
+  function latestBarRightMargin(rows, formatLabel, tierMax) {
+    const labels = currentScaleMode === "fixed" ? [formatLabel(tierMax)] : rows.map(r => formatLabel(r.value));
+    return Math.ceil(Math.max(80, ...labels.map(estimateLabelWidth)) + 16);
   }
 
   function cssVar(name) {
@@ -369,6 +411,58 @@
   // generation chart (native MWh) and consumption chart (native ktoe) share one display-unit
   // toggle (currentEnergyUnit) instead of each being stuck in its own dataset's native unit.
   const KTOE_TO_MWH = 11630;
+
+  // DUKES table 6.5a: Great Britain's electricity generation mix, split between low-carbon
+  // ("green" — nuclear, renewables) and fossil fuel sources, as a % of total generation, for each
+  // calendar year DESNZ has published it. This is a *national* figure, not part of any of the
+  // sub-national datasets this site otherwise loads, so there's no automated fetch for it —
+  // there's only ever one number a year to add, published each summer in DUKES chapter 6
+  // (https://www.gov.uk/government/statistics/electricity-chapter-6-digest-of-united-kingdom-
+  // energy-statistics-dukes). Add each new year by hand by reading rows 9 ("Fossil fuels") and
+  // 10 ("Low carbon", or table 6.5a's equivalent — DUKES's exact row layout shifts between
+  // editions) of that year's table 6.5a. 2024's figures were supplied directly by a reviewer
+  // (Phil Gagg) citing that table.
+  const DUKES_ELECTRICITY_MIX = {
+    2024: { greenPct: 50.8, fossilPct: 49.2 }
+  };
+
+  // The most recent year with both a DUKES grid-mix figure above *and* the generation/consumption
+  // data electricityGreenFossilSplit needs (generation starts 2014, consumption starts 2005) —
+  // null if none overlap. Independent of region: year coverage is the same dataset-wide.
+  function latestGreenFossilYear() {
+    const genYears = new Set(energyGenerationYears());
+    const conYears = new Set(energyConsumptionYears());
+    const shared = Object.keys(DUKES_ELECTRICITY_MIX).map(Number)
+      .filter(y => genYears.has(y) && conYears.has(y))
+      .sort((a, b) => b - a);
+    return shared.length ? shared[0] : null;
+  }
+
+  // Splits an area's electricity consumption into an indicative "green" and "fossil" MWh figure,
+  // combining two datasets this site already has with the one external DUKES figure above —
+  // proposed by the same reviewer as a way to answer "how green is the electricity I use" without
+  // the false precision of just applying the national ratio to the whole total (see the chart's
+  // "i" button for the full reasoning). The logic: local renewable generation is treated as green
+  // consumption first (the same idea behind "market-based" Scope 2 carbon accounting — known local
+  // generation nets off before a residual grid-average mix is applied), and only the *remainder*
+  // of local electricity consumption is assumed to be drawn from the national grid at that year's
+  // DUKES low-carbon/fossil split. Local generation is capped at total consumption (defensive —
+  // never observed in this dataset, where the highest local share is ~32%, but renewables could
+  // in principle grow past 100% of local demand in future data). Null if generation, consumption
+  // or a DUKES figure isn't available for that year.
+  function electricityGreenFossilSplit(regionKey, year) {
+    const mix = DUKES_ELECTRICITY_MIX[year];
+    const con = energyConsumption(regionKey, year);
+    const gen = energyGeneration(regionKey, year);
+    if (!mix || !con || !gen) return null;
+    const totalMwh = con.electricity_consumption_mwh;
+    const localGreenMwh = Math.min(gen.total_mwh, totalMwh);
+    const gridMwh = totalMwh - localGreenMwh;
+    return {
+      greenMwh: localGreenMwh + gridMwh * (mix.greenPct / 100),
+      fossilMwh: gridMwh * (mix.fossilPct / 100)
+    };
+  }
 
   // Consumption-by-fuel figures are stored in ktoe, DESNZ's own native unit for this dataset.
   function fmtKtoe(ktoe) {
@@ -665,6 +759,51 @@
   function consumptionUnitLabel(metric, unit) {
     if (unit === "kwh") return metric === "total" ? "GWh" : "kWh/person";
     return metric === "total" ? "ktoe" : "toe/person";
+  }
+
+  // Tier-wide axis maxima for "fixed scale" mode (currentScaleMode — see its declaration above).
+  // Scans every region in the tier, across every year the dataset has (not just the one
+  // currently displayed), so the axis stays the same whether you're looking at the latest bars
+  // or the historical trend line, and whether the tier's peak happens to be in the selected
+  // region/year or not. Cheap enough (19 regions x ~20 years x a handful of categories) to
+  // recompute on demand rather than precompute at load, so it's just memoized per distinct
+  // (tier, metric, ...) combination actually asked for.
+  const generationTierMaxCache = {};
+  function generationTierMax(regionKey, metric) {
+    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+    const cacheKey = tier + "|" + metric;
+    if (generationTierMaxCache[cacheKey] !== undefined) return generationTierMaxCache[cacheKey];
+    let max = 0;
+    for (const r of regionsInTier(regionKey)) {
+      for (const year of energyGenerationYears()) {
+        const gen = energyGeneration(r, year);
+        if (!gen) continue;
+        for (const tech of ENERGY_TECH_ORDER) {
+          const v = generationMetricValue(r, year, gen.by_technology_mwh[tech], metric);
+          if (v > max) max = v;
+        }
+      }
+    }
+    return (generationTierMaxCache[cacheKey] = max || 1);
+  }
+
+  const consumptionTierMaxCache = {};
+  function consumptionTierMax(regionKey, metric, detail, axis) {
+    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+    const cacheKey = [tier, metric, detail, axis].join("|");
+    if (consumptionTierMaxCache[cacheKey] !== undefined) return consumptionTierMaxCache[cacheKey];
+    const cats = consumptionCategories(detail, axis);
+    let max = 0;
+    for (const r of regionsInTier(regionKey)) {
+      for (const year of energyConsumptionYears()) {
+        if (!energyConsumption(r, year)) continue;
+        for (const c of cats) {
+          const v = consumptionValue(r, year, c.key, detail, metric, axis);
+          if (v !== null && v > max) max = v;
+        }
+      }
+    }
+    return (consumptionTierMaxCache[cacheKey] = max || 1);
   }
 
   // Constituent fuel breakdown for a "simple" group (e.g. "Fossil fuels" -> Coal, Manufactured
@@ -1540,16 +1679,15 @@
     const rows = ENERGY_TECH_ORDER.map(t => ({ name: t, value: generationMetricValue(regionKey, gy, gen.by_technology_mwh[t], metric) }))
       .sort((a, b) => b.value - a.value);
     const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
+    const formatGenerationLabel = v => fmtGenerationMetric(metric, unit, v) + " " + generationUnitLabel(metric, unit);
+    const tierMax = generationTierMax(regionKey, metric);
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
-    // Right margin sized from the widest value label actually being rendered (see
-    // estimateLabelWidth above) rather than a fixed guess, so the longest bar's label — the one
-    // with no unused plot space to spill into — always has room.
-    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: 150 };
+    const M = { top: 10, right: latestBarRightMargin(rows, formatGenerationLabel, tierMax), bottom: 10, left: 150 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
-    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const maxVal = currentScaleMode === "fixed" ? tierMax : (Math.max(...rows.map(r => r.value)) || 1);
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
@@ -1597,7 +1735,7 @@
     const plotW = W - M.left - M.right;
     const plotH = H - M.top - M.bottom;
 
-    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08 || 1;
+    const maxVal = (currentScaleMode === "fixed" ? generationTierMax(regionKey, metric) : Math.max(...series.flatMap(s => s.values), 0)) * 1.08 || 1;
 
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -1759,19 +1897,18 @@
     const rows = cats.map(c => ({ key: c.key, name: c.label, value: consumptionValue(regionKey, cy, c.key, detail, metric, axis) }))
       .sort((a, b) => b.value - a.value);
     const valueLabels = rows.map(r => fmtConsumptionMetric(metric, unit, r.value) + " " + consumptionUnitLabel(metric, unit));
+    const formatConsumptionLabel = v => fmtConsumptionMetric(metric, unit, v) + " " + consumptionUnitLabel(metric, unit);
+    const tierMax = consumptionTierMax(regionKey, metric, detail, axis);
 
     const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
     // The sector axis's "Industrial, commercial & other" label is longer than any fuel-type
     // label this margin was originally sized for (the previous longest, "Manufactured fuels",
     // fits comfortably at 150) — widen it for that axis so the label isn't clipped.
-    // Right margin sized from the widest value label actually being rendered (see
-    // estimateLabelWidth above) rather than a fixed guess, so the longest bar's label — the one
-    // with no unused plot space to spill into — always has room.
-    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: axis === "sector" ? 230 : 150 };
+    const M = { top: 10, right: latestBarRightMargin(rows, formatConsumptionLabel, tierMax), bottom: 10, left: axis === "sector" ? 230 : 150 };
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
-    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const maxVal = currentScaleMode === "fixed" ? tierMax : (Math.max(...rows.map(r => r.value)) || 1);
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
@@ -1827,7 +1964,7 @@
     const plotW = W - M.left - M.right;
     const plotH = H - M.top - M.bottom;
 
-    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08 || 1;
+    const maxVal = (currentScaleMode === "fixed" ? consumptionTierMax(regionKey, metric, detail, axis) : Math.max(...series.flatMap(s => s.values), 0)) * 1.08 || 1;
 
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -1941,6 +2078,127 @@
     wrap.appendChild(table);
   }
 
+  // ---------------- electricity green/fossil chart (latest year only) ----------------
+  // Unlike every other chart on this site, this one doesn't respond to the page-wide Latest
+  // year/Historical trend toggle: DUKES_ELECTRICITY_MIX only has one year's national grid-mix
+  // figure so far (2014–2023 would need looking up by hand and adding above), and a "trend" line
+  // through a single point isn't meaningful — so it always shows latestGreenFossilYear(), with
+  // that year spelled out in its own title rather than left to the page-wide toggle to imply.
+
+  let greenFossilNoteText = "";
+
+  function updateGreenFossilNote(regionKey, year, metric, unit) {
+    const split = electricityGreenFossilSplit(regionKey, year);
+    if (!split) { greenFossilNoteText = ""; return; }
+    const totalMwh = split.greenMwh + split.fossilMwh;
+    const greenShare = totalMwh ? (split.greenMwh / totalMwh) * 100 : 0;
+    const label = metric === "total" ? "Electricity consumption, " : "Electricity consumption per person, ";
+    greenFossilNoteText = label + year + ": an estimated " + fmtRatioPct(greenShare) +
+      " green (" + fmtGenerationMetric(metric, unit, greenFossilValue(regionKey, year, split.greenMwh, metric)) + " " + generationUnitLabel(metric, unit) +
+      "), combining this area's own renewable generation with the national grid's low-carbon share for whatever's drawn from it — see this chart's \"i\" button for the method and its limits.";
+  }
+
+  function greenFossilValue(regionKey, year, rawMwh, metric) {
+    return metric === "total" ? rawMwh : rawMwh / regionPopulation(regionKey, year);
+  }
+
+  function buildGreenFossilChart(regionKey) {
+    const container = document.getElementById("green-fossil-chart");
+    const titleEl = document.getElementById("green-fossil-chart-title");
+    if (!container || !titleEl || !ENERGY_DATA) return;
+    clearNode(container);
+    const metric = currentMetric;
+    const unit = currentEnergyUnit;
+    const year = latestGreenFossilYear();
+
+    if (!year) {
+      titleEl.textContent = REGION_LABEL[regionKey] + " electricity consumption: green vs fossil (not yet available)";
+      greenFossilNoteText = "";
+      const p = document.createElement("p");
+      p.className = "chart-empty-note";
+      p.textContent = "Not available yet: needs a DUKES 6.5a grid-mix figure for a year both renewable generation and energy consumption data cover — see this chart's \"i\" button.";
+      container.appendChild(p);
+      buildGreenFossilTableLatest(null, [], metric, unit);
+      return;
+    }
+
+    updateGreenFossilNote(regionKey, year, metric, unit);
+    const metricLabel = metric === "total" ? "electricity consumption: green vs fossil" : "electricity consumption per person: green vs fossil";
+    titleEl.textContent = REGION_LABEL[regionKey] + " " + metricLabel + ", " + year;
+
+    const split = electricityGreenFossilSplit(regionKey, year);
+    const totalValue = greenFossilValue(regionKey, year, split.greenMwh + split.fossilMwh, metric) || 1;
+    const rows = [
+      { key: "Green", name: "Green (low-carbon)", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
+      { key: "Fossil", name: "Fossil fuel", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
+    ];
+    const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
+
+    const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
+    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: 150 };
+    const plotW = W - M.left - M.right;
+    const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
+
+    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = v => (v / maxVal) * plotW;
+
+    rows.forEach((r, i) => {
+      const y = M.top + i * (rowH + gap);
+      const barW = xScale(r.value);
+      const color = categoryColor(r.key);
+      const barY = y + (rowH - barH) / 2;
+
+      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
+      label.textContent = r.name;
+
+      const rect = el("rect", { x: M.left, y: barY, width: Math.max(barW, 0), height: barH, rx: "4", fill: color }, svg);
+      rect.style.cursor = "pointer";
+
+      const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
+      valText.textContent = valueLabels[i];
+
+      rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
+      rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
+      rect.addEventListener("pointermove", (ev) => {
+        showTooltip(ev.clientX, ev.clientY, (tt) => {
+          ttTitle(tt, r.name);
+          ttRow(tt, color, year + "", valueLabels[i] + " (" + fmtRatioPct(r.value / totalValue * 100) + " of electricity consumed)");
+          ttPopulationRow(tt, regionKey, year, metric, true);
+        });
+      });
+    });
+
+    buildGreenFossilTableLatest(year, rows, metric, unit);
+  }
+
+  function buildGreenFossilTableLatest(year, rows, metric, unit) {
+    const wrap = document.getElementById("green-fossil-table");
+    if (!wrap) return;
+    clearNode(wrap);
+    if (!year) { return; }
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Source", generationUnitLabel(metric, unit) + " (" + year + ")"].forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      [r.name, fmtGenerationMetric(metric, unit, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
   // ---------------- info modal ----------------
 
   const INFO_CONTENT = {
@@ -1977,6 +2235,14 @@
       body: [
         "Renewable generation and energy consumption come from two different DESNZ datasets, each published in its own native unit: generation in MWh (shown here as GWh, or kWh per person), consumption in ktoe — kilotonnes of oil equivalent (shown as ktoe, or toe per person). This toggle picks one shared unit family for both charts, named after each dataset's own published unit, and converts whichever chart isn't already in that family using the standard DUKES/IEA factor of 1 toe = 11.63 MWh.",
         "\"MWh-based\" keeps generation as DESNZ publishes it and converts consumption into GWh / kWh per person. \"ktoe-based\" keeps consumption as DESNZ publishes it and converts generation into ktoe / toe per person. Neither option is more \"correct\" than the other — pick whichever makes the two charts easier to compare directly."
+      ]
+    },
+    "scale-mode-toggle": {
+      title: "Fixed vs auto scale",
+      body: [
+        "Both energy charts' axes default to \"Fixed scale\": one shared axis maximum for every region in the same tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way). Switching the region selector between two areas in the same tier keeps the axis still, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
+        "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
+        "The shared maximum is the highest single value seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier."
       ]
     },
     "trend-chart": {
@@ -2029,13 +2295,26 @@
       body: [
         "Total final energy consumed within the area's boundary, covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation. DESNZ publishes this dataset in ktoe (kilotonnes of oil equivalent) — the energy unit toggle just above lets you view it instead in the same GWh/kWh-per-person units as the generation chart; see that toggle's own \"i\" button for details.",
         "\"By fuel type\" (the default) groups DESNZ's six published fuel categories into three: Fossil fuels (Coal + Manufactured fuels + Petroleum + Gas), Electricity, and Bioenergy & waste — tick \"Show all fuel types\" for DESNZ's own six categories individually. \"By sector\" switches to a different split of the same total: Domestic, Transport, and Industrial, Commercial and other — useful for telling how much of an area's consumption is households and cars versus workplaces and industry.",
-        "Electricity is kept separate from both \"Fossil fuels\" and \"Bioenergy & waste\" rather than folded into either — the electricity consumed locally is drawn from Great Britain's national grid, whose generation mix (gas, nuclear, wind, solar, imports, etc.) isn't attributed back to the area consuming it by this dataset, so this site can't honestly label it either way.",
+        "Electricity is kept separate from both \"Fossil fuels\" and \"Bioenergy & waste\" rather than folded into either — the electricity consumed locally is drawn from Great Britain's national grid, whose generation mix (gas, nuclear, wind, solar, imports, etc.) isn't attributed back to the area consuming it by this dataset, so this chart can't honestly label it either way. The \"Electricity: green vs fossil\" chart further down gives an indicative estimate instead, combining this figure with local renewable generation and the national grid mix — see that chart's own \"i\" button for the method.",
         "Oil (petroleum) is typically the largest category here, dominated by road transport fuel — DESNZ's road transport figures are modelled from national/regional fuel sales data apportioned to local authorities, not measured locally.",
         "This dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are consumed elsewhere — it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily move in step with this consumption total. New Forest is the clearest example: switch to \"By sector\" there and \"Industrial, Commercial and other\" dwarfs Domestic and Transport combined, driven by oil refining rather than local demand — which is also why New Forest's energy consumption looks high next to its emissions figures elsewhere on this site. A large \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a big non-household energy user, not local demand, is driving an area's total.",
         "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle just above to switch between ktoe/toe-per-person and GWh/kWh-per-person.",
         "For Mid-Hampshire, each fuel or sector is the sum of that category's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
       ],
       link: { href: "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level", label: "gov.uk statistical release" }
+    },
+    "green-fossil-chart": {
+      title: "Electricity: green vs fossil",
+      dynamicIntro: () => greenFossilNoteText,
+      body: [
+        "How much of an area's electricity consumption is estimated to come from low-carbon sources versus fossil fuels — the question most people actually mean when they ask \"how green is my electricity\", as distinct from the generation chart's self-sufficiency figure above (how much renewable electricity an area generates relative to what it consumes, which says nothing about the mix it actually draws from the grid).",
+        "The method: this area's own renewable generation is counted as green consumption first (the same logic behind \"market-based\" carbon accounting — known local generation nets off before anything else is assumed). Whatever's left of local electricity consumption is assumed to be drawn from the national grid, split at that year's DUKES table 6.5a low-carbon/fossil ratio for Great Britain as a whole — the grid pools generation nationally, so there's no way to measure a specific area's actual grid-drawn mix directly, and this national average is the closest honest substitute.",
+        "This is a deliberately indicative estimate, not a metered figure — no dataset ties a specific unit of electricity consumed in one area back to where it was generated. Two simplifications worth knowing: it assumes 100% of local renewable generation is offsetting local consumption (in reality it's exported to the shared grid and pooled, the same caveat as the generation chart above), and the national DUKES ratio is a GB-wide average, not specific to this area's own grid connection.",
+        "Only available for years with both a DUKES 6.5a figure and matching generation/consumption data — currently 2024 only, since DUKES's grid-mix split isn't part of the sub-national datasets this site otherwise updates automatically and has to be added by hand each year. This is why, unlike every other chart here, it doesn't respond to the page-wide Latest year/Historical trend toggle — a trend line through one point wouldn't mean anything.",
+        "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle further up to switch between GWh/kWh-per-person and ktoe/toe-per-person.",
+        "For Mid-Hampshire, this figure is derived from that region's own generation and consumption totals, each already the sum of the four constituent districts' figures — see the region selector's \"i\" button."
+      ],
+      link: { href: "https://www.gov.uk/government/statistics/electricity-chapter-6-digest-of-united-kingdom-energy-statistics-dukes", label: "DUKES chapter 6 (gov.uk)" }
     },
     "general-methodology": {
       title: "Full methodology & sources",
@@ -2118,7 +2397,8 @@
     () => buildSectorChart(currentRegion),
     () => buildGasChart(currentRegion),
     () => buildGenerationChart(currentRegion),
-    () => buildConsumptionChart(currentRegion)
+    () => buildConsumptionChart(currentRegion),
+    () => buildGreenFossilChart(currentRegion)
   ];
 
   // The subset of PAGE_WIDE_CHARTS that also needs re-rendering when the region selector
@@ -2130,7 +2410,8 @@
     () => buildSectorChart(currentRegion),
     () => buildGasChart(currentRegion),
     () => buildGenerationChart(currentRegion),
-    () => buildConsumptionChart(currentRegion)
+    () => buildConsumptionChart(currentRegion),
+    () => buildGreenFossilChart(currentRegion)
   ];
 
   function renderPageWideCharts() {
@@ -2190,6 +2471,16 @@
     currentEnergyUnit = unit;
     document.querySelectorAll("[data-energy-unit]").forEach(b => {
       b.classList.toggle("is-active", b.dataset.energyUnit === unit);
+    });
+    renderPageWideCharts();
+  }
+
+  // Page-wide for the same reason as setEnergyUnit above — one wiring via PAGE_WIDE_CHARTS,
+  // even though only generation/consumption read currentScaleMode.
+  function setScaleMode(mode) {
+    currentScaleMode = mode;
+    document.querySelectorAll("[data-scale-mode]").forEach(b => {
+      b.classList.toggle("is-active", b.dataset.scaleMode === mode);
     });
     renderPageWideCharts();
   }
@@ -2255,6 +2546,9 @@
     });
     document.querySelectorAll("[data-energy-unit]").forEach(btn => {
       btn.addEventListener("click", () => setEnergyUnit(btn.dataset.energyUnit));
+    });
+    document.querySelectorAll("[data-scale-mode]").forEach(btn => {
+      btn.addEventListener("click", () => setScaleMode(btn.dataset.scaleMode));
     });
 
     document.getElementById("sector-detail-toggle").addEventListener("change", (ev) => {
