@@ -412,30 +412,32 @@
   // toggle (currentEnergyUnit) instead of each being stuck in its own dataset's native unit.
   const KTOE_TO_MWH = 11630;
 
-  // DUKES table 6.5a: Great Britain's electricity generation mix, split between low-carbon
-  // ("green" — nuclear, renewables) and fossil fuel sources, as a % of total generation, for each
-  // calendar year DESNZ has published it. This is a *national* figure, not part of any of the
-  // sub-national datasets this site otherwise loads, so there's no automated fetch for it —
-  // there's only ever one number a year to add, published each summer in DUKES chapter 6
-  // (https://www.gov.uk/government/statistics/electricity-chapter-6-digest-of-united-kingdom-
-  // energy-statistics-dukes). Add each new year by hand by reading rows 9 ("Fossil fuels") and
-  // 10 ("Low carbon", or table 6.5a's equivalent — DUKES's exact row layout shifts between
-  // editions) of that year's table 6.5a. 2024's figures were supplied directly by a reviewer
-  // (Phil Gagg) citing that table.
-  const DUKES_ELECTRICITY_MIX = {
-    2024: { greenPct: 50.8, fossilPct: 49.2 }
-  };
+  // DUKES table 6.5a: Great Britain's "Share of renewable generation" — a *national* figure, not
+  // part of any of the sub-national datasets this site otherwise loads, so it's fetched and parsed
+  // separately (data/fetch_energy_source.py + process_energy.py's read_dukes_renewable_share) into
+  // ENERGY_DATA.meta.dukes_electricity_mix, keyed by year as {greenPct, fossilPct}. "greenPct" is
+  // DUKES's own renewable-generation share; "fossilPct" is the remainder (100 - greenPct), DUKES's
+  // usual simplification for a two-way split — it's really "non-renewable" (nuclear and net
+  // imports included alongside fossil fuel), not fossil fuel alone. See this chart's "i" button.
+  function dukesElectricityMix() {
+    return ENERGY_DATA.meta.dukes_electricity_mix || {};
+  }
 
-  // The most recent year with both a DUKES grid-mix figure above *and* the generation/consumption
-  // data electricityGreenFossilSplit needs (generation starts 2014, consumption starts 2005) —
-  // null if none overlap. Independent of region: year coverage is the same dataset-wide.
+  // The most recent year with a DUKES grid-mix figure *and* the generation/consumption data
+  // electricityGreenFossilSplit needs (generation starts 2014, consumption starts 2005) — null if
+  // none overlap. Independent of region: year coverage is the same dataset-wide.
   function latestGreenFossilYear() {
+    return greenFossilYears()[0] || null;
+  }
+
+  // Every year with a DUKES grid-mix figure and matching generation/consumption data, newest
+  // first — the historical trend chart's x-axis, and latestGreenFossilYear's source.
+  function greenFossilYears() {
     const genYears = new Set(energyGenerationYears());
     const conYears = new Set(energyConsumptionYears());
-    const shared = Object.keys(DUKES_ELECTRICITY_MIX).map(Number)
+    return Object.keys(dukesElectricityMix()).map(Number)
       .filter(y => genYears.has(y) && conYears.has(y))
       .sort((a, b) => b - a);
-    return shared.length ? shared[0] : null;
   }
 
   // Splits an area's electricity consumption into an indicative "green" and "fossil" MWh figure,
@@ -451,7 +453,7 @@
   // in principle grow past 100% of local demand in future data). Null if generation, consumption
   // or a DUKES figure isn't available for that year.
   function electricityGreenFossilSplit(regionKey, year) {
-    const mix = DUKES_ELECTRICITY_MIX[year];
+    const mix = dukesElectricityMix()[year];
     const con = energyConsumption(regionKey, year);
     const gen = energyGeneration(regionKey, year);
     if (!mix || !con || !gen) return null;
@@ -804,6 +806,61 @@
       }
     }
     return (consumptionTierMaxCache[cacheKey] = max || 1);
+  }
+
+  // Sector chart's bars diverge from a centre zero line (LULUCF usually runs negative), so its
+  // fixed-scale maximum is the largest *magnitude* seen either side of zero, not a plain max — the
+  // same idea as generationTierMax/consumptionTierMax above, scanning every region in the tier
+  // across every year, but keyed on currentHorizon too (sectorMetricValue reweights by GWP20 when
+  // active, so a GWP20 tier max can be larger than the GWP100 one for the same tier). Sub-sector
+  // detail only exists for the latest year (DATA.subsector_detail_latest_year has no history), so
+  // its tier max only scans that one year — it can't be computed across "every year" the way the
+  // top-level sector split can.
+  const sectorTierMaxCache = {};
+  function sectorTierMax(regionKey, metric, detail) {
+    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+    const cacheKey = [tier, metric, detail, currentHorizon].join("|");
+    if (sectorTierMaxCache[cacheKey] !== undefined) return sectorTierMaxCache[cacheKey];
+    let max = 0;
+    if (detail) {
+      const ly = latestYear();
+      for (const r of regionsInTier(regionKey)) {
+        for (const sector of SECTOR_ORDER) {
+          for (const row of sectorSubrowsFor(r, ly, sector, metric)) {
+            if (Math.abs(row.value) > max) max = Math.abs(row.value);
+          }
+        }
+      }
+    } else {
+      for (const r of regionsInTier(regionKey)) {
+        for (const year of DATA.meta.years) {
+          for (const sector of SECTOR_ORDER) {
+            const v = Math.abs(sectorMetricValue(r, year, sector, metric));
+            if (v > max) max = v;
+          }
+        }
+      }
+    }
+    return (sectorTierMaxCache[cacheKey] = max || 1);
+  }
+
+  // Gases are never negative, so this is a plain max (no divergence to account for) — otherwise
+  // the same idea as sectorTierMax above, including the currentHorizon dependence.
+  const gasTierMaxCache = {};
+  function gasTierMax(regionKey, metric) {
+    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+    const cacheKey = [tier, metric, currentHorizon].join("|");
+    if (gasTierMaxCache[cacheKey] !== undefined) return gasTierMaxCache[cacheKey];
+    let max = 0;
+    for (const r of regionsInTier(regionKey)) {
+      for (const year of DATA.meta.years) {
+        for (const g of GAS_ORDER) {
+          const v = gasMetricValue(r, year, g, metric);
+          if (v > max) max = v;
+        }
+      }
+    }
+    return (gasTierMaxCache[cacheKey] = max || 1);
   }
 
   // Constituent fuel breakdown for a "simple" group (e.g. "Fossil fuels" -> Coal, Manufactured
@@ -1268,7 +1325,9 @@
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap);
 
-    const maxAbs = Math.max(...rows.map(r => Math.abs(r.value)));
+    const maxAbs = currentScaleMode === "fixed"
+      ? sectorTierMax(regionKey, metric, detail)
+      : Math.max(...rows.map(r => Math.abs(r.value))) || 1;
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
@@ -1334,8 +1393,8 @@
     const plotH = H - M.top - M.bottom;
 
     const allValues = series.flatMap(s => s.values);
-    const maxVal = Math.max(...allValues, 0) * 1.08;
-    const minVal = Math.min(...allValues, 0) * 1.08;
+    const maxVal = (currentScaleMode === "fixed" ? sectorTierMax(regionKey, metric, false) : Math.max(...allValues, 0)) * 1.08;
+    const minVal = (currentScaleMode === "fixed" ? -sectorTierMax(regionKey, metric, false) : Math.min(...allValues, 0)) * 1.08;
 
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -1479,7 +1538,7 @@
     const plotW = W - M.left - M.right;
     const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
 
-    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
+    const maxVal = (currentScaleMode === "fixed" ? gasTierMax(regionKey, metric) : Math.max(...rows.map(r => r.value))) || 1;
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
@@ -1529,7 +1588,7 @@
     const plotW = W - M.left - M.right;
     const plotH = H - M.top - M.bottom;
 
-    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08;
+    const maxVal = (currentScaleMode === "fixed" ? gasTierMax(regionKey, metric) : Math.max(...series.flatMap(s => s.values), 0)) * 1.08 || 1;
 
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -2078,12 +2137,11 @@
     wrap.appendChild(table);
   }
 
-  // ---------------- electricity green/fossil chart (latest year only) ----------------
-  // Unlike every other chart on this site, this one doesn't respond to the page-wide Latest
-  // year/Historical trend toggle: DUKES_ELECTRICITY_MIX only has one year's national grid-mix
-  // figure so far (2014–2023 would need looking up by hand and adding above), and a "trend" line
-  // through a single point isn't meaningful — so it always shows latestGreenFossilYear(), with
-  // that year spelled out in its own title rather than left to the page-wide toggle to imply.
+  // ---------------- electricity green/fossil chart ----------------
+  // greenFossilYears() spans every year with both generation and consumption data alongside a
+  // DUKES grid-mix figure (2014 onward, DUKES 6.5a going back to 1996) — enough for a real trend,
+  // so unlike the single-year-only design this chart started with, it now responds to the
+  // page-wide Latest year/Historical trend toggle like every other chart.
 
   let greenFossilNoteText = "";
 
@@ -2109,9 +2167,10 @@
     clearNode(container);
     const metric = currentMetric;
     const unit = currentEnergyUnit;
-    const year = latestGreenFossilYear();
+    const view = currentView;
+    const years = greenFossilYears(); // newest first
 
-    if (!year) {
+    if (!years.length) {
       titleEl.textContent = REGION_LABEL[regionKey] + " electricity consumption: green vs fossil (not yet available)";
       greenFossilNoteText = "";
       const p = document.createElement("p");
@@ -2122,15 +2181,22 @@
       return;
     }
 
+    const year = years[0];
     updateGreenFossilNote(regionKey, year, metric, unit);
     const metricLabel = metric === "total" ? "electricity consumption: green vs fossil" : "electricity consumption per person: green vs fossil";
-    titleEl.textContent = REGION_LABEL[regionKey] + " " + metricLabel + ", " + year;
+    titleEl.textContent = REGION_LABEL[regionKey] + " " + metricLabel + ", " +
+      (view === "historical" ? (years[years.length - 1] + "–" + year) : year);
+
+    if (view === "historical") {
+      buildGreenFossilChartHistorical(container, regionKey, years.slice().reverse(), metric, unit);
+      return;
+    }
 
     const split = electricityGreenFossilSplit(regionKey, year);
     const totalValue = greenFossilValue(regionKey, year, split.greenMwh + split.fossilMwh, metric) || 1;
     const rows = [
-      { key: "Green", name: "Green (low-carbon)", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
-      { key: "Fossil", name: "Fossil fuel", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
+      { key: "Green", name: "Green (renewable)", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
+      { key: "Fossil", name: "Fossil fuel (& other non-renewable)", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
     ];
     const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
 
@@ -2199,6 +2265,110 @@
     wrap.appendChild(table);
   }
 
+  function buildGreenFossilChartHistorical(container, regionKey, years, metric, unit) {
+    const series = ["Green", "Fossil"].map(key => ({
+      key: key,
+      name: key === "Green" ? "Green (renewable)" : "Fossil fuel (& other non-renewable)",
+      color: categoryColor(key),
+      values: years.map(y => {
+        const split = electricityGreenFossilSplit(regionKey, y);
+        const raw = key === "Green" ? split.greenMwh : split.fossilMwh;
+        return greenFossilValue(regionKey, y, raw, metric);
+      })
+    }));
+
+    const W = 860, H = 340;
+    const M = { top: 20, right: 20, bottom: 32, left: 64 };
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+
+    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08 || 1;
+
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    container.appendChild(svg);
+
+    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
+    const yScale = v => M.top + plotH - (v / maxVal) * plotH;
+
+    const yTicks = 5;
+    for (let t = 0; t <= yTicks; t++) {
+      const val = (maxVal / yTicks) * t;
+      const yy = yScale(val);
+      el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
+      const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = fmtGenerationMetric(metric, unit, val);
+    }
+
+    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
+    xTickYears.forEach(y => {
+      const i = years.indexOf(y);
+      const txt = el("text", { x: xScale(i), y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
+      txt.textContent = y;
+    });
+
+    el("line", { x1: M.left, x2: M.left + plotW, y1: yScale(0), y2: yScale(0), stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
+
+    series.forEach(s => {
+      let d = "";
+      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
+      el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+
+    const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
+    const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" }, svg);
+
+    hitRect.addEventListener("pointermove", (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const localX = (ev.clientX - rect.left) * scaleX;
+      let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
+      idx = Math.max(0, Math.min(years.length - 1, idx));
+      const xx = xScale(idx);
+      crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
+      const yearTotal = series.reduce((a, s) => a + s.values[idx], 0) || 1;
+      showTooltip(ev.clientX, ev.clientY, (tt) => {
+        ttTitle(tt, String(years[idx]));
+        series.forEach(s => {
+          ttRow(tt, s.color, s.name, fmtGenerationMetric(metric, unit, s.values[idx]) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
+        });
+        ttPopulationRow(tt, regionKey, years[idx], metric, true);
+      });
+    });
+    hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
+
+    const legendWrap = document.createElement("div");
+    legendWrap.className = "legend";
+    series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
+    container.appendChild(legendWrap);
+
+    buildGreenFossilTableHistorical(years, series, metric, unit);
+  }
+
+  function buildGreenFossilTableHistorical(years, series, metric, unit) {
+    const wrap = document.getElementById("green-fossil-table");
+    if (!wrap) return;
+    clearNode(wrap);
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    ["Year"].concat(series.map(s => s.name + " (" + generationUnitLabel(metric, unit) + ")")).forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    years.forEach((y, i) => {
+      const tr = document.createElement("tr");
+      const cells = [y].concat(series.map(s => fmtGenerationMetric(metric, unit, s.values[i])));
+      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
   // ---------------- info modal ----------------
 
   const INFO_CONTENT = {
@@ -2240,9 +2410,10 @@
     "scale-mode-toggle": {
       title: "Fixed vs auto scale",
       body: [
-        "Both energy charts' axes default to \"Fixed scale\": one shared axis maximum for every region in the same tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way). Switching the region selector between two areas in the same tier keeps the axis still, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
-        "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
-        "The shared maximum is the highest single value seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier."
+        "The sector, gas, generation and consumption charts' axes default to \"Fixed scale\": one shared axis maximum for every region in the same tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way). Switching the region selector between two areas in the same tier keeps the axis still, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
+        "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which sector, which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
+        "The shared maximum is the highest single value (or, for the sector chart's diverging bars, the largest magnitude either side of zero) seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier. The sector chart's sub-sector detail view is the one exception: sub-sector figures are only published for the latest year, so that view's shared maximum only scans the tier's regions for that one year, not the full history.",
+        "The trend chart doesn't use this toggle — it already shows more than one region and, often, more than one tier at once (a district alongside its unitary and Hampshire and the Solent), so a single \"fixed vs auto\" per-tier scale doesn't apply to it the same way."
       ]
     },
     "trend-chart": {
@@ -2308,13 +2479,14 @@
       dynamicIntro: () => greenFossilNoteText,
       body: [
         "How much of an area's electricity consumption is estimated to come from low-carbon sources versus fossil fuels — the question most people actually mean when they ask \"how green is my electricity\", as distinct from the generation chart's self-sufficiency figure above (how much renewable electricity an area generates relative to what it consumes, which says nothing about the mix it actually draws from the grid).",
-        "The method: this area's own renewable generation is counted as green consumption first (the same logic behind \"market-based\" carbon accounting — known local generation nets off before anything else is assumed). Whatever's left of local electricity consumption is assumed to be drawn from the national grid, split at that year's DUKES table 6.5a low-carbon/fossil ratio for Great Britain as a whole — the grid pools generation nationally, so there's no way to measure a specific area's actual grid-drawn mix directly, and this national average is the closest honest substitute.",
+        "The method: this area's own renewable generation is counted as green consumption first (the same logic behind \"market-based\" carbon accounting — known local generation nets off before anything else is assumed). Whatever's left of local electricity consumption is assumed to be drawn from the national grid, split at that year's DUKES table 6.5a renewable share for Great Britain as a whole — the grid pools generation nationally, so there's no way to measure a specific area's actual grid-drawn mix directly, and this national average is the closest honest substitute.",
+        "\"Green\" here is specifically DUKES's own renewable-generation share (solar, wind, hydro, bioenergy) — \"Fossil fuel\" is the remainder, which strictly also includes nuclear and net electricity imports, not fossil fuel exclusively. This mirrors the two-way split DUKES itself publishes; a genuinely separate nuclear/fossil/renewable three-way split exists in a different DUKES table but isn't used here, to keep this chart a simple green/non-green comparison.",
         "This is a deliberately indicative estimate, not a metered figure — no dataset ties a specific unit of electricity consumed in one area back to where it was generated. Two simplifications worth knowing: it assumes 100% of local renewable generation is offsetting local consumption (in reality it's exported to the shared grid and pooled, the same caveat as the generation chart above), and the national DUKES ratio is a GB-wide average, not specific to this area's own grid connection.",
-        "Only available for years with both a DUKES 6.5a figure and matching generation/consumption data — currently 2024 only, since DUKES's grid-mix split isn't part of the sub-national datasets this site otherwise updates automatically and has to be added by hand each year. This is why, unlike every other chart here, it doesn't respond to the page-wide Latest year/Historical trend toggle — a trend line through one point wouldn't mean anything.",
-        "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle further up to switch between GWh/kWh-per-person and ktoe/toe-per-person.",
+        "Available for every year with both a DUKES 6.5a figure and matching generation/consumption data — 2014 onward, since local renewable generation data only starts then. DUKES 6.5a itself is fetched and parsed automatically as part of this site's regular data refresh, the same as the generation and consumption datasets.",
+        "Use the control panel above to switch between totals and per-person figures, a latest-year snapshot and the trend since 2014, and the energy unit toggle further up to switch between GWh/kWh-per-person and ktoe/toe-per-person.",
         "For Mid-Hampshire, this figure is derived from that region's own generation and consumption totals, each already the sum of the four constituent districts' figures — see the region selector's \"i\" button."
       ],
-      link: { href: "https://www.gov.uk/government/statistics/electricity-chapter-6-digest-of-united-kingdom-energy-statistics-dukes", label: "DUKES chapter 6 (gov.uk)" }
+      link: { href: "https://www.gov.uk/government/statistics/renewable-sources-of-energy-chapter-6-digest-of-united-kingdom-energy-statistics-dukes", label: "DUKES chapter 6 (gov.uk)" }
     },
     "general-methodology": {
       title: "Full methodology & sources",

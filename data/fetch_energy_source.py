@@ -23,6 +23,12 @@ TFEC_RELEASE_HREF_RE = re.compile(
 TFEC_XLSX_RE = re.compile(r'href="(https://assets\.publishing\.service\.gov\.uk/media/[^"]+\.xlsx)"')
 TFEC_DEST = DATA_DIR / "energy_consumption_source.xlsx"
 
+# DUKES chapter 6 (Renewable sources of energy) table 6.5, like the renewable-by-LA page above,
+# is updated in place each year rather than getting a new dated URL per release.
+DUKES_PAGE_URL = "https://www.gov.uk/government/statistics/renewable-sources-of-energy-chapter-6-digest-of-united-kingdom-energy-statistics-dukes"
+DUKES_XLSX_RE = re.compile(r'href="(https://assets\.publishing\.service\.gov\.uk/media/[^"]+/DUKES_6\.5\.xlsx)"')
+DUKES_DEST = DATA_DIR / "dukes_source.xlsx"
+
 
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -84,6 +90,20 @@ def renewable_xlsx_url():
     return seen[0]
 
 
+def dukes_xlsx_url():
+    html = fetch(DUKES_PAGE_URL)
+    matches = DUKES_XLSX_RE.findall(html)
+    if not matches:
+        sys.exit(f"Could not find the DUKES 6.5 spreadsheet on {DUKES_PAGE_URL} — has gov.uk changed its page structure?")
+    seen = []
+    for m in matches:
+        if m not in seen:
+            seen.append(m)
+    if len(seen) > 1:
+        print(f"Warning: multiple candidate DUKES spreadsheet links found, using the first: {seen}", file=sys.stderr)
+    return seen[0]
+
+
 def tfec_xlsx_url():
     html = fetch(TFEC_COLLECTION_URL)
     matches = TFEC_RELEASE_HREF_RE.findall(html)
@@ -121,6 +141,13 @@ def main():
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
         sys.exit(f"Could not reach gov.uk to check for TFEC updates: {e}")
     update_if_changed("Energy consumption (TFEC)", url, TFEC_DEST, force)
+
+    try:
+        url = dukes_xlsx_url()
+        print(f"DUKES 6.5 source: {url}")
+    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+        sys.exit(f"Could not reach gov.uk to check for DUKES updates: {e}")
+    update_if_changed("DUKES 6.5 (renewable generation share)", url, DUKES_DEST, force)
 
     print("Run `python3 process_energy.py` next to regenerate the app's energy data files.")
 

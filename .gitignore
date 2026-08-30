@@ -2,6 +2,7 @@
 data/emissions_source.csv
 data/renewable_electricity_source.xlsx
 data/energy_consumption_source.xlsx
+data/dukes_source.xlsx
 node_modules/
 test-results/
 playwright-report/

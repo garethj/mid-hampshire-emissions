@@ -113,7 +113,10 @@ test("'Compare all constituents' checkbox changes the number of chart bars/lines
 // fills the full plot width, so its label has only that fixed margin to work with — if the label
 // text (e.g. "84,519.7 kWh/person") is wider than the margin, it gets clipped exactly there. Only
 // a real browser can measure actual rendered text width (jsdom's getBBox always returns zeros),
-// which is why this lives here rather than in the jsdom suite.
+// which is why this lives here rather than in the jsdom suite. Also covers the sector/gas charts'
+// "Fixed scale" mode, added later: their bars get shorter (not longer) relative to auto mode when
+// the tier max exceeds the current region's own max, so this is a lower-risk code path than
+// generation/consumption's, but still worth checking given it shares the same margin-sizing idea.
 async function overflowingValueLabels(page, svgSelector) {
   return page.locator(svgSelector).evaluate((svg) => {
     const vb = svg.viewBox.baseVal;
@@ -142,6 +145,20 @@ test("bar chart value labels never overflow the chart's SVG viewBox, even for th
       await page.click(`[data-scale-mode="${scaleMode}"]`);
       for (const metric of ["per_capita", "total"]) {
         await page.click(`[data-metric="${metric}"]`);
+
+        // Sector and gas charts don't depend on the energy-unit toggle, so check them once per
+        // scale mode/metric rather than inside the unit loop below.
+        let sectorOverflow = await overflowingValueLabels(page, "#sector-chart svg");
+        expect(sectorOverflow, `sector chart (${region}, ${scaleMode}, ${metric}): ${JSON.stringify(sectorOverflow)}`).toEqual([]);
+
+        await page.check("#sector-detail-toggle");
+        sectorOverflow = await overflowingValueLabels(page, "#sector-chart svg");
+        expect(sectorOverflow, `sector chart, sub-sector detail (${region}, ${scaleMode}, ${metric}): ${JSON.stringify(sectorOverflow)}`).toEqual([]);
+        await page.uncheck("#sector-detail-toggle");
+
+        const gasOverflow = await overflowingValueLabels(page, "#gas-chart svg");
+        expect(gasOverflow, `gas chart (${region}, ${scaleMode}, ${metric}): ${JSON.stringify(gasOverflow)}`).toEqual([]);
+
         for (const unit of ["kwh", "toe"]) {
           await page.click(`[data-energy-unit="${unit}"]`);
 

@@ -182,6 +182,14 @@ class TestEnergyShape(unittest.TestCase):
         years = ENERGY["meta"]["consumption_years"]
         self.assertEqual(years, sorted(years))
 
+    def test_dukes_electricity_mix_covers_generation_years(self):
+        # Not every DUKES year needs a matching generation year (DUKES 6.5a goes back to 1996,
+        # generation only to 2014) — but every generation year should have a DUKES figure, since
+        # that's the overlap the green/fossil chart actually needs (see greenFossilYears in app.js).
+        mix_years = set(int(y) for y in ENERGY["meta"]["dukes_electricity_mix"].keys())
+        for year in ENERGY["meta"]["generation_years"]:
+            self.assertIn(year, mix_years, f"DUKES electricity mix is missing generation year {year}")
+
 
 class TestEnergyInvariants(unittest.TestCase):
     def test_technology_groups_sum_to_total_generation(self):
@@ -217,6 +225,13 @@ class TestEnergyInvariants(unittest.TestCase):
                     self.assertLess(rel, 0.01,
                                      f"{key} {year}: sector categories sum ({total}) vs "
                                      f"all_fuels_ktoe ({c['all_fuels_ktoe']}) differ by {rel:.2%}")
+
+    def test_dukes_electricity_mix_green_and_fossil_pct_sum_to_100(self):
+        for year, entry in ENERGY["meta"]["dukes_electricity_mix"].items():
+            assertClose(self, entry["greenPct"] + entry["fossilPct"], 100.0, 0.01,
+                        f"DUKES {year}: greenPct + fossilPct should sum to 100")
+            self.assertGreaterEqual(entry["greenPct"], 0)
+            self.assertLessEqual(entry["greenPct"], 100)
 
     def test_electricity_consumption_matches_ktoe_conversion(self):
         KTOE_TO_MWH = 11630.0

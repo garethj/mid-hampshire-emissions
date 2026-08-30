@@ -10,6 +10,7 @@ from la_config import ALL_LAS, REGION_DEFS
 
 RENEWABLE_SRC = sys.argv[1] if len(sys.argv) > 1 else "renewable_electricity_source.xlsx"
 TFEC_SRC = sys.argv[2] if len(sys.argv) > 2 else "energy_consumption_source.xlsx"
+DUKES_SRC = sys.argv[3] if len(sys.argv) > 3 else "dukes_source.xlsx"
 
 # DUKES/IEA standard conversion, also used by DESNZ itself throughout this dataset family.
 KTOE_TO_MWH = 11630.0
@@ -115,6 +116,35 @@ def read_tfec_year(wb, year):
     return by_la
 
 
+# DUKES chapter 6 table 6.5a is Great Britain's national electricity generation mix — a single
+# time series, not split by local authority, unlike everything else this module parses. "Share of
+# renewable generation" is the row DUKES itself uses for this ratio; the residual (100% minus it)
+# is nuclear, fossil fuel and net imports combined, not fossil fuel alone — see app.js's
+# electricityGreenFossilSplit for how this app discloses that simplification.
+def read_dukes_renewable_share(wb):
+    ws = wb["6.5a"]
+    header = None
+    share_row = None
+    for row in ws.iter_rows(values_only=True):
+        if header is None:
+            if row and row[0] == "Electricity generation (ktoe)":
+                header = row
+            continue
+        if row and row[0] == "Share of renewable generation":
+            share_row = row
+            break
+    if header is None or share_row is None:
+        sys.exit("Could not find DUKES table 6.5a's \"Share of renewable generation\" row — has the DUKES 6.5 workbook layout changed?")
+    mix = {}
+    for i in range(1, len(header)):
+        if header[i] is None or share_row[i] is None:
+            continue
+        year = int(str(header[i]).strip())
+        green_pct = round(numeric(share_row[i]) * 100, 3)
+        mix[year] = {"greenPct": green_pct, "fossilPct": round(100 - green_pct, 3)}
+    return mix
+
+
 def build_region_series(per_year_la, la_list, la_weight, value_key):
     weight = lambda la: (la_weight[la] if la_weight else 1.0)
     out = {}
@@ -154,6 +184,8 @@ def build_region_series(per_year_la, la_list, la_weight, value_key):
 def main():
     renewable_wb = openpyxl.load_workbook(RENEWABLE_SRC, read_only=True, data_only=True)
     tfec_wb = openpyxl.load_workbook(TFEC_SRC, read_only=True, data_only=True)
+    dukes_wb = openpyxl.load_workbook(DUKES_SRC, read_only=True, data_only=True)
+    dukes_electricity_mix = read_dukes_renewable_share(dukes_wb)
 
     generation_by_year = {}
     for year in range(2014, 2031):
@@ -180,12 +212,16 @@ def main():
             "source_renewable_url": "https://www.gov.uk/government/statistics/regional-renewable-statistics",
             "source_consumption": "DESNZ Total final energy consumption at regional and local authority level",
             "source_consumption_url": "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level",
+            "source_dukes": "DESNZ DUKES table 6.5a — Share of renewable electricity generation (Great Britain)",
+            "source_dukes_url": "https://www.gov.uk/government/statistics/renewable-sources-of-energy-chapter-6-digest-of-united-kingdom-energy-statistics-dukes",
             "units": "MWh",
             "generation_years": generation_years,
             "consumption_years": consumption_years,
             "technology_groups": TECH_GROUP_NAMES,
             "fuel_categories": FUEL_CATEGORIES,
             "sector_categories": SECTOR_CATEGORIES,
+            "dukes_electricity_mix": dukes_electricity_mix,
+            "note_dukes_electricity_mix": "\"greenPct\" is DUKES table 6.5a's \"Share of renewable generation\" for Great Britain as a whole, not a local figure — the national grid pools generation, so no dataset ties a specific area's electricity consumption back to specific generation sources. \"fossilPct\" is the remainder (100 minus greenPct), which is DUKES's usual simplification for a two-way green/fossil split, but strictly includes nuclear and net imports alongside fossil fuel, not fossil fuel alone.",
             "units_consumption": "ktoe (kilotonnes of oil equivalent), except electricity_consumption_mwh which is MWh",
             "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json — see that file's note_boundary for the full explanation.",
             "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",

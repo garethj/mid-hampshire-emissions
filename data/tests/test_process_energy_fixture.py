@@ -1,8 +1,10 @@
 """
 End-to-end fixture test for process_energy.py — runs the real script against tiny synthetic
-xlsx workbooks (same shape as DESNZ's real renewable-generation and TFEC releases), including a
-disclosure-suppressed ("[X]") cell, to check the technology-grouping / suppression-folding /
-region-rollup logic without needing the real ~4MB source workbooks.
+xlsx workbooks (same shape as DESNZ's real renewable-generation, TFEC and DUKES 6.5 releases),
+including a disclosure-suppressed ("[X]") cell, to check the technology-grouping /
+suppression-folding / region-rollup / DUKES-parsing logic without needing the real source
+workbooks (the renewable and TFEC ones are ~4MB each; DUKES 6.5 is much smaller but still a
+real download).
 """
 import json
 import os
@@ -53,6 +55,20 @@ def build_generation_workbook(path):
     wb.save(path)
 
 
+def build_dukes_workbook(path):
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    ws = wb.create_sheet("6.5a")
+    # Same shape as the real DUKES 6.5 workbook's "6.5a" sheet: a header row of years (as text,
+    # matching the real workbook), then several unrelated rows before the one this app actually
+    # reads, to check the parser locates it by label rather than by a fixed row offset.
+    ws.append(["Electricity generation (ktoe)", str(YEAR - 1), str(YEAR)])
+    ws.append(["Renewable generation", 400.0, 500.0])
+    ws.append(["Total generation", 2000.0, 2500.0])
+    ws.append(["Share of renewable generation", 0.19, 0.5075530080733758])
+    wb.save(path)
+
+
 def build_tfec_workbook(path):
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
@@ -73,12 +89,14 @@ class TestProcessEnergyFixture(unittest.TestCase):
         cls.tmpdir = TemporaryDirectory()
         gen_path = os.path.join(cls.tmpdir.name, "gen.xlsx")
         tfec_path = os.path.join(cls.tmpdir.name, "tfec.xlsx")
+        dukes_path = os.path.join(cls.tmpdir.name, "dukes.xlsx")
         build_generation_workbook(gen_path)
         build_tfec_workbook(tfec_path)
+        build_dukes_workbook(dukes_path)
 
         env = dict(os.environ, PYTHONPATH=DATA_DIR)
         result = subprocess.run(
-            [sys.executable, os.path.join(DATA_DIR, "process_energy.py"), gen_path, tfec_path],
+            [sys.executable, os.path.join(DATA_DIR, "process_energy.py"), gen_path, tfec_path, dukes_path],
             cwd=cls.tmpdir.name, env=env, capture_output=True, text=True,
         )
         cls.process_result = result
@@ -136,6 +154,17 @@ class TestProcessEnergyFixture(unittest.TestCase):
         expected_domestic = sum(7.0 * lc.MID_HAMPSHIRE_RETAINED_FRACTION[la] for la in lc.MID_HAMPSHIRE_LAS)
         actual_domestic = self.out["regions"]["mid-hampshire"]["consumption"][year]["sector_ktoe"]["Domestic"]
         self.assertAlmostEqual(actual_domestic, expected_domestic, places=3)
+
+    def test_dukes_electricity_mix_parsed_by_year(self):
+        mix = self.out["meta"]["dukes_electricity_mix"]
+        self.assertAlmostEqual(mix[str(YEAR - 1)]["greenPct"], 19.0, places=3)
+        self.assertAlmostEqual(mix[str(YEAR - 1)]["fossilPct"], 81.0, places=3)
+        self.assertAlmostEqual(mix[str(YEAR)]["greenPct"], 50.755, places=3)
+        self.assertAlmostEqual(mix[str(YEAR)]["fossilPct"], 49.245, places=3)
+
+    def test_dukes_green_and_fossil_pct_sum_to_100(self):
+        for entry in self.out["meta"]["dukes_electricity_mix"].values():
+            self.assertAlmostEqual(entry["greenPct"] + entry["fossilPct"], 100.0, places=3)
 
     def test_hampshire_solent_generation_sums_all_las_unweighted(self):
         expected = 150.0 + 65.0 + 15.0 * (len(lc.HAMPSHIRE_SOLENT_LAS) - 2)

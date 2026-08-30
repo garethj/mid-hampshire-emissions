@@ -4,6 +4,8 @@ window.MHE_ENERGY_DATA = {
   "source_renewable_url": "https://www.gov.uk/government/statistics/regional-renewable-statistics",
   "source_consumption": "DESNZ Total final energy consumption at regional and local authority level",
   "source_consumption_url": "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level",
+  "source_dukes": "DESNZ DUKES table 6.5a \u2014 Share of renewable electricity generation (Great Britain)",
+  "source_dukes_url": "https://www.gov.uk/government/statistics/renewable-sources-of-energy-chapter-6-digest-of-united-kingdom-energy-statistics-dukes",
   "units": "MWh",
   "generation_years": [
    2014,
@@ -60,12 +62,135 @@ window.MHE_ENERGY_DATA = {
    "Transport",
    "Industrial, Commercial and other"
   ],
+  "dukes_electricity_mix": {
+   "1996": {
+    "greenPct": 1.62,
+    "fossilPct": 98.38
+   },
+   "1997": {
+    "greenPct": 1.981,
+    "fossilPct": 98.019
+   },
+   "1998": {
+    "greenPct": 2.384,
+    "fossilPct": 97.616
+   },
+   "1999": {
+    "greenPct": 2.612,
+    "fossilPct": 97.388
+   },
+   "2000": {
+    "greenPct": 2.629,
+    "fossilPct": 97.371
+   },
+   "2001": {
+    "greenPct": 2.482,
+    "fossilPct": 97.518
+   },
+   "2002": {
+    "greenPct": 2.873,
+    "fossilPct": 97.127
+   },
+   "2003": {
+    "greenPct": 2.662,
+    "fossilPct": 97.338
+   },
+   "2004": {
+    "greenPct": 3.591,
+    "fossilPct": 96.409
+   },
+   "2005": {
+    "greenPct": 4.251,
+    "fossilPct": 95.749
+   },
+   "2006": {
+    "greenPct": 4.557,
+    "fossilPct": 95.443
+   },
+   "2007": {
+    "greenPct": 4.962,
+    "fossilPct": 95.038
+   },
+   "2008": {
+    "greenPct": 5.611,
+    "fossilPct": 94.389
+   },
+   "2009": {
+    "greenPct": 6.691,
+    "fossilPct": 93.309
+   },
+   "2010": {
+    "greenPct": 6.852,
+    "fossilPct": 93.148
+   },
+   "2011": {
+    "greenPct": 9.569,
+    "fossilPct": 90.431
+   },
+   "2012": {
+    "greenPct": 11.336,
+    "fossilPct": 88.664
+   },
+   "2013": {
+    "greenPct": 14.852,
+    "fossilPct": 85.148
+   },
+   "2014": {
+    "greenPct": 19.089,
+    "fossilPct": 80.911
+   },
+   "2015": {
+    "greenPct": 24.637,
+    "fossilPct": 75.363
+   },
+   "2016": {
+    "greenPct": 24.65,
+    "fossilPct": 75.35
+   },
+   "2017": {
+    "greenPct": 29.436,
+    "fossilPct": 70.564
+   },
+   "2018": {
+    "greenPct": 33.228,
+    "fossilPct": 66.772
+   },
+   "2019": {
+    "greenPct": 36.871,
+    "fossilPct": 63.129
+   },
+   "2020": {
+    "greenPct": 43.343,
+    "fossilPct": 56.657
+   },
+   "2021": {
+    "greenPct": 40.089,
+    "fossilPct": 59.911
+   },
+   "2022": {
+    "greenPct": 41.975,
+    "fossilPct": 58.025
+   },
+   "2023": {
+    "greenPct": 46.948,
+    "fossilPct": 53.052
+   },
+   "2024": {
+    "greenPct": 50.755,
+    "fossilPct": 49.245
+   },
+   "2025": {
+    "greenPct": 52.382,
+    "fossilPct": 47.618
+   }
+  },
+  "note_dukes_electricity_mix": "\"greenPct\" is DUKES table 6.5a's \"Share of renewable generation\" for Great Britain as a whole, not a local figure \u2014 the national grid pools generation, so no dataset ties a specific area's electricity consumption back to specific generation sources. \"fossilPct\" is the remainder (100 minus greenPct), which is DUKES's usual simplification for a two-way green/fossil split, but strictly includes nuclear and net imports alongside fossil fuel, not fossil fuel alone.",
   "units_consumption": "ktoe (kilotonnes of oil equivalent), except electricity_consumption_mwh which is MWh",
   "note_boundary": "Same Mid-Hampshire / Hampshire and the Solent constituent local authorities and Mid-Hampshire population-based retained fractions as mid_hampshire_emissions.json \u2014 see that file's note_boundary for the full explanation.",
   "note_suppression": "DESNZ suppresses some small per-technology generation cells (marked \"[X]\" in the source workbook) to avoid revealing individual plants' output. This site treats suppressed cells as 0 for their own technology group and adds the (small) gap between the visible columns and DESNZ's own published Total into the \"Other\" group, so technology totals always sum exactly to DESNZ's published local authority total. The consumption-by-fuel dataset has no equivalent suppression.",
   "note_ktoe_conversion": "Energy consumption is published in ktoe (kilotonnes of oil equivalent); electricity_consumption_mwh converts the Electricity fuel category to MWh using the standard DUKES/IEA factor of 1 toe = 11.63 MWh, for comparison against renewable generation (also in MWh). The consumption-by-fuel chart displays all fuels in ktoe, DESNZ's native unit.",
   "note_industrial_consumption": "DESNZ's energy consumption dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are then consumed elsewhere \u2014 it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily scale with this consumption total in the same way. So a local authority with a large single industrial site (New Forest's oil refining is the clearest example in this dataset) can show a consumption total that looks disproportionately high next to its emissions total, without either figure being wrong \u2014 they're measuring different things. The consumption chart's \"by sector\" view (Domestic / Transport / Industrial, Commercial and other) exists to make this visible: a high \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a large non-household energy user, rather than local demand, is driving the area's total.",
-  "generated": "2026-08-29"
+  "generated": "2026-08-30"
  },
  "regions": {
   "hampshire-solent": {

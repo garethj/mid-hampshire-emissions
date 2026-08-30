@@ -466,6 +466,115 @@ test("fixed scale mode also applies to the historical trend line (consumption ch
     `rendered axis max ${renderedAxisMax} toe/person, expected ~${(expectedTierMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
 });
 
+test("fixed scale mode also gives regions in the same tier the same px-per-unit axis on the gas chart", async () => {
+  const dom = await loadApp({ region: "gosport" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  const ly = DATA.meta.years[DATA.meta.years.length - 1];
+  const perCapita = (regionKey) => {
+    const yd = DATA.regions[regionKey].years[ly];
+    return yd.gases_kt_co2e.CO2 / yd.population_thousands;
+  };
+
+  // Gosport (smallest per-capita CO2 among historic districts) vs Winchester (the largest) —
+  // neither happens to already be the tier's own max across *every* year, unlike the
+  // Test-Valley-for-solar coincidence noted below, so both sides of this comparison are
+  // meaningful checks, not just a restatement of "this region already sets the scale".
+  const gosportWidths = barWidthsByLabel(window, "gas-chart");
+  doc.getElementById("region-select").value = "winchester";
+  fireChange(window, doc.getElementById("region-select"));
+  const winchesterWidths = barWidthsByLabel(window, "gas-chart");
+
+  const gosportPxPerUnit = gosportWidths.CO2 / perCapita("gosport");
+  const winchesterPxPerUnit = winchesterWidths.CO2 / perCapita("winchester");
+  assert.ok(Math.abs(gosportPxPerUnit - winchesterPxPerUnit) < 0.01,
+    `expected the same px/unit scale in fixed mode, got Gosport=${gosportPxPerUnit} vs Winchester=${winchesterPxPerUnit}`);
+
+  doc.getElementById("region-select").value = "gosport";
+  fireChange(window, doc.getElementById("region-select"));
+  fireClick(window, doc.querySelector('[data-scale-mode="auto"]'));
+  const gosportAutoWidths = barWidthsByLabel(window, "gas-chart");
+  const gosportAutoPxPerUnit = gosportAutoWidths.CO2 / perCapita("gosport");
+  assert.ok(Math.abs(gosportAutoPxPerUnit - gosportPxPerUnit) > 1,
+    "expected auto scale to render a visibly different bar width than fixed scale for Gosport");
+});
+
+test("fixed scale mode's sector chart axis is the largest magnitude across the tier (diverging LULUCF-aware), and applies to the historical trend too", async () => {
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  // Independently recompute the expected tier-wide magnitude: the largest |value| of any sector,
+  // in any year, for any historic district — mirrors sectorTierMax in app.js, including LULUCF's
+  // negative values (Math.abs, not a plain max).
+  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
+  let expectedTierMax = 0;
+  for (const r of historicDistricts) {
+    for (const year of DATA.meta.years) {
+      const yd = DATA.regions[r].years[year];
+      for (const v of Object.values(yd.sectors_kt_co2e)) {
+        const abs = Math.abs(v / yd.population_thousands);
+        if (abs > expectedTierMax) expectedTierMax = abs;
+      }
+    }
+  }
+
+  // Historical sector chart has no row labels (only axis ticks + a legend), so text-anchor="end"
+  // cleanly isolates the y-axis value labels from the x-axis year labels (text-anchor="middle").
+  const svg = doc.querySelector("#sector-chart svg");
+  const tickValues = Array.from(svg.querySelectorAll('text[text-anchor="end"]'))
+    .map((t) => Number(t.textContent.replace(/,/g, "")));
+  const renderedAxisMax = Math.max(...tickValues);
+
+  assert.ok(Math.abs(renderedAxisMax - expectedTierMax * 1.08) < 0.5,
+    `rendered axis max ${renderedAxisMax} t/person, expected ~${(expectedTierMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+});
+
+test("sector chart's sub-sector detail view scales fixed axis to the tier's latest-year sub-sector max, not full history", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.getElementById("sector-detail-toggle"));
+
+  const ly = DATA.meta.years[DATA.meta.years.length - 1];
+  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
+  let expectedTierMax = 0;
+  for (const r of historicDistricts) {
+    const detail = DATA.subsector_detail_latest_year[r] || {};
+    const pop = DATA.regions[r].years[ly].population_thousands;
+    for (const subs of Object.values(detail)) {
+      for (const v of Object.values(subs)) {
+        const abs = Math.abs(v / pop);
+        if (abs > expectedTierMax) expectedTierMax = abs;
+      }
+    }
+  }
+
+  const svg = doc.querySelector("#sector-chart svg");
+  const vb = svg.getAttribute("viewBox").split(" ").map(Number);
+  const plotHalfWidth = (vb[2] - 235 - 70) / 2; // W - left - right margins (see buildSectorChartLatest), halved either side of zero
+  const rects = Array.from(svg.querySelectorAll("rect.sector-bar"));
+  const widestBarWidth = Math.max(...rects.map((r) => Number(r.getAttribute("width"))));
+
+  // The widest sub-sector bar shouldn't exceed what the tier-wide max would allow — a looser
+  // check than the exact-pixel comparisons above, since sub-sector detail can't scan full history
+  // the way the top-level view does, but it should still never let one region's own sub-sector
+  // exceed the shared axis.
+  assert.ok(widestBarWidth <= plotHalfWidth + 1,
+    `widest sub-sector bar (${widestBarWidth}px) shouldn't exceed the fixed-scale plot half-width (${plotHalfWidth}px)`);
+  assert.ok(expectedTierMax > 0, "sanity check: expected some non-zero sub-sector detail in this tier");
+});
+
 test("electricity green vs fossil chart: green + fossil sums to total electricity consumption, matching the DUKES-based formula", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;
@@ -484,14 +593,17 @@ test("electricity green vs fossil chart: green + fossil sums to total electricit
 
   // Independently recompute Phil Gagg's formula from raw ENERGY_DATA (not by calling app.js's own
   // functions), same pattern as the demand-comparison test above: local green generation nets off
-  // first, the 2024 DUKES 6.5a ratio (50.8% green / 49.2% fossil) applies to the remainder.
+  // first, that year's DUKES 6.5a renewable-generation share applies to the remainder. Reads the
+  // ratio from the data rather than hardcoding it, so this stays correct across a future DUKES
+  // data refresh rather than silently drifting from whatever's actually committed.
   const con = ENERGY_DATA.regions.winchester.consumption["2024"];
   const gen = ENERGY_DATA.regions.winchester.generation["2024"];
+  const mix = ENERGY_DATA.meta.dukes_electricity_mix["2024"];
   const totalMwh = con.electricity_consumption_mwh;
   const localGreenMwh = Math.min(gen.total_mwh, totalMwh);
   const gridMwh = totalMwh - localGreenMwh;
-  const expectedGreenGwh = (localGreenMwh + gridMwh * 0.508) / 1000;
-  const expectedFossilGwh = (gridMwh * 0.492) / 1000;
+  const expectedGreenGwh = (localGreenMwh + gridMwh * (mix.greenPct / 100)) / 1000;
+  const expectedFossilGwh = (gridMwh * (mix.fossilPct / 100)) / 1000;
 
   const greenGwh = num(greenRow[1]);
   const fossilGwh = num(fossilRow[1]);
@@ -503,13 +615,31 @@ test("electricity green vs fossil chart: green + fossil sums to total electricit
     `green + fossil (${greenGwh + fossilGwh} GWh) should sum to total electricity consumption (${(totalMwh / 1000).toFixed(1)} GWh)`);
 });
 
-test("electricity green vs fossil chart doesn't respond to the page-wide Latest year/Historical trend toggle", async () => {
+test("electricity green vs fossil chart responds to the page-wide Latest year/Historical trend toggle, now that it spans multiple years", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;
+  const { ENERGY_DATA } = getData(window);
   const doc = window.document;
+
   const before = doc.getElementById("green-fossil-chart-title").textContent;
+  assert.match(before, /, 2024$/, `latest view should show a single year, got: ${before}`);
+
   fireClick(window, doc.querySelector('[data-view="historical"]'));
   const after = doc.getElementById("green-fossil-chart-title").textContent;
-  assert.equal(before, after, "this chart only has one year of DUKES data, so it should show the same single-year title regardless of the page-wide view toggle");
+  assert.match(after, /, \d{4}–2024$/, `historical view should show a year range ending 2024, got: ${after}`);
+  assert.notEqual(before, after);
+
+  // Historical view renders one line per Green/Fossil, same shape as the sector/gas charts.
+  const paths = doc.querySelectorAll("#green-fossil-chart svg path");
+  assert.equal(paths.length, 2, `expected 2 lines (Green, Fossil), got ${paths.length}`);
+
+  fireClick(window, doc.querySelector('.table-toggle[data-target="green-fossil-table"]'));
+  const rows = tableRows(window, "green-fossil-table");
+  const genYears = new Set(ENERGY_DATA.meta.generation_years);
+  const conYears = new Set(ENERGY_DATA.meta.consumption_years);
+  const mixYears = new Set(Object.keys(ENERGY_DATA.meta.dukes_electricity_mix).map(Number));
+  const expectedYears = ENERGY_DATA.meta.generation_years.filter((y) => genYears.has(y) && conYears.has(y) && mixYears.has(y));
+  assert.equal(rows.length, expectedYears.length, `expected one table row per year with generation+consumption+DUKES data (${expectedYears.length}), got ${rows.length}`);
+
   assert.deepEqual(dom.errors, []);
 });

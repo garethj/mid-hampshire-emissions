@@ -57,7 +57,7 @@ def main():
     print("\n== Checking energy data ==")
     energy_changed = fetch_and_check(
         "fetch_energy_source.py",
-        [DATA / "renewable_electricity_source.xlsx", DATA / "energy_consumption_source.xlsx"],
+        [DATA / "renewable_electricity_source.xlsx", DATA / "energy_consumption_source.xlsx", DATA / "dukes_source.xlsx"],
         force,
     )
     if energy_changed:
