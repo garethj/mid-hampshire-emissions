@@ -844,6 +844,31 @@
     return (sectorTierMaxCache[cacheKey] = max || 1);
   }
 
+  // The historical (line) chart's fixed-scale axis needs the tier's actual positive and negative
+  // extents separately, not a symmetric ±sectorTierMax — a line chart's vertical position isn't a
+  // left/right length comparison the way the diverging bar chart's is, so there's no need to waste
+  // axis space forcing the negative side to match whatever the largest *positive* sector happens
+  // to be somewhere in the tier (this was a real bug: LULUCF's actual negative range is far
+  // smaller than some other sector's positive peak, so the symmetric version left a large blank
+  // band below zero on every region's chart).
+  const sectorTierRangeCache = {};
+  function sectorTierRange(regionKey, metric) {
+    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+    const cacheKey = [tier, metric, currentHorizon].join("|");
+    if (sectorTierRangeCache[cacheKey] !== undefined) return sectorTierRangeCache[cacheKey];
+    let max = 0, min = 0;
+    for (const r of regionsInTier(regionKey)) {
+      for (const year of DATA.meta.years) {
+        for (const sector of SECTOR_ORDER) {
+          const v = sectorMetricValue(r, year, sector, metric);
+          if (v > max) max = v;
+          if (v < min) min = v;
+        }
+      }
+    }
+    return (sectorTierRangeCache[cacheKey] = { max: max || 1, min: min });
+  }
+
   // Gases are never negative, so this is a plain max (no divergence to account for) — otherwise
   // the same idea as sectorTierMax above, including the currentHorizon dependence.
   const gasTierMaxCache = {};
@@ -1393,8 +1418,9 @@
     const plotH = H - M.top - M.bottom;
 
     const allValues = series.flatMap(s => s.values);
-    const maxVal = (currentScaleMode === "fixed" ? sectorTierMax(regionKey, metric, false) : Math.max(...allValues, 0)) * 1.08;
-    const minVal = (currentScaleMode === "fixed" ? -sectorTierMax(regionKey, metric, false) : Math.min(...allValues, 0)) * 1.08;
+    const fixedRange = currentScaleMode === "fixed" ? sectorTierRange(regionKey, metric) : null;
+    const maxVal = (fixedRange ? fixedRange.max : Math.max(...allValues, 0)) * 1.08;
+    const minVal = (fixedRange ? fixedRange.min : Math.min(...allValues, 0)) * 1.08;
 
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -2195,8 +2221,8 @@
     const split = electricityGreenFossilSplit(regionKey, year);
     const totalValue = greenFossilValue(regionKey, year, split.greenMwh + split.fossilMwh, metric) || 1;
     const rows = [
-      { key: "Green", name: "Green (renewable)", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
-      { key: "Fossil", name: "Fossil fuel (& other non-renewable)", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
+      { key: "Green", name: "Green", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
+      { key: "Fossil", name: "Fossil fuel", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
     ];
     const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
 
@@ -2268,7 +2294,7 @@
   function buildGreenFossilChartHistorical(container, regionKey, years, metric, unit) {
     const series = ["Green", "Fossil"].map(key => ({
       key: key,
-      name: key === "Green" ? "Green (renewable)" : "Fossil fuel (& other non-renewable)",
+      name: key === "Green" ? "Green" : "Fossil fuel",
       color: categoryColor(key),
       values: years.map(y => {
         const split = electricityGreenFossilSplit(regionKey, y);
@@ -2412,7 +2438,7 @@
       body: [
         "The sector, gas, generation and consumption charts' axes default to \"Fixed scale\": one shared axis maximum for every region in the same tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way). Switching the region selector between two areas in the same tier keeps the axis still, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
         "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which sector, which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
-        "The shared maximum is the highest single value (or, for the sector chart's diverging bars, the largest magnitude either side of zero) seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier. The sector chart's sub-sector detail view is the one exception: sub-sector figures are only published for the latest year, so that view's shared maximum only scans the tier's regions for that one year, not the full history.",
+        "The shared maximum is the highest single value seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier. The sector chart's latest-year bars are the one case with a symmetric axis either side of zero (the largest magnitude in either direction, since a diverging bar's left/right length needs one consistent scale to stay comparable) — its historical trend line instead uses the tier's actual highest and lowest values independently, since a line's vertical position isn't a length comparison the same way. The sector chart's sub-sector detail view is the one further exception: sub-sector figures are only published for the latest year, so that view's shared maximum only scans the tier's regions for that one year, not the full history.",
         "The trend chart doesn't use this toggle — it already shows more than one region and, often, more than one tier at once (a district alongside its unitary and Hampshire and the Solent), so a single \"fixed vs auto\" per-tier scale doesn't apply to it the same way."
       ]
     },
@@ -2680,18 +2706,20 @@
 
   // Keeps each sticky bar pinned directly under the one above it, whatever height each actually
   // renders at (the control panel wraps to two rows below ~640px wide, changing everything
-  // stacked beneath it): control panel -> region toggle -> energy unit toggle.
+  // stacked beneath it): control panel -> region toggle -> chart scale row -> energy unit toggle.
   function setupStickyOffset() {
     const panel = document.getElementById("control-panel");
     const regionRow = document.getElementById("region-scoped").querySelector(".region-toggle-row");
+    const scaleRow = document.getElementById("chart-scale-row");
     const energyUnitRow = document.getElementById("energy-unit-row");
     const update = () => {
       document.documentElement.style.setProperty("--control-panel-h", panel.offsetHeight + "px");
       document.documentElement.style.setProperty("--region-toggle-h", regionRow.offsetHeight + "px");
-      // Tracks the energy-unit row's own height too — see .card's scroll-margin-top in style.css,
-      // which needs this (on top of the two above) to keep a card's own heading clear of the
-      // sticky stack when a browser-driven jump (in-page search, fragment link, Tab-to-focus)
-      // lands on it, inside #energy-scoped where all three bars stack.
+      // Tracks the chart scale row's and energy-unit row's own heights too — see .card's
+      // scroll-margin-top in style.css, which needs these (on top of the two above) to keep a
+      // card's own heading clear of the sticky stack when a browser-driven jump (in-page search,
+      // fragment link, Tab-to-focus) lands on it, wherever three or four bars stack.
+      document.documentElement.style.setProperty("--chart-scale-row-h", scaleRow.offsetHeight + "px");
       document.documentElement.style.setProperty("--energy-unit-row-h", energyUnitRow.offsetHeight + "px");
     };
     update();
@@ -2699,6 +2727,7 @@
       const ro = new ResizeObserver(update);
       ro.observe(panel);
       ro.observe(regionRow);
+      ro.observe(scaleRow);
       ro.observe(energyUnitRow);
     } else {
       window.addEventListener("resize", update);

@@ -114,16 +114,35 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
+/* ---------- Chart scale toggle ---------- */
+/* Sector, gas, generation and consumption all read this control — everything below the trend
+   chart, which doesn't (it already compares more than one region/tier per chart, so a
+   per-tier fixed/auto scale doesn't apply to it — see its own "i" button reasoning below). It
+   lives right after the trend chart's card, so it visually reads as "this affects what's below",
+   not the trend chart above it — a real point of confusion when this toggle used to sit
+   page-wide in the region toggle row. Stacks below the control panel and region toggle, and
+   (like them) stops sticking once its own section — this row plus everything below it in
+   .chart-scale-scoped — scrolls past. */
+.chart-scale-row {
+  display: flex; align-items: center; gap: 10px; overflow-x: auto;
+  position: sticky; top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px)); z-index: 22;
+  background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px;
+  padding: 10px 16px; margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
 /* ---------- Energy unit toggle ---------- */
-/* Only the generation and consumption charts read this control, unlike the page-wide control
-   panel and region toggle above — so it lives right above those two charts instead, and (like
-   the region toggle) stops sticking once its own section (this row plus the two energy cards
-   below it) scrolls past. Stacks below both the control panel and the region toggle, so its
-   sticky offset is their two heights combined — both kept in sync with their real rendered
-   heights by the same ResizeObserver in app.js that already tracks --control-panel-h. */
+/* Only the generation and consumption charts read this control, unlike the chart scale toggle
+   above (which also governs sector/gas) — so it lives right above those two charts instead, and
+   (like the rows above it) stops sticking once its own section (this row plus the three energy
+   cards below it) scrolls past. Stacks below the control panel, region toggle AND the chart scale
+   row, so its sticky offset is all three heights combined — all kept in sync with their real
+   rendered heights by the same ResizeObserver in app.js that already tracks --control-panel-h. */
 .energy-unit-row {
   display: flex; align-items: center; gap: 10px; overflow-x: auto;
-  position: sticky; top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px)); z-index: 20;
+  position: sticky;
+  top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px));
+  z-index: 20;
   background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 10px;
   padding: 10px 16px; margin-bottom: 22px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -189,14 +208,16 @@ body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 
 /* ---------- Cards ---------- */
 /* scroll-margin-top keeps a card's own heading clear of the sticky stack above it (control panel
-   + region toggle, and — inside #energy-scoped — the energy unit row too) whenever a browser-
+   + region toggle; the chart scale row too for sector/gas/energy cards inside .chart-scale-scoped;
+   the energy unit row on top of that again for cards inside #energy-scoped) whenever a browser-
    driven jump lands on it: in-page search (Cmd/Ctrl+F), a fragment link, or Tab focusing an
    element inside the card. It doesn't (and can't) prevent a heading from briefly sitting under
    the sticky bars mid-scroll during ordinary continuous scrolling — that's normal for any sticky
    header design, the same way a page heading scrolls up behind a fixed nav bar on any site — this
    only fixes browser-chosen "jump to here" landings actually stopping in the wrong place. */
 .card, .card-head h2, .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + 12px); }
-.energy-scoped .card, .energy-scoped .card-head h2, .energy-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--energy-unit-row-h, 64px) + 12px); }
+.chart-scale-scoped .card, .chart-scale-scoped .card-head h2, .chart-scale-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px) + 12px); }
+.energy-scoped .card, .energy-scoped .card-head h2, .energy-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px) + var(--energy-unit-row-h, 64px) + 12px); }
 .card { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 12px; padding: 18px 20px 20px; margin-bottom: 20px; }
 .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
 .card-head h2 { font-size: 1.05rem; }
@@ -298,7 +319,7 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
    compact row rather than wrapping to two or three — wrapping would eat a large chunk of a
    phone viewport permanently. Buttons shrink and the row scrolls horizontally instead. */
 @media (max-width: 640px) {
-  .control-panel, .region-toggle-row, .energy-unit-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
+  .control-panel, .region-toggle-row, .chart-scale-row, .energy-unit-row { flex-wrap: nowrap; overflow-x: auto; gap: 8px 14px; padding: 8px 14px; }
   .control-group { flex: none; }
   .control-panel .seg-btn { padding: 7px 12px; font-size: 0.88rem; }
   #region-select { padding: 7px 30px 7px 10px; font-size: 0.88rem; }

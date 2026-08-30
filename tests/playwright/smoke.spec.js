@@ -85,6 +85,26 @@ test("modal title and close button stay in view when the body content is scrolle
   await expect(page.locator("#modal-title")).toBeInViewport();
 });
 
+// Regression test for a real bug: the chart scale toggle used to live in the page-wide region
+// toggle row, directly above the trend chart — which reads as "this affects everything below,
+// including the trend chart," but the trend chart doesn't respond to it (it already compares more
+// than one region/tier per chart, so a per-tier fixed/auto scale doesn't apply). Moved to its own
+// row after the trend chart's card instead, so it only visually covers what it actually affects.
+test("chart scale toggle sits below the trend chart, not above it, and doesn't move the trend chart's own axis", async ({ page }) => {
+  await page.goto("index.html");
+  await expect(page.locator('.region-toggle-row [data-scale-mode]')).toHaveCount(0);
+  await expect(page.locator('#chart-scale-row [data-scale-mode="fixed"]')).toBeVisible();
+
+  // viewBox alone (fixed pixel dimensions) wouldn't catch the trend chart secretly re-scaling its
+  // data, so compare the whole rendered SVG markup instead — it should be byte-identical, since
+  // nothing about the trend chart's inputs changes when this toggle changes.
+  const trendBefore = await page.locator("#trend-chart svg").evaluate((el) => el.outerHTML);
+
+  await page.click('[data-scale-mode="auto"]');
+  const trendAfter = await page.locator("#trend-chart svg").evaluate((el) => el.outerHTML);
+  expect(trendAfter, "trend chart shouldn't re-render differently when the chart scale toggle changes").toEqual(trendBefore);
+});
+
 test("energy unit toggle sits above the generation/consumption charts, not the top control panel, and switches units live", async ({ page }) => {
   await page.goto("index.html");
   await expect(page.locator('#control-panel [data-energy-unit]')).toHaveCount(0);
@@ -107,25 +127,25 @@ test("'Compare all constituents' checkbox changes the number of chart bars/lines
   expect(after).not.toBe(before);
 });
 
-// Regression test for a real bug: the generation and consumption "latest" bar charts placed each
-// bar's value+unit label in a *fixed*-width right margin. A shorter bar leaves unused plot space
-// for its label to spill into before hitting the SVG's edge, but the chart's longest bar already
-// fills the full plot width, so its label has only that fixed margin to work with — if the label
-// text (e.g. "84,519.7 kWh/person") is wider than the margin, it gets clipped exactly there. Only
-// a real browser can measure actual rendered text width (jsdom's getBBox always returns zeros),
-// which is why this lives here rather than in the jsdom suite. Also covers the sector/gas charts'
-// "Fixed scale" mode, added later: their bars get shorter (not longer) relative to auto mode when
-// the tier max exceeds the current region's own max, so this is a lower-risk code path than
-// generation/consumption's, but still worth checking given it shares the same margin-sizing idea.
+// Regression test for two real bugs, both the same underlying shape: a chart placed a text label
+// in a fixed-width margin sized for a shorter string than what actually got rendered there, so it
+// got clipped against the SVG's edge. The first (generation/consumption's value+unit labels, e.g.
+// "84,519.7 kWh/person", clipped against the right edge by too-narrow a right margin) is what this
+// test originally caught; the second (the green/fossil chart's "Fossil fuel (& other
+// non-renewable)" row label, clipped against the *left* edge by a rename that outgrew the fixed
+// left margin) is why the check below covers every text element and both edges, not just bold
+// value labels on the right. Only a real browser can measure actual rendered text width (jsdom's
+// getBBox always returns zeros), which is why this lives here rather than in the jsdom suite.
 async function overflowingValueLabels(page, svgSelector) {
   return page.locator(svgSelector).evaluate((svg) => {
     const vb = svg.viewBox.baseVal;
-    return Array.from(svg.querySelectorAll('text[font-weight="700"]'))
+    return Array.from(svg.querySelectorAll("text"))
       .map((t) => {
         const box = t.getBBox();
-        return { text: t.textContent, right: box.x + box.width, vbRight: vb.x + vb.width };
+        return { text: t.textContent, left: box.x, right: box.x + box.width, vbLeft: vb.x, vbRight: vb.x + vb.width };
       })
-      .filter((r) => r.right > r.vbRight + 0.5); // small tolerance for sub-pixel rounding
+      // small tolerance for sub-pixel rounding
+      .filter((r) => r.right > r.vbRight + 0.5 || r.left < r.vbLeft - 0.5);
   });
 }
 

@@ -503,18 +503,18 @@ test("fixed scale mode also gives regions in the same tier the same px-per-unit 
     "expected auto scale to render a visibly different bar width than fixed scale for Gosport");
 });
 
-test("fixed scale mode's sector chart axis is the largest magnitude across the tier (diverging LULUCF-aware), and applies to the historical trend too", async () => {
+test("fixed scale mode's sector chart latest-year bars use a symmetric tier-wide magnitude (diverging LULUCF-aware)", async () => {
   const dom = await loadApp({ region: "new-forest" });
   const { window } = dom;
   const { DATA } = getData(window);
   const doc = window.document;
 
-  fireClick(window, doc.querySelector('[data-view="historical"]'));
   fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
 
   // Independently recompute the expected tier-wide magnitude: the largest |value| of any sector,
   // in any year, for any historic district — mirrors sectorTierMax in app.js, including LULUCF's
-  // negative values (Math.abs, not a plain max).
+  // negative values (Math.abs, not a plain max). The latest-year bar chart is symmetric either
+  // side of zero, since a diverging bar's left/right length needs one consistent scale.
   const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
   let expectedTierMax = 0;
   for (const r of historicDistricts) {
@@ -527,15 +527,62 @@ test("fixed scale mode's sector chart axis is the largest magnitude across the t
     }
   }
 
+  // The zero baseline sits at the SVG's horizontal midpoint (zeroX = M.left + plotW/2); a bar's
+  // width as a fraction of the plot half-width, times expectedTierMax, gives back the axis scale
+  // implied by that bar — done for New Forest's own largest-magnitude row, which should equal
+  // expectedTierMax exactly since New Forest itself sets this tier's scale (Industry/Transport are
+  // its largest sectors).
+  const svg = doc.querySelector("#sector-chart svg");
+  const vb = svg.getAttribute("viewBox").split(" ").map(Number);
+  const M = { left: 130, right: 70 };
+  const plotHalfWidth = (vb[2] - M.left - M.right) / 2;
+  const rects = Array.from(svg.querySelectorAll("rect.sector-bar"));
+  const widestBarWidth = Math.max(...rects.map((r) => Number(r.getAttribute("width"))));
+  assert.ok(widestBarWidth <= plotHalfWidth + 1,
+    `widest sector bar (${widestBarWidth}px) shouldn't exceed the fixed-scale plot half-width (${plotHalfWidth}px)`);
+  assert.ok(expectedTierMax > 0, "sanity check: expected some non-zero sector value in this tier");
+});
+
+test("fixed scale mode's sector chart historical trend uses the tier's actual positive/negative extents independently, not a symmetric magnitude", async () => {
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  // Independently recompute the expected tier-wide max and min (not abs) — mirrors
+  // sectorTierRange in app.js. LULUCF's actual negative range is far smaller in magnitude than
+  // some other sector's positive peak elsewhere in the tier, so these two extents genuinely
+  // differ — the regression this test guards is the axis wasting space forcing them to match.
+  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
+  let expectedMax = 0, expectedMin = 0;
+  for (const r of historicDistricts) {
+    for (const year of DATA.meta.years) {
+      const yd = DATA.regions[r].years[year];
+      for (const v of Object.values(yd.sectors_kt_co2e)) {
+        const perCapita = v / yd.population_thousands;
+        if (perCapita > expectedMax) expectedMax = perCapita;
+        if (perCapita < expectedMin) expectedMin = perCapita;
+      }
+    }
+  }
+  assert.ok(expectedMax > Math.abs(expectedMin) * 2,
+    `test assumption broken: expected the tier's positive peak (${expectedMax}) to clearly exceed its negative magnitude (${expectedMin}) — otherwise this test can't distinguish symmetric from asymmetric axis sizing`);
+
   // Historical sector chart has no row labels (only axis ticks + a legend), so text-anchor="end"
   // cleanly isolates the y-axis value labels from the x-axis year labels (text-anchor="middle").
   const svg = doc.querySelector("#sector-chart svg");
   const tickValues = Array.from(svg.querySelectorAll('text[text-anchor="end"]'))
     .map((t) => Number(t.textContent.replace(/,/g, "")));
   const renderedAxisMax = Math.max(...tickValues);
+  const renderedAxisMin = Math.min(...tickValues);
 
-  assert.ok(Math.abs(renderedAxisMax - expectedTierMax * 1.08) < 0.5,
-    `rendered axis max ${renderedAxisMax} t/person, expected ~${(expectedTierMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+  assert.ok(Math.abs(renderedAxisMax - expectedMax * 1.08) < 0.5,
+    `rendered axis max ${renderedAxisMax} t/person, expected ~${(expectedMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+  assert.ok(Math.abs(renderedAxisMin - expectedMin * 1.08) < 0.5,
+    `rendered axis min ${renderedAxisMin} t/person, expected ~${(expectedMin * 1.08).toFixed(2)} (tier min x 1.08 headroom) — not the symmetric -${(expectedMax * 1.08).toFixed(2)}`);
 });
 
 test("sector chart's sub-sector detail view scales fixed axis to the tier's latest-year sub-sector max, not full history", async () => {

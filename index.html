@@ -63,11 +63,6 @@
         <select id="region-select" aria-label="Choose region"></select>
       </div>
       <button class="info-btn" data-info="region-toggle" aria-label="About this selector">i</button>
-      <div class="seg-toggle" role="group" aria-label="Choose chart axis scale">
-        <button class="seg-btn is-active" data-scale-mode="fixed">Fixed scale</button>
-        <button class="seg-btn" data-scale-mode="auto">Auto scale</button>
-      </div>
-      <button class="info-btn" data-info="scale-mode-toggle" aria-label="About this scale toggle">i</button>
     </div>
 
     <div class="card">
@@ -86,6 +81,15 @@
       <div class="table-scroll is-hidden" id="trend-table"></div>
     </div>
 
+    <div class="chart-scale-row" id="chart-scale-row" role="group" aria-label="Choose chart axis scale">
+      <div class="seg-toggle">
+        <button class="seg-btn is-active" data-scale-mode="fixed">Fixed scale</button>
+        <button class="seg-btn" data-scale-mode="auto">Auto scale</button>
+      </div>
+      <button class="info-btn" data-info="scale-mode-toggle" aria-label="About this scale toggle">i</button>
+    </div>
+
+    <div class="chart-scale-scoped">
     <div class="card">
       <div class="card-head">
         <h2 id="sector-chart-title">Winchester emissions per person by sector, 2023</h2>
@@ -159,6 +163,8 @@
       <div class="chart-wrap" id="green-fossil-chart"></div>
       <button class="table-toggle" data-target="green-fossil-table">Show as table</button>
       <div class="table-scroll is-hidden" id="green-fossil-table"></div>
+    </div>
+
     </div>
 
     </div>
