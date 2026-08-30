@@ -188,6 +188,15 @@ body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 .info-btn:hover, .info-btn:focus-visible { border-color: var(--brand); color: var(--brand); outline: none; }
 
 /* ---------- Cards ---------- */
+/* scroll-margin-top keeps a card's own heading clear of the sticky stack above it (control panel
+   + region toggle, and — inside #energy-scoped — the energy unit row too) whenever a browser-
+   driven jump lands on it: in-page search (Cmd/Ctrl+F), a fragment link, or Tab focusing an
+   element inside the card. It doesn't (and can't) prevent a heading from briefly sitting under
+   the sticky bars mid-scroll during ordinary continuous scrolling — that's normal for any sticky
+   header design, the same way a page heading scrolls up behind a fixed nav bar on any site — this
+   only fixes browser-chosen "jump to here" landings actually stopping in the wrong place. */
+.card, .card-head h2, .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + 12px); }
+.energy-scoped .card, .energy-scoped .card-head h2, .energy-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--energy-unit-row-h, 64px) + 12px); }
 .card { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 12px; padding: 18px 20px 20px; margin-bottom: 20px; }
 .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
 .card-head h2 { font-size: 1.05rem; }

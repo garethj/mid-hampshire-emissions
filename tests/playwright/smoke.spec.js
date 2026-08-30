@@ -168,3 +168,33 @@ test("bar chart value labels never overflow the chart's SVG viewBox, even for th
     }
   }
 });
+
+// Regression test for a real bug: a card's own heading could render partially hidden behind the
+// sticky control panel/region toggle/energy unit row when a browser-driven scroll (in-page
+// search, a fragment link, Tab-focusing an element) landed on it, since nothing reserved enough
+// clearance above it. scroll-margin-top (see .card in style.css) fixes this for exactly those
+// browser-driven jumps — it doesn't and can't prevent a heading briefly sitting under the sticky
+// bars mid-scroll during ordinary continuous scrolling, which is normal for any sticky-header
+// design, so this test only checks the "jump to element" case, not continuous scrolling.
+test("a card's own heading clears the sticky bars above it when scrolled to directly (not covered)", async ({ page }) => {
+  await page.goto("index.html");
+
+  // A card above the energy section (two sticky bars: control panel + region toggle).
+  let overlap = await page.evaluate(() => {
+    document.getElementById("sector-chart-title").scrollIntoView();
+    const cp = document.getElementById("control-panel").getBoundingClientRect().bottom;
+    const rt = document.querySelector(".region-toggle-row").getBoundingClientRect().bottom;
+    const titleTop = document.getElementById("sector-chart-title").getBoundingClientRect().top;
+    return titleTop < Math.max(cp, rt);
+  });
+  expect(overlap, "sector chart title should clear the control panel + region toggle").toBe(false);
+
+  // A card inside #energy-scoped (three sticky bars, including the energy unit row).
+  overlap = await page.evaluate(() => {
+    document.getElementById("generation-chart-title").scrollIntoView();
+    const eur = document.getElementById("energy-unit-row").getBoundingClientRect().bottom;
+    const titleTop = document.getElementById("generation-chart-title").getBoundingClientRect().top;
+    return titleTop < eur;
+  });
+  expect(overlap, "generation chart title should clear all three sticky bars, including the energy unit row").toBe(false);
+});

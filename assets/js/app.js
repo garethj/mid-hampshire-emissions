@@ -2512,15 +2512,22 @@
   function setupStickyOffset() {
     const panel = document.getElementById("control-panel");
     const regionRow = document.getElementById("region-scoped").querySelector(".region-toggle-row");
+    const energyUnitRow = document.getElementById("energy-unit-row");
     const update = () => {
       document.documentElement.style.setProperty("--control-panel-h", panel.offsetHeight + "px");
       document.documentElement.style.setProperty("--region-toggle-h", regionRow.offsetHeight + "px");
+      // Tracks the energy-unit row's own height too — see .card's scroll-margin-top in style.css,
+      // which needs this (on top of the two above) to keep a card's own heading clear of the
+      // sticky stack when a browser-driven jump (in-page search, fragment link, Tab-to-focus)
+      // lands on it, inside #energy-scoped where all three bars stack.
+      document.documentElement.style.setProperty("--energy-unit-row-h", energyUnitRow.offsetHeight + "px");
     };
     update();
     if (window.ResizeObserver) {
       const ro = new ResizeObserver(update);
       ro.observe(panel);
       ro.observe(regionRow);
+      ro.observe(energyUnitRow);
     } else {
       window.addEventListener("resize", update);
     }
