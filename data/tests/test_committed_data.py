@@ -182,13 +182,15 @@ class TestEnergyShape(unittest.TestCase):
         years = ENERGY["meta"]["consumption_years"]
         self.assertEqual(years, sorted(years))
 
-    def test_dukes_electricity_mix_covers_generation_years(self):
-        # Not every DUKES year needs a matching generation year (DUKES 6.5a goes back to 1996,
-        # generation only to 2014) — but every generation year should have a DUKES figure, since
-        # that's the overlap the green/fossil chart actually needs (see greenFossilYears in app.js).
+    def test_dukes_electricity_mix_covers_consumption_years(self):
+        # Not every DUKES year needs a matching consumption year (DUKES 6.5a goes back to 1996,
+        # consumption only to 2005) — but every consumption year needs a DUKES figure, since the
+        # consumption chart splits each year's own Electricity ktoe by that year's DUKES share
+        # (see electricityFuelSplitKtoe in app.js, which falls back to treating a missing year as
+        # entirely non-renewable rather than assume an unevidenced green share).
         mix_years = set(int(y) for y in ENERGY["meta"]["dukes_electricity_mix"].keys())
-        for year in ENERGY["meta"]["generation_years"]:
-            self.assertIn(year, mix_years, f"DUKES electricity mix is missing generation year {year}")
+        for year in ENERGY["meta"]["consumption_years"]:
+            self.assertIn(year, mix_years, f"DUKES electricity mix is missing consumption year {year}")
 
 
 class TestEnergyInvariants(unittest.TestCase):

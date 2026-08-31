@@ -719,71 +719,88 @@ test("trend chart's fixed scale also applies to the latest-year bar view", async
     "Hampshire and the Solent's bar height shouldn't change when switching the selected region under fixed scale");
 });
 
-test("electricity green vs fossil chart: green + fossil sums to total electricity consumption, matching the DUKES-based formula", async () => {
-  const dom = await loadApp({ region: "winchester" });
-  const { window } = dom;
-  const { DATA, ENERGY_DATA } = getData(window);
-  const doc = window.document;
-
-  fireClick(window, doc.querySelector('[data-metric="total"]'));
-  fireClick(window, doc.querySelector('[data-energy-unit="kwh"]'));
-  fireClick(window, doc.querySelector('.table-toggle[data-target="green-fossil-table"]'));
-
-  const rows = tableRows(window, "green-fossil-table");
-  assert.equal(rows.length, 2, `expected exactly Green and Fossil rows, got: ${JSON.stringify(rows)}`);
-  const greenRow = rows.find((r) => /Green/.test(r[0]));
-  const fossilRow = rows.find((r) => /Fossil/.test(r[0]));
-  assert.ok(greenRow && fossilRow, `expected a Green and a Fossil row, got: ${JSON.stringify(rows)}`);
-
-  // Independently recompute Phil Gagg's formula from raw ENERGY_DATA (not by calling app.js's own
-  // functions), same pattern as the demand-comparison test above: local green generation nets off
-  // first, that year's DUKES 6.5a renewable-generation share applies to the remainder. Reads the
-  // ratio from the data rather than hardcoding it, so this stays correct across a future DUKES
-  // data refresh rather than silently drifting from whatever's actually committed.
-  const con = ENERGY_DATA.regions.winchester.consumption["2024"];
-  const gen = ENERGY_DATA.regions.winchester.generation["2024"];
-  const mix = ENERGY_DATA.meta.dukes_electricity_mix["2024"];
-  const totalMwh = con.electricity_consumption_mwh;
-  const localGreenMwh = Math.min(gen.total_mwh, totalMwh);
-  const gridMwh = totalMwh - localGreenMwh;
-  const expectedGreenGwh = (localGreenMwh + gridMwh * (mix.greenPct / 100)) / 1000;
-  const expectedFossilGwh = (gridMwh * (mix.fossilPct / 100)) / 1000;
-
-  const greenGwh = num(greenRow[1]);
-  const fossilGwh = num(fossilRow[1]);
-  assert.ok(Math.abs(greenGwh - expectedGreenGwh) < 0.5,
-    `green = ${greenGwh} GWh, expected ~${expectedGreenGwh.toFixed(1)}`);
-  assert.ok(Math.abs(fossilGwh - expectedFossilGwh) < 0.5,
-    `fossil = ${fossilGwh} GWh, expected ~${expectedFossilGwh.toFixed(1)}`);
-  assert.ok(Math.abs((greenGwh + fossilGwh) - totalMwh / 1000) < 0.5,
-    `green + fossil (${greenGwh + fossilGwh} GWh) should sum to total electricity consumption (${(totalMwh / 1000).toFixed(1)} GWh)`);
-});
-
-test("electricity green vs fossil chart responds to the page-wide Latest year/Historical trend toggle, now that it spans multiple years", async () => {
+test("consumption chart's 'By fuel type' defaults to just Fossil fuels and Green energy, summing to the all-fuels total", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;
   const { ENERGY_DATA } = getData(window);
   const doc = window.document;
 
-  const before = doc.getElementById("green-fossil-chart-title").textContent;
-  assert.match(before, /, 2024$/, `latest view should show a single year, got: ${before}`);
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
+  fireClick(window, doc.querySelector('[data-energy-unit="toe"]')); // native ktoe, to compare directly against raw fuels_ktoe
+  fireClick(window, doc.querySelector('.table-toggle[data-target="consumption-table"]'));
 
-  fireClick(window, doc.querySelector('[data-view="historical"]'));
-  const after = doc.getElementById("green-fossil-chart-title").textContent;
-  assert.match(after, /, \d{4}–2024$/, `historical view should show a year range ending 2024, got: ${after}`);
-  assert.notEqual(before, after);
+  const rows = tableRows(window, "consumption-table");
+  assert.equal(rows.length, 2, `expected exactly Fossil fuels and Green energy rows, got: ${JSON.stringify(rows)}`);
+  const fossilRow = rows.find((r) => /Fossil fuels/.test(r[0]));
+  const greenRow = rows.find((r) => /Green energy/.test(r[0]));
+  assert.ok(fossilRow && greenRow, `expected a Fossil fuels and a Green energy row, got: ${JSON.stringify(rows)}`);
 
-  // Historical view renders one line per Green/Fossil, same shape as the sector/gas charts.
-  const paths = doc.querySelectorAll("#green-fossil-chart svg path");
-  assert.equal(paths.length, 2, `expected 2 lines (Green, Fossil), got ${paths.length}`);
+  const c = ENERGY_DATA.regions.winchester.consumption["2024"];
+  const mix = ENERGY_DATA.meta.dukes_electricity_mix["2024"];
+  const fossilElec = c.fuels_ktoe.Electricity * (mix.fossilPct / 100);
+  const renewElec = c.fuels_ktoe.Electricity * (mix.greenPct / 100);
+  const expectedFossil = c.fuels_ktoe.Coal + c.fuels_ktoe["Manufactured fuels"] + c.fuels_ktoe.Petroleum + c.fuels_ktoe.Gas + fossilElec;
+  const expectedGreen = renewElec + c.fuels_ktoe["Bioenergy and wastes"];
 
-  fireClick(window, doc.querySelector('.table-toggle[data-target="green-fossil-table"]'));
-  const rows = tableRows(window, "green-fossil-table");
-  const genYears = new Set(ENERGY_DATA.meta.generation_years);
-  const conYears = new Set(ENERGY_DATA.meta.consumption_years);
-  const mixYears = new Set(Object.keys(ENERGY_DATA.meta.dukes_electricity_mix).map(Number));
-  const expectedYears = ENERGY_DATA.meta.generation_years.filter((y) => genYears.has(y) && conYears.has(y) && mixYears.has(y));
-  assert.equal(rows.length, expectedYears.length, `expected one table row per year with generation+consumption+DUKES data (${expectedYears.length}), got ${rows.length}`);
+  assert.ok(Math.abs(num(fossilRow[1]) - expectedFossil) < 0.5,
+    `Fossil fuels = ${num(fossilRow[1])} ktoe, expected ~${expectedFossil.toFixed(1)}`);
+  assert.ok(Math.abs(num(greenRow[1]) - expectedGreen) < 0.5,
+    `Green energy = ${num(greenRow[1])} ktoe, expected ~${expectedGreen.toFixed(1)}`);
+  assert.ok(Math.abs((num(fossilRow[1]) + num(greenRow[1])) - c.all_fuels_ktoe) < 1,
+    `Fossil fuels + Green energy (${num(fossilRow[1]) + num(greenRow[1])}) should sum to all_fuels_ktoe (${c.all_fuels_ktoe})`);
+});
 
-  assert.deepEqual(dom.errors, []);
+test("consumption chart's 'Show all fuel types' expands Electricity into Fossil fuel electricity and Renewable electricity, not a bare Electricity row", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const doc = window.document;
+
+  fireClick(window, doc.getElementById("consumption-detail-toggle"));
+  fireClick(window, doc.querySelector('.table-toggle[data-target="consumption-table"]'));
+
+  const rows = tableRows(window, "consumption-table");
+  const names = rows.map((r) => r[0]);
+  assert.equal(rows.length, 7, `expected 7 rows (4 direct fuels + 2 electricity splits + bioenergy), got: ${JSON.stringify(names)}`);
+  assert.ok(names.some((n) => /Fossil fuel electricity/.test(n)), `expected a "Fossil fuel electricity" row, got: ${JSON.stringify(names)}`);
+  assert.ok(names.some((n) => /Renewable electricity/.test(n)), `expected a "Renewable electricity" row, got: ${JSON.stringify(names)}`);
+  assert.ok(!names.some((n) => n === "Electricity"), `"Electricity" should no longer appear as its own bare row, got: ${JSON.stringify(names)}`);
+});
+
+test("hovering the 'Fossil fuels'/'Green energy' bars shows the same constituent breakdown 'Show all fuel types' would render, like the sector chart", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const { ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
+  const rect = doc.querySelector("#consumption-chart svg rect");
+  const ev = new window.MouseEvent("pointermove", { clientX: 10, clientY: 10 });
+  rect.dispatchEvent(ev);
+
+  const subRows = Array.from(doc.querySelectorAll(".viz-tooltip .tt-subrow")).map((el) => el.textContent);
+  // Whichever of Fossil fuels/Green energy sorts first (larger value) is what's hovered — either
+  // way its breakdown should list its own constituent fuels, e.g. "Coal" or "Bioenergy & waste".
+  assert.ok(subRows.length >= 2, `expected at least 2 breakdown sub-rows in the tooltip, got: ${JSON.stringify(subRows)}`);
+});
+
+test("hovering a derived electricity-split row ('Show all fuel types') shows the actual calculation, not just the result", async () => {
+  const dom = await loadApp({ region: "winchester" });
+  const { window } = dom;
+  const { ENERGY_DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
+  fireClick(window, doc.getElementById("consumption-detail-toggle"));
+
+  const rects = Array.from(doc.querySelectorAll("#consumption-chart svg rect"));
+  const labels = Array.from(doc.querySelectorAll("#consumption-chart svg text[text-anchor='end']")).map((t) => t.textContent);
+  const idx = labels.indexOf("Fossil fuel electricity");
+  assert.ok(idx >= 0, `expected to find a "Fossil fuel electricity" row label, got: ${JSON.stringify(labels)}`);
+
+  rects[idx].dispatchEvent(new window.MouseEvent("pointermove", { clientX: 10, clientY: 10 }));
+  const subRows = Array.from(doc.querySelectorAll(".viz-tooltip .tt-subrow")).map((el) => el.textContent);
+  const mix = ENERGY_DATA.meta.dukes_electricity_mix["2024"];
+
+  assert.ok(subRows.some((r) => /Total electricity/.test(r)), `expected a "Total electricity" calculation row, got: ${JSON.stringify(subRows)}`);
+  assert.ok(subRows.some((r) => r.includes(mix.fossilPct.toFixed(1))), `expected the DUKES fossil share (${mix.fossilPct.toFixed(1)}%) shown in the calculation, got: ${JSON.stringify(subRows)}`);
 });

@@ -162,21 +162,29 @@
   // CVD-adjacency reason as SECTOR_ORDER above (the historical chart renders this fixed order).
   const ENERGY_TECH_ORDER = ["Solar", "Bioenergy & waste", "Wind", "Hydro", "Other"];
 
-  // Matches ENERGY_DATA.meta.fuel_categories (see process_energy.py) — DESNZ's own fuel
-  // categories, used for the consumption chart's "complex" (all fuel types) view.
-  const FUEL_ORDER = ["Coal", "Manufactured fuels", "Petroleum", "Gas", "Electricity", "Bioenergy and wastes"];
+  // Matches ENERGY_DATA.meta.fuel_categories (see process_energy.py) for four of these six —
+  // DESNZ's own directly-published fuel categories. "Electricity" isn't one of the six: DESNZ
+  // publishes a single Electricity figure with no source attribution, so this site splits it into
+  // "Fossil fuel electricity" and "Renewable electricity" using that year's DUKES national
+  // generation mix (see electricityFuelSplitKtoe above) — the same split used for both this
+  // "complex" (all fuel types) view and the "simple" grouping below.
+  const FUEL_ORDER = ["Coal", "Manufactured fuels", "Petroleum", "Gas", "Fossil fuel electricity", "Renewable electricity", "Bioenergy and wastes"];
   const FUEL_LABEL = {
     Coal: "Coal", "Manufactured fuels": "Manufactured fuels", Petroleum: "Oil (petroleum)",
-    Gas: "Gas", Electricity: "Electricity", "Bioenergy and wastes": "Bioenergy & waste"
+    Gas: "Gas", "Fossil fuel electricity": "Fossil fuel electricity",
+    "Renewable electricity": "Renewable electricity", "Bioenergy and wastes": "Bioenergy & waste"
   };
-  // "Simple" view groups: not a DESNZ category, a bucketing this site applies for the collapsed
-  // view. Electricity is kept separate rather than folded into either side, since the fuel this
-  // site measures ("Electricity" consumed locally) isn't itself fossil or renewable — it's
-  // generated from a national mix that this dataset doesn't attribute back to source.
+  // "Simple" view groups: not DESNZ categories, a bucketing this site applies for the collapsed
+  // default view. "Green energy" combines two different *kinds* of figure — Bioenergy and wastes
+  // is a real, measured local quantity (fuel actually burned within the area); Renewable
+  // electricity is a national statistical estimate applied uniformly to this area's own
+  // electricity ktoe. Both are legitimate and both are genuinely renewable/low-carbon by
+  // official convention, but they're not the same kind of "green" — see this chart's "i" button.
+  // The same distinction applies to "Fossil fuels": Coal/Manufactured fuels/Petroleum/Gas are
+  // measured local combustion; Fossil fuel electricity is the national-mix estimate.
   const FUEL_SIMPLE_GROUPS = {
-    "Fossil fuels": ["Coal", "Manufactured fuels", "Petroleum", "Gas"],
-    "Electricity": ["Electricity"],
-    "Bioenergy & waste": ["Bioenergy and wastes"]
+    "Fossil fuels": ["Coal", "Manufactured fuels", "Petroleum", "Gas", "Fossil fuel electricity"],
+    "Green energy": ["Renewable electricity", "Bioenergy and wastes"]
   };
 
   // Matches ENERGY_DATA.meta.sector_categories (see process_energy.py) — the consumption chart's
@@ -252,22 +260,30 @@
     "Bioenergy & waste": 6,   // green — organic matter (matches the fuel category below)
     "Other": 7,                // violet — the "everything else" bucket, wherever it appears
 
-    // Energy consumption by fuel — "complex" (all types) view. DESNZ's exact spelling
+    // Energy consumption by fuel — "complex" (all fuel types) view. DESNZ's exact spelling
     // ("Bioenergy and wastes") differs slightly from the generation chart's "Bioenergy & waste"
-    // but is the same real-world category, so it gets the same green.
-    "Coal": 8,                     // red — combustion
-    "Manufactured fuels": 7,       // violet — coal-derived, grouped near Coal's family
-    "Petroleum": 5,                // magenta
-    "Gas": 1,                      // blue — the iconic blue gas flame
-    "Electricity": 4,              // yellow — the lightning-bolt association
-    "Bioenergy and wastes": 6,     // green
+    // but is the same real-world category, so it gets the same green. Fixed order for this list is
+    // Coal-Manufactured-Petroleum-Gas-FossilElec-RenewElec-Bioenergy (see FUEL_ORDER) — every
+    // adjacent pair below (8-7, 7-5, 5-1, 1-3, 3-4, 4-6) reuses a pairing already validated
+    // elsewhere in this file (SECTOR_ORDER/GAS_ORDER/ENERGY_TECH_ORDER), rather than introducing
+    // an unvalidated adjacency — deliberately avoiding orange (2) next to either yellow (4, fails
+    // CVD separation, see below) or the reds/violets already either side of it in this sequence.
+    "Coal": 8,                        // red — combustion
+    "Manufactured fuels": 7,          // violet — coal-derived, grouped near Coal's family
+    "Petroleum": 5,                   // magenta
+    "Gas": 1,                         // blue — the iconic blue gas flame
+    "Fossil fuel electricity": 3,     // aqua — sits between Gas and Renewable electricity
+    "Renewable electricity": 4,       // yellow — keeps the old "Electricity" slot's lightning-bolt
+                                       // association, narrowed to specifically its renewable share
+    "Bioenergy and wastes": 6,        // green
 
-    // Energy consumption by fuel — "simple" (grouped) view. Not real DESNZ categories, so
-    // these get their own slot rather than inheriting one component's colour arbitrarily.
+    // Energy consumption by fuel — "simple" (grouped) view. Not real DESNZ categories, so these
+    // get their own slot rather than inheriting one component's colour arbitrarily.
     // Violet rather than the more obvious orange ("generic fossil" hue) because this group sits
-    // next to Electricity's yellow, and orange-yellow also fails CVD separation.
-    "Fossil fuels": 7,   // violet
-    // "Electricity" and "Bioenergy & waste" simple-view groups reuse the slots above directly.
+    // next to Green energy's green, and orange-green isn't a pairing validated elsewhere in this
+    // file (7-6 is, e.g. Public Sector next to Agriculture).
+    "Fossil fuels": 7,    // violet
+    "Green energy": 6,    // green — matches Bioenergy and wastes' slot, one of its two constituents
 
     // Energy consumption by sector — the consumption chart's alternate view (toggled against the
     // by-fuel-type view above, never shown together). "Domestic" and "Transport" reuse the exact
@@ -276,15 +292,7 @@
     // dominant real-world driver of that bucket — CONSUMPTION_SECTOR_ORDER is deliberately
     // ordered (Domestic, Transport, Industrial...) so this red slot sits next to Transport's blue
     // rather than Domestic's orange, since red-orange adjacency fails CVD separation (see above).
-    "Industrial, Commercial and other": 8,  // red — shares Industry's slot
-
-    // Electricity green/fossil split (DUKES 6.5a-derived, its own small chart — never shown
-    // alongside the by-fuel/by-sector views above, so no adjacency constraint with them). "Green"
-    // reuses Bioenergy & waste/Agriculture's green slot (the obvious real-world association);
-    // "Fossil" reuses the "Fossil fuels" simple-view group's violet slot above, since it's the
-    // same real-world concept.
-    "Green": 6,     // green
-    "Fossil": 7     // violet
+    "Industrial, Commercial and other": 8  // red — shares Industry's slot
   };
 
   // ---------------- helpers ----------------
@@ -418,52 +426,46 @@
   // ENERGY_DATA.meta.dukes_electricity_mix, keyed by year as {greenPct, fossilPct}. "greenPct" is
   // DUKES's own renewable-generation share; "fossilPct" is the remainder (100 - greenPct), DUKES's
   // usual simplification for a two-way split — it's really "non-renewable" (nuclear and net
-  // imports included alongside fossil fuel), not fossil fuel alone. See this chart's "i" button.
+  // imports included alongside fossil fuel), not fossil fuel alone. See the consumption chart's
+  // "i" button for how this is used and its limits.
   function dukesElectricityMix() {
     return ENERGY_DATA.meta.dukes_electricity_mix || {};
   }
 
-  // The most recent year with a DUKES grid-mix figure *and* the generation/consumption data
-  // electricityGreenFossilSplit needs (generation starts 2014, consumption starts 2005) — null if
-  // none overlap. Independent of region: year coverage is the same dataset-wide.
-  function latestGreenFossilYear() {
-    return greenFossilYears()[0] || null;
-  }
-
-  // Every year with a DUKES grid-mix figure and matching generation/consumption data, newest
-  // first — the historical trend chart's x-axis, and latestGreenFossilYear's source.
-  function greenFossilYears() {
-    const genYears = new Set(energyGenerationYears());
-    const conYears = new Set(energyConsumptionYears());
-    return Object.keys(dukesElectricityMix()).map(Number)
-      .filter(y => genYears.has(y) && conYears.has(y))
-      .sort((a, b) => b - a);
-  }
-
-  // Splits an area's electricity consumption into an indicative "green" and "fossil" MWh figure,
-  // combining two datasets this site already has with the one external DUKES figure above —
-  // proposed by the same reviewer as a way to answer "how green is the electricity I use" without
-  // the false precision of just applying the national ratio to the whole total (see the chart's
-  // "i" button for the full reasoning). The logic: local renewable generation is treated as green
-  // consumption first (the same idea behind "market-based" Scope 2 carbon accounting — known local
-  // generation nets off before a residual grid-average mix is applied), and only the *remainder*
-  // of local electricity consumption is assumed to be drawn from the national grid at that year's
-  // DUKES low-carbon/fossil split. Local generation is capped at total consumption (defensive —
-  // never observed in this dataset, where the highest local share is ~32%, but renewables could
-  // in principle grow past 100% of local demand in future data). Null if generation, consumption
-  // or a DUKES figure isn't available for that year.
-  function electricityGreenFossilSplit(regionKey, year) {
+  // Splits a region's electricity consumption (in ktoe, its native unit here) into a fossil and a
+  // renewable share, using that year's DUKES national generation mix uniformly — deliberately
+  // *not* netted against the region's own local renewable generation (an earlier version of this
+  // feature did that, and a concrete case exposed why it doesn't hold up: New Forest hosts
+  // Marchwood, a ~900MW gas-fired power station invisible to this calculation since only renewable
+  // generation is published by local authority, so netting only local *renewables* off first made
+  // New Forest look greener than the national average despite hosting a large fossil plant. Since
+  // the grid pools everything, no consumer's actual draw can honestly vary from the national mix
+  // by area — this applies the same ratio to every region's electricity, uniformly, matching that
+  // physical reality rather than crediting whatever generation happens to be nearby). See
+  // note_dukes_electricity_mix in mid_hampshire_energy.json and this chart's "i" button.
+  function electricityFuelSplitKtoe(electricityKtoe, year) {
     const mix = dukesElectricityMix()[year];
-    const con = energyConsumption(regionKey, year);
-    const gen = energyGeneration(regionKey, year);
-    if (!mix || !con || !gen) return null;
-    const totalMwh = con.electricity_consumption_mwh;
-    const localGreenMwh = Math.min(gen.total_mwh, totalMwh);
-    const gridMwh = totalMwh - localGreenMwh;
+    // Defensive fallback for a year TFEC consumption data covers but DUKES doesn't (not currently
+    // possible — DUKES 6.5a spans 1996–2025, consumption 2005–2024 — see
+    // test_dukes_electricity_mix_covers_consumption_years in data/tests): treat as entirely
+    // non-renewable rather than assume a green share with no evidence for it.
+    const greenPct = mix ? mix.greenPct : 0;
+    const fossilPct = mix ? mix.fossilPct : 100;
     return {
-      greenMwh: localGreenMwh + gridMwh * (mix.greenPct / 100),
-      fossilMwh: gridMwh * (mix.fossilPct / 100)
+      "Fossil fuel electricity": electricityKtoe * (fossilPct / 100),
+      "Renewable electricity": electricityKtoe * (greenPct / 100)
     };
+  }
+
+  // Single point of access for a fuel-type's ktoe figure, whether it's one of DESNZ's own
+  // published categories (straight from fuels_ktoe) or one of the two derived electricity-split
+  // categories above — lets consumptionValue/fuelSimpleBreakdown below treat all fuel keys
+  // uniformly rather than each needing its own special case.
+  function consumptionFuelKtoe(c, year, fuelKey) {
+    if (fuelKey === "Fossil fuel electricity" || fuelKey === "Renewable electricity") {
+      return electricityFuelSplitKtoe(c.fuels_ktoe.Electricity, year)[fuelKey];
+    }
+    return c.fuels_ktoe[fuelKey];
   }
 
   // Consumption-by-fuel figures are stored in ktoe, DESNZ's own native unit for this dataset.
@@ -744,8 +746,8 @@
     const raw = axis === "sector"
       ? c.sector_ktoe[categoryKey]
       : detail
-        ? c.fuels_ktoe[categoryKey]
-        : FUEL_SIMPLE_GROUPS[categoryKey].reduce((sum, f) => sum + c.fuels_ktoe[f], 0);
+        ? consumptionFuelKtoe(c, year, categoryKey)
+        : FUEL_SIMPLE_GROUPS[categoryKey].reduce((sum, f) => sum + consumptionFuelKtoe(c, year, f), 0);
     return metric === "total" ? raw : raw / regionPopulation(regionKey, year);
   }
 
@@ -923,19 +925,34 @@
     return (trendGlobalMaxCache[cacheKey] = max || 1);
   }
 
+  // For the two derived electricity-split categories only, shows the actual calculation behind
+  // the row's own value (total electricity consumed × that year's DUKES share) — the four
+  // directly-measured DESNZ categories don't need this, since their tooltip value already *is*
+  // the published figure, not something calculated from another number on screen.
+  function ttElectricitySplitCalc(tt, regionKey, year, categoryKey, metric, unit) {
+    if (categoryKey !== "Fossil fuel electricity" && categoryKey !== "Renewable electricity") return;
+    const c = energyConsumption(regionKey, year);
+    const mix = dukesElectricityMix()[year];
+    if (!c || !mix) return;
+    const electricityRaw = metric === "total" ? c.fuels_ktoe.Electricity : c.fuels_ktoe.Electricity / regionPopulation(regionKey, year);
+    const pct = categoryKey === "Fossil fuel electricity" ? mix.fossilPct : mix.greenPct;
+    ttSubRow(tt, "Total electricity", fmtConsumptionMetric(metric, unit, electricityRaw) + " " + consumptionUnitLabel(metric, unit), true);
+    ttSubRow(tt, "× DUKES " + year + " share", fmtRatioPct(pct), false, true);
+  }
+
   // Constituent fuel breakdown for a "simple" group (e.g. "Fossil fuels" -> Coal, Manufactured
-  // fuels, Petroleum, Gas), sorted by magnitude. Null for single-fuel groups (Electricity,
-  // Bioenergy & waste) where a "breakdown" would just repeat the aggregate row.
+  // fuels, Petroleum, Gas, Fossil fuel electricity), sorted by magnitude — shown in each bar's
+  // hover, the same breakdown "Show all fuel types" renders as its own rows.
   function fuelSimpleBreakdown(regionKey, year, groupKey, metric) {
     const constituents = FUEL_SIMPLE_GROUPS[groupKey];
     if (!constituents || constituents.length <= 1) return null;
     const c = energyConsumption(regionKey, year);
     if (!c) return null;
     const pop = regionPopulation(regionKey, year);
-    return constituents.map(f => ({
-      name: FUEL_LABEL[f],
-      value: metric === "total" ? c.fuels_ktoe[f] : c.fuels_ktoe[f] / pop
-    })).sort((a, b) => b.value - a.value);
+    return constituents.map(f => {
+      const raw = consumptionFuelKtoe(c, year, f);
+      return { name: FUEL_LABEL[f], value: metric === "total" ? raw : raw / pop };
+    }).sort((a, b) => b.value - a.value);
   }
 
   // Renewable generation as a % of local electricity demand — not the same as "how much of
@@ -2062,6 +2079,9 @@
               breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
             }
           }
+          if (axis !== "sector" && detail) {
+            ttElectricitySplitCalc(tt, regionKey, cy, r.key, metric, unit);
+          }
           ttPopulationRow(tt, regionKey, cy, metric, true);
         });
       });
@@ -2139,6 +2159,9 @@
               breakdown.forEach((sub, i) => ttSubRow(tt, sub.name, fmtConsumptionMetric(metric, unit, sub.value) + " " + consumptionUnitLabel(metric, unit), i === 0));
             }
           }
+          if (axis !== "sector" && detail) {
+            ttElectricitySplitCalc(tt, regionKey, years[idx], s.key, metric, unit);
+          }
         });
         ttPopulationRow(tt, regionKey, years[idx], metric, true);
       });
@@ -2191,238 +2214,6 @@
     years.forEach((y, i) => {
       const tr = document.createElement("tr");
       const cells = [y].concat(series.map(s => fmtConsumptionMetric(metric, unit, s.values[i])));
-      cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
-      tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-    wrap.appendChild(table);
-  }
-
-  // ---------------- electricity green/fossil chart ----------------
-  // greenFossilYears() spans every year with both generation and consumption data alongside a
-  // DUKES grid-mix figure (2014 onward, DUKES 6.5a going back to 1996) — enough for a real trend,
-  // so unlike the single-year-only design this chart started with, it now responds to the
-  // page-wide Latest year/Historical trend toggle like every other chart.
-
-  let greenFossilNoteText = "";
-
-  function updateGreenFossilNote(regionKey, year, metric, unit) {
-    const split = electricityGreenFossilSplit(regionKey, year);
-    if (!split) { greenFossilNoteText = ""; return; }
-    const totalMwh = split.greenMwh + split.fossilMwh;
-    const greenShare = totalMwh ? (split.greenMwh / totalMwh) * 100 : 0;
-    const label = metric === "total" ? "Electricity consumption, " : "Electricity consumption per person, ";
-    greenFossilNoteText = label + year + ": an estimated " + fmtRatioPct(greenShare) +
-      " green (" + fmtGenerationMetric(metric, unit, greenFossilValue(regionKey, year, split.greenMwh, metric)) + " " + generationUnitLabel(metric, unit) +
-      "), combining this area's own renewable generation with the national grid's low-carbon share for whatever's drawn from it — see this chart's \"i\" button for the method and its limits.";
-  }
-
-  function greenFossilValue(regionKey, year, rawMwh, metric) {
-    return metric === "total" ? rawMwh : rawMwh / regionPopulation(regionKey, year);
-  }
-
-  function buildGreenFossilChart(regionKey) {
-    const container = document.getElementById("green-fossil-chart");
-    const titleEl = document.getElementById("green-fossil-chart-title");
-    if (!container || !titleEl || !ENERGY_DATA) return;
-    clearNode(container);
-    const metric = currentMetric;
-    const unit = currentEnergyUnit;
-    const view = currentView;
-    const years = greenFossilYears(); // newest first
-
-    if (!years.length) {
-      titleEl.textContent = REGION_LABEL[regionKey] + " electricity consumption: green vs fossil (not yet available)";
-      greenFossilNoteText = "";
-      const p = document.createElement("p");
-      p.className = "chart-empty-note";
-      p.textContent = "Not available yet: needs a DUKES 6.5a grid-mix figure for a year both renewable generation and energy consumption data cover — see this chart's \"i\" button.";
-      container.appendChild(p);
-      buildGreenFossilTableLatest(null, [], metric, unit);
-      return;
-    }
-
-    const year = years[0];
-    updateGreenFossilNote(regionKey, year, metric, unit);
-    const metricLabel = metric === "total" ? "electricity consumption: green vs fossil" : "electricity consumption per person: green vs fossil";
-    titleEl.textContent = REGION_LABEL[regionKey] + " " + metricLabel + ", " +
-      (view === "historical" ? (years[years.length - 1] + "–" + year) : year);
-
-    if (view === "historical") {
-      buildGreenFossilChartHistorical(container, regionKey, years.slice().reverse(), metric, unit);
-      return;
-    }
-
-    const split = electricityGreenFossilSplit(regionKey, year);
-    const totalValue = greenFossilValue(regionKey, year, split.greenMwh + split.fossilMwh, metric) || 1;
-    const rows = [
-      { key: "Green", name: "Green", value: greenFossilValue(regionKey, year, split.greenMwh, metric) },
-      { key: "Fossil", name: "Fossil fuel", value: greenFossilValue(regionKey, year, split.fossilMwh, metric) }
-    ];
-    const valueLabels = rows.map(r => fmtGenerationMetric(metric, unit, r.value) + " " + generationUnitLabel(metric, unit));
-
-    const W = 860, rowH = 40, gap = 14, barH = 26, labelFontSize = "12.5";
-    const M = { top: 10, right: Math.ceil(Math.max(80, ...valueLabels.map(estimateLabelWidth)) + 16), bottom: 10, left: 150 };
-    const plotW = W - M.left - M.right;
-    const H = M.top + M.bottom + rows.length * (rowH + gap) - gap;
-
-    const maxVal = Math.max(...rows.map(r => r.value)) || 1;
-    const svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    container.appendChild(svg);
-
-    const xScale = v => (v / maxVal) * plotW;
-
-    rows.forEach((r, i) => {
-      const y = M.top + i * (rowH + gap);
-      const barW = xScale(r.value);
-      const color = categoryColor(r.key);
-      const barY = y + (rowH - barH) / 2;
-
-      const label = el("text", { x: M.left - 12, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": labelFontSize, fill: cssVar("--text-secondary") }, svg);
-      label.textContent = r.name;
-
-      const rect = el("rect", { x: M.left, y: barY, width: Math.max(barW, 0), height: barH, rx: "4", fill: color }, svg);
-      rect.style.cursor = "pointer";
-
-      const valText = el("text", { x: M.left + barW + 8, y: y + rowH / 2 + 4, "text-anchor": "start", "font-size": labelFontSize, "font-weight": "700", fill: cssVar("--text-primary") }, svg);
-      valText.textContent = valueLabels[i];
-
-      rect.addEventListener("pointerenter", () => rect.setAttribute("opacity", "0.82"));
-      rect.addEventListener("pointerleave", () => { rect.setAttribute("opacity", "1"); hideTooltip(); });
-      rect.addEventListener("pointermove", (ev) => {
-        showTooltip(ev.clientX, ev.clientY, (tt) => {
-          ttTitle(tt, r.name);
-          ttRow(tt, color, year + "", valueLabels[i] + " (" + fmtRatioPct(r.value / totalValue * 100) + " of consumption)");
-          ttPopulationRow(tt, regionKey, year, metric, true);
-        });
-      });
-    });
-
-    buildGreenFossilTableLatest(year, rows, metric, unit);
-  }
-
-  function buildGreenFossilTableLatest(year, rows, metric, unit) {
-    const wrap = document.getElementById("green-fossil-table");
-    if (!wrap) return;
-    clearNode(wrap);
-    if (!year) { return; }
-    const table = document.createElement("table");
-    table.className = "data-table";
-    const thead = document.createElement("thead");
-    const htr = document.createElement("tr");
-    ["Source", generationUnitLabel(metric, unit) + " (" + year + ")"].forEach(h => {
-      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
-    });
-    thead.appendChild(htr);
-    table.appendChild(thead);
-    const tbody = document.createElement("tbody");
-    rows.forEach(r => {
-      const tr = document.createElement("tr");
-      [r.name, fmtGenerationMetric(metric, unit, r.value)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
-      tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-    wrap.appendChild(table);
-  }
-
-  function buildGreenFossilChartHistorical(container, regionKey, years, metric, unit) {
-    const series = ["Green", "Fossil"].map(key => ({
-      key: key,
-      name: key === "Green" ? "Green" : "Fossil fuel",
-      color: categoryColor(key),
-      values: years.map(y => {
-        const split = electricityGreenFossilSplit(regionKey, y);
-        const raw = key === "Green" ? split.greenMwh : split.fossilMwh;
-        return greenFossilValue(regionKey, y, raw, metric);
-      })
-    }));
-
-    const W = 860, H = 340;
-    const M = { top: 20, right: 20, bottom: 32, left: 64 };
-    const plotW = W - M.left - M.right;
-    const plotH = H - M.top - M.bottom;
-
-    const maxVal = Math.max(...series.flatMap(s => s.values), 0) * 1.08 || 1;
-
-    const svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    container.appendChild(svg);
-
-    const xScale = i => M.left + (i / (years.length - 1)) * plotW;
-    const yScale = v => M.top + plotH - (v / maxVal) * plotH;
-
-    const yTicks = 5;
-    for (let t = 0; t <= yTicks; t++) {
-      const val = (maxVal / yTicks) * t;
-      const yy = yScale(val);
-      el("line", { x1: M.left, x2: M.left + plotW, y1: yy, y2: yy, stroke: cssVar("--gridline"), "stroke-width": "1" }, svg);
-      const txt = el("text", { x: M.left - 8, y: yy + 4, "text-anchor": "end", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = fmtGenerationMetric(metric, unit, val);
-    }
-
-    const xTickYears = [years[0], years[Math.round((years.length - 1) * 0.25)], years[Math.round((years.length - 1) * 0.5)], years[Math.round((years.length - 1) * 0.75)], years[years.length - 1]];
-    xTickYears.forEach(y => {
-      const i = years.indexOf(y);
-      const txt = el("text", { x: xScale(i), y: M.top + plotH + 20, "text-anchor": "middle", fill: cssVar("--text-muted"), "font-size": "11" }, svg);
-      txt.textContent = y;
-    });
-
-    el("line", { x1: M.left, x2: M.left + plotW, y1: yScale(0), y2: yScale(0), stroke: cssVar("--baseline"), "stroke-width": "1" }, svg);
-
-    series.forEach(s => {
-      let d = "";
-      s.values.forEach((v, i) => { d += (i === 0 ? "M" : "L") + xScale(i).toFixed(1) + "," + yScale(v).toFixed(1) + " "; });
-      el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": "2", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
-    });
-
-    const crosshair = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: cssVar("--text-muted"), "stroke-width": "1", opacity: "0" }, svg);
-    const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" }, svg);
-
-    hitRect.addEventListener("pointermove", (ev) => {
-      const rect = svg.getBoundingClientRect();
-      const scaleX = W / rect.width;
-      const localX = (ev.clientX - rect.left) * scaleX;
-      let idx = Math.round(((localX - M.left) / plotW) * (years.length - 1));
-      idx = Math.max(0, Math.min(years.length - 1, idx));
-      const xx = xScale(idx);
-      crosshair.setAttribute("x1", xx); crosshair.setAttribute("x2", xx); crosshair.setAttribute("opacity", "1");
-      const yearTotal = series.reduce((a, s) => a + s.values[idx], 0) || 1;
-      showTooltip(ev.clientX, ev.clientY, (tt) => {
-        ttTitle(tt, String(years[idx]));
-        series.forEach(s => {
-          ttRow(tt, s.color, s.name, fmtGenerationMetric(metric, unit, s.values[idx]) + " " + generationUnitLabel(metric, unit) + " (" + fmtRatioPct(s.values[idx] / yearTotal * 100) + ")");
-        });
-        ttPopulationRow(tt, regionKey, years[idx], metric, true);
-      });
-    });
-    hitRect.addEventListener("pointerleave", () => { crosshair.setAttribute("opacity", "0"); hideTooltip(); });
-
-    const legendWrap = document.createElement("div");
-    legendWrap.className = "legend";
-    series.forEach(s => legendWrap.appendChild(legendItemLine(s.color, s.name)));
-    container.appendChild(legendWrap);
-
-    buildGreenFossilTableHistorical(years, series, metric, unit);
-  }
-
-  function buildGreenFossilTableHistorical(years, series, metric, unit) {
-    const wrap = document.getElementById("green-fossil-table");
-    if (!wrap) return;
-    clearNode(wrap);
-    const table = document.createElement("table");
-    table.className = "data-table";
-    const thead = document.createElement("thead");
-    const htr = document.createElement("tr");
-    ["Year"].concat(series.map(s => s.name + " (" + generationUnitLabel(metric, unit) + ")")).forEach(h => {
-      const th = document.createElement("th"); th.textContent = h; htr.appendChild(th);
-    });
-    thead.appendChild(htr);
-    table.appendChild(thead);
-    const tbody = document.createElement("tbody");
-    years.forEach((y, i) => {
-      const tr = document.createElement("tr");
-      const cells = [y].concat(series.map(s => fmtGenerationMetric(metric, unit, s.values[i])));
       cells.forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
@@ -2526,28 +2317,17 @@
       title: "Energy consumption by fuel",
       body: [
         "Total final energy consumed within the area's boundary, covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation. DESNZ publishes this dataset in ktoe (kilotonnes of oil equivalent) — the energy unit toggle just above lets you view it instead in the same GWh/kWh-per-person units as the generation chart; see that toggle's own \"i\" button for details.",
-        "\"By fuel type\" (the default) groups DESNZ's six published fuel categories into three: Fossil fuels (Coal + Manufactured fuels + Petroleum + Gas), Electricity, and Bioenergy & waste — tick \"Show all fuel types\" for DESNZ's own six categories individually. \"By sector\" switches to a different split of the same total: Domestic, Transport, and Industrial, Commercial and other — useful for telling how much of an area's consumption is households and cars versus workplaces and industry.",
-        "Electricity is kept separate from both \"Fossil fuels\" and \"Bioenergy & waste\" rather than folded into either — the electricity consumed locally is drawn from Great Britain's national grid, whose generation mix (gas, nuclear, wind, solar, imports, etc.) isn't attributed back to the area consuming it by this dataset, so this chart can't honestly label it either way. The \"Electricity: green vs fossil\" chart further down gives an indicative estimate instead, combining this figure with local renewable generation and the national grid mix — see that chart's own \"i\" button for the method.",
+        "\"By fuel type\" (the default) groups everything into two: Fossil fuels and Green energy — tick \"Show all fuel types\" to break each down into its constituent parts (hovering a bar shows the same breakdown, without needing to tick the box). \"By sector\" switches to a different split of the same total: Domestic, Transport, and Industrial, Commercial and other — useful for telling how much of an area's consumption is households and cars versus workplaces and industry.",
+        "DESNZ publishes six fuel categories for this dataset — Coal, Manufactured fuels, Petroleum, Gas, Electricity, and Bioenergy and wastes — but doesn't say what generated the electricity, since Great Britain's grid pools generation nationally and doesn't attribute it back to the area consuming it. This site fills that gap using DUKES's published national generation mix for that year: Electricity is split into \"Fossil fuel electricity\" and \"Renewable electricity\" at that year's national ratio, applied the same way to every area's own electricity consumption. Hovering either of those two rows in \"Show all fuel types\" shows the calculation itself (this area's total electricity figure and that year's DUKES share) rather than just the result.",
+        "That national ratio is deliberately applied uniformly, not adjusted for what's generated locally. An earlier version of this site instead netted an area's own local renewable generation off first — Winchester's own solar panels, say — before applying the national ratio to the rest. That fell apart on a concrete case: New Forest hosts Marchwood, a large (~900MW) gas-fired power station, entirely invisible to that calculation, since only renewable generation is published by local authority. Netting off local renewables but not the (unmeasured) local fossil generation made New Forest look greener than the national average despite hosting a major fossil plant. Since the grid pools everything, no area's actual electricity draw can honestly differ from the national mix based on what's built nearby — applying one uniform ratio to everyone matches that reality, rather than crediting whichever kind of local generation happens to have published data.",
+        "\"Green energy\" combines two different kinds of number: Bioenergy and wastes is a real, measured quantity (fuel actually burned within the area — wood pellets, biodiesel, industrial biomass); Renewable electricity is a national statistical estimate applied uniformly to this area's own electricity figure. Both are legitimate and both are genuinely renewable/low-carbon by official convention, but they're not the same kind of \"green\" — one is measured here, one is estimated from a national average. The same distinction applies to \"Fossil fuels\": Coal, Manufactured fuels, Petroleum and Gas are measured local combustion; Fossil fuel electricity is the national-mix estimate.",
+        "DUKES's own renewable-generation figure already includes bioenergy-derived electricity (anaerobic digestion, landfill gas, biomass power stations) alongside solar, wind and hydro — the same technologies the generation chart above groups under \"Bioenergy & waste\" — so \"Renewable electricity\" here isn't solar/wind/hydro only. There's no further national breakdown by technology published at this level, so it isn't split any further.",
         "Oil (petroleum) is typically the largest category here, dominated by road transport fuel — DESNZ's road transport figures are modelled from national/regional fuel sales data apportioned to local authorities, not measured locally.",
         "This dataset counts every unit of fuel burned within a local authority's boundary, including fuel used by large industrial sites (e.g. oil refining) to make products that are consumed elsewhere — it measures fuel burned on-site, not fuel used by local residents and businesses. DESNZ's emissions statistics attribute CO2 by point-source location under separate rules, and don't necessarily move in step with this consumption total. New Forest is the clearest example: switch to \"By sector\" there and \"Industrial, Commercial and other\" dwarfs Domestic and Transport combined, driven by oil refining rather than local demand — which is also why New Forest's energy consumption looks high next to its emissions figures elsewhere on this site. A large \"Industrial, Commercial and other\" share relative to Domestic and Transport is the signal that a big non-household energy user, not local demand, is driving an area's total.",
         "Use the control panel above to switch between totals and per-person figures, and the energy unit toggle just above to switch between ktoe/toe-per-person and GWh/kWh-per-person.",
         "For Mid-Hampshire, each fuel or sector is the sum of that category's figure across the four constituent districts, scaled the same way as the emissions charts (see the region selector's \"i\" button)."
       ],
       link: { href: "https://www.gov.uk/government/collections/total-final-energy-consumption-at-sub-national-level", label: "gov.uk statistical release" }
-    },
-    "green-fossil-chart": {
-      title: "Electricity: green vs fossil",
-      dynamicIntro: () => greenFossilNoteText,
-      body: [
-        "How much of an area's electricity consumption is estimated to come from low-carbon sources versus fossil fuels — the question most people actually mean when they ask \"how green is my electricity\", as distinct from the generation chart's self-sufficiency figure above (how much renewable electricity an area generates relative to what it consumes, which says nothing about the mix it actually draws from the grid).",
-        "The method: this area's own renewable generation is counted as green consumption first (the same logic behind \"market-based\" carbon accounting — known local generation nets off before anything else is assumed). Whatever's left of local electricity consumption is assumed to be drawn from the national grid, split at that year's DUKES table 6.5a renewable share for Great Britain as a whole — the grid pools generation nationally, so there's no way to measure a specific area's actual grid-drawn mix directly, and this national average is the closest honest substitute.",
-        "\"Green\" here is specifically DUKES's own renewable-generation share (solar, wind, hydro, bioenergy) — \"Fossil fuel\" is the remainder, which strictly also includes nuclear and net electricity imports, not fossil fuel exclusively. This mirrors the two-way split DUKES itself publishes; a genuinely separate nuclear/fossil/renewable three-way split exists in a different DUKES table but isn't used here, to keep this chart a simple green/non-green comparison.",
-        "This is a deliberately indicative estimate, not a metered figure — no dataset ties a specific unit of electricity consumed in one area back to where it was generated. Two simplifications worth knowing: it assumes 100% of local renewable generation is offsetting local consumption (in reality it's exported to the shared grid and pooled, the same caveat as the generation chart above), and the national DUKES ratio is a GB-wide average, not specific to this area's own grid connection.",
-        "Available for every year with both a DUKES 6.5a figure and matching generation/consumption data — 2014 onward, since local renewable generation data only starts then. DUKES 6.5a itself is fetched and parsed automatically as part of this site's regular data refresh, the same as the generation and consumption datasets.",
-        "Use the control panel above to switch between totals and per-person figures, a latest-year snapshot and the trend since 2014, and the energy unit toggle further up to switch between GWh/kWh-per-person and ktoe/toe-per-person.",
-        "For Mid-Hampshire, this figure is derived from that region's own generation and consumption totals, each already the sum of the four constituent districts' figures — see the region selector's \"i\" button."
-      ],
-      link: { href: "https://www.gov.uk/government/statistics/renewable-sources-of-energy-chapter-6-digest-of-united-kingdom-energy-statistics-dukes", label: "DUKES chapter 6 (gov.uk)" }
     },
     "general-methodology": {
       title: "Full methodology & sources",
@@ -2630,8 +2410,7 @@
     () => buildSectorChart(currentRegion),
     () => buildGasChart(currentRegion),
     () => buildGenerationChart(currentRegion),
-    () => buildConsumptionChart(currentRegion),
-    () => buildGreenFossilChart(currentRegion)
+    () => buildConsumptionChart(currentRegion)
   ];
 
   // The subset of PAGE_WIDE_CHARTS that also needs re-rendering when the region selector
@@ -2643,8 +2422,7 @@
     () => buildSectorChart(currentRegion),
     () => buildGasChart(currentRegion),
     () => buildGenerationChart(currentRegion),
-    () => buildConsumptionChart(currentRegion),
-    () => buildGreenFossilChart(currentRegion)
+    () => buildConsumptionChart(currentRegion)
   ];
 
   function renderPageWideCharts() {

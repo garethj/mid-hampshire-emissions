@@ -191,9 +191,6 @@ test("bar chart value labels never overflow the chart's SVG viewBox, even for th
           overflow = await overflowingValueLabels(page, "#consumption-chart svg");
           expect(overflow, `consumption chart, By sector (${region}, ${scaleMode}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
           await page.click('[data-consumption-view="fuel"]');
-
-          overflow = await overflowingValueLabels(page, "#green-fossil-chart svg");
-          expect(overflow, `green/fossil chart (${region}, ${metric}, ${unit}): ${JSON.stringify(overflow)}`).toEqual([]);
         }
       }
     }

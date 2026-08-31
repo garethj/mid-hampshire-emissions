@@ -14,7 +14,7 @@ This dashboard deliberately starts small — a few headline figures, built on da
 
 - **Housing & retrofit (EPC data)** — Energy Performance Certificate data by district could show housing stock efficiency and retrofit progress, relevant to the large Domestic sector.
 - **Transport specifics** — EV charge-point density, ULEV registrations and active travel mode share — useful given transport is the single largest sector here.
-- **Local vs imported green energy** — Not really buildable: there's no metering anywhere that ties a unit of electricity consumed in one area back to a specific generator elsewhere, since the GB grid pools everything. The electricity green/fossil chart's DUKES-based split is the closest honest answer to "how green is my electricity" — a national grid-average figure combined with an area's own known local generation, not a true local-origin measurement.
+- **Local vs imported green energy** — Not really buildable: there's no metering anywhere that ties a unit of electricity consumed in one area back to a specific generator elsewhere, since the GB grid pools everything. The consumption chart's DUKES-based fossil/renewable electricity split (applying the national generation mix uniformly to every area) is the closest honest answer to "how green is my electricity" — a national average, not a true local-origin measurement.
 
 ## Visuals
 
