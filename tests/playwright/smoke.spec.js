@@ -90,19 +90,14 @@ test("modal title and close button stay in view when the body content is scrolle
 // including the trend chart," but the trend chart doesn't respond to it (it already compares more
 // than one region/tier per chart, so a per-tier fixed/auto scale doesn't apply). Moved to its own
 // row after the trend chart's card instead, so it only visually covers what it actually affects.
-test("chart scale toggle sits below the trend chart, not above it, and doesn't move the trend chart's own axis", async ({ page }) => {
+test("chart scale toggle sits above the trend chart (and every other chart it governs), not the page-wide region toggle row", async ({ page }) => {
   await page.goto("index.html");
   await expect(page.locator('.region-toggle-row [data-scale-mode]')).toHaveCount(0);
   await expect(page.locator('#chart-scale-row [data-scale-mode="fixed"]')).toBeVisible();
 
-  // viewBox alone (fixed pixel dimensions) wouldn't catch the trend chart secretly re-scaling its
-  // data, so compare the whole rendered SVG markup instead — it should be byte-identical, since
-  // nothing about the trend chart's inputs changes when this toggle changes.
-  const trendBefore = await page.locator("#trend-chart svg").evaluate((el) => el.outerHTML);
-
-  await page.click('[data-scale-mode="auto"]');
-  const trendAfter = await page.locator("#trend-chart svg").evaluate((el) => el.outerHTML);
-  expect(trendAfter, "trend chart shouldn't re-render differently when the chart scale toggle changes").toEqual(trendBefore);
+  const scaleRowBox = await page.locator("#chart-scale-row").boundingBox();
+  const trendTitleBox = await page.locator("#trend-chart-title").boundingBox();
+  expect(scaleRowBox.y, "chart scale row should render above the trend chart's own title").toBeLessThan(trendTitleBox.y);
 });
 
 test("energy unit toggle sits above the generation/consumption charts, not the top control panel, and switches units live", async ({ page }) => {

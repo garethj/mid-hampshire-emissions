@@ -622,6 +622,74 @@ test("sector chart's sub-sector detail view scales fixed axis to the tier's late
   assert.ok(expectedTierMax > 0, "sanity check: expected some non-zero sub-sector detail in this tier");
 });
 
+test("trend chart's fixed scale is one site-wide maximum: Hampshire and the Solent's line doesn't change size when switching between two regions that share a parent", async () => {
+  // New Forest and Winchester both roll up to Mid-Hampshire (see la_config.py's REGION_DEFS), so
+  // their "context" views both show [self, Mid-Hampshire, Hampshire and the Solent] — the exact
+  // regression this test guards: those two shared lines shouldn't change size just because the
+  // *third* line (each region's own) differs between the two views.
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  // Y-axis tick labels only: text-anchor="end" also matches the net-zero target markers, but
+  // those render at font-size 10.5 (and aren't plain numbers), vs the ticks' font-size 11.
+  const tickValues = () => Array.from(doc.querySelectorAll("#trend-chart svg text[text-anchor='end'][font-size='11']"))
+    .map((t) => Number(t.textContent.replace(/,/g, "")));
+
+  const newForestAxisMax = Math.max(...tickValues());
+  doc.getElementById("region-select").value = "winchester";
+  fireChange(window, doc.getElementById("region-select"));
+  const winchesterAxisMax = Math.max(...tickValues());
+
+  assert.equal(newForestAxisMax, winchesterAxisMax,
+    `fixed scale should give New Forest (${newForestAxisMax}) and Winchester (${winchesterAxisMax}) contexts the same axis, since both share Mid-Hampshire as parent`);
+
+  // Independently recompute the expected global max — mirrors trendGlobalMax in app.js.
+  let expectedMax = 0;
+  for (const r of DATA.meta.region_index) {
+    for (const year of DATA.meta.years) {
+      const perCapita = DATA.regions[r.key].years[year].per_capita_t_co2e;
+      if (perCapita > expectedMax) expectedMax = perCapita;
+    }
+  }
+  assert.ok(Math.abs(winchesterAxisMax - expectedMax * 1.08) < 0.5,
+    `rendered axis max ${winchesterAxisMax}, expected ~${(expectedMax * 1.08).toFixed(2)} (global max x 1.08 headroom)`);
+
+  // Auto mode should let the axis genuinely differ between these two regions' own context sets —
+  // otherwise this test couldn't tell "fixed" apart from a chart that just never responds at all.
+  fireClick(window, doc.querySelector('[data-scale-mode="auto"]'));
+  const winchesterAutoMax = Math.max(...tickValues());
+  doc.getElementById("region-select").value = "new-forest";
+  fireChange(window, doc.getElementById("region-select"));
+  const newForestAutoMax = Math.max(...tickValues());
+  assert.notEqual(newForestAutoMax, winchesterAutoMax,
+    "auto scale should size the axis to whichever 2-3 regions are shown, which should differ here");
+});
+
+test("trend chart's fixed scale also applies to the latest-year bar view", async () => {
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  const barHeights = () => Array.from(doc.querySelectorAll("#trend-chart svg rect")).map((r) => Number(r.getAttribute("height")));
+  const newForestHeights = barHeights();
+  doc.getElementById("region-select").value = "winchester";
+  fireChange(window, doc.getElementById("region-select"));
+  const winchesterHeights = barHeights();
+
+  // Both contexts include Hampshire and the Solent as the last bar; its real value doesn't change
+  // between the two, so under fixed scale its rendered bar height shouldn't either.
+  assert.equal(newForestHeights[newForestHeights.length - 1], winchesterHeights[winchesterHeights.length - 1],
+    "Hampshire and the Solent's bar height shouldn't change when switching the selected region under fixed scale");
+});
+
 test("electricity green vs fossil chart: green + fossil sums to total electricity consumption, matching the DUKES-based formula", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;

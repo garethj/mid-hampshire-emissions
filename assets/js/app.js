@@ -888,6 +888,29 @@
     return (gasTierMaxCache[cacheKey] = max || 1);
   }
 
+  // The trend chart isn't tier-scoped like the charts above — a "context" view can show a
+  // district alongside its own unitary and Hampshire and the Solent on one chart, spanning three
+  // tiers at once, so "one shared scale per tier" has no single tier to anchor to. Its "fixed"
+  // scale is instead one true site-wide maximum across every one of the 19 regions, which is what
+  // actually fixes the reported bug: without this, switching the selected region (e.g. New Forest
+  // to Winchester) changed the axis to fit whichever 2-3 regions happened to be on screen, so
+  // Hampshire and the Solent's bar/line — present in *every* context view, at the same real value
+  // each time — visibly changed size purely because the denominator moved, even though nothing
+  // about Hampshire and the Solent itself had changed.
+  const trendGlobalMaxCache = {};
+  function trendGlobalMax(metric) {
+    const cacheKey = [metric, currentHorizon].join("|");
+    if (trendGlobalMaxCache[cacheKey] !== undefined) return trendGlobalMaxCache[cacheKey];
+    let max = 0;
+    for (const r of REGIONS) {
+      for (const year of DATA.meta.years) {
+        const v = regionMetricValue(r.key, year, metric);
+        if (v > max) max = v;
+      }
+    }
+    return (trendGlobalMaxCache[cacheKey] = max || 1);
+  }
+
   // Constituent fuel breakdown for a "simple" group (e.g. "Fossil fuels" -> Coal, Manufactured
   // fuels, Petroleum, Gas), sorted by magnitude. Null for single-fuel groups (Electricity,
   // Bioenergy & waste) where a "breakdown" would just repeat the aggregate row.
@@ -1031,7 +1054,7 @@
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
 
-    const maxVal = Math.max(...series.flatMap(s => s.values)) * 1.08;
+    const maxVal = (currentScaleMode === "fixed" ? trendGlobalMax(metric) : Math.max(...series.flatMap(s => s.values))) * 1.08;
     const xScale = year => M.left + ((year - chartMinYear) / (chartMaxYear - chartMinYear)) * plotW;
     const yScale = v => M.top + plotH - (v / maxVal) * plotH;
 
@@ -1189,7 +1212,7 @@
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     container.appendChild(svg);
 
-    const maxVal = Math.max(...values) * 1.2;
+    const maxVal = (currentScaleMode === "fixed" ? trendGlobalMax(metric) : Math.max(...values)) * 1.2;
     const yScale = v => M.top + plotH - (v / maxVal) * plotH;
 
     const yTicks = 5;
@@ -2258,7 +2281,7 @@
       rect.addEventListener("pointermove", (ev) => {
         showTooltip(ev.clientX, ev.clientY, (tt) => {
           ttTitle(tt, r.name);
-          ttRow(tt, color, year + "", valueLabels[i] + " (" + fmtRatioPct(r.value / totalValue * 100) + " of electricity consumed)");
+          ttRow(tt, color, year + "", valueLabels[i] + " (" + fmtRatioPct(r.value / totalValue * 100) + " of consumption)");
           ttPopulationRow(tt, regionKey, year, metric, true);
         });
       });
@@ -2439,7 +2462,7 @@
         "The sector, gas, generation and consumption charts' axes default to \"Fixed scale\": one shared axis maximum for every region in the same tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way). Switching the region selector between two areas in the same tier keeps the axis still, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
         "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which sector, which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
         "The shared maximum is the highest single value seen for that chart, metric and breakdown across every region in the tier and every year of data available, not just the one currently on screen — so the axis doesn't jump around as you switch between the latest year and the historical trend, or between regions in the same tier. The sector chart's latest-year bars are the one case with a symmetric axis either side of zero (the largest magnitude in either direction, since a diverging bar's left/right length needs one consistent scale to stay comparable) — its historical trend line instead uses the tier's actual highest and lowest values independently, since a line's vertical position isn't a length comparison the same way. The sector chart's sub-sector detail view is the one further exception: sub-sector figures are only published for the latest year, so that view's shared maximum only scans the tier's regions for that one year, not the full history.",
-        "The trend chart doesn't use this toggle — it already shows more than one region and, often, more than one tier at once (a district alongside its unitary and Hampshire and the Solent), so a single \"fixed vs auto\" per-tier scale doesn't apply to it the same way."
+        "The trend chart's \"Fixed scale\" isn't per-tier like the others — it can show a district alongside its own unitary and Hampshire and the Solent on one chart at once, spanning up to three tiers simultaneously, so there's no single tier to scale it to. Instead it uses one true maximum across all 19 regions, which is what keeps Hampshire and the Solent (present in every context view) the same size regardless of which region you're focused on — switching between two areas that share a parent (e.g. New Forest and Winchester, both under Mid-Hampshire) no longer changes how big the shared Mid-Hampshire and Hampshire and the Solent lines look, since neither their real values nor the axis have changed."
       ]
     },
     "trend-chart": {
@@ -2447,7 +2470,7 @@
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
         "This chart plots the selected region in its hierarchy context, not a fixed set of regions: it always shows Hampshire and the Solent, plus the selected region's own line, plus (for a historic district or current unitary) the proposed unitary it rolls up to — e.g. picking Eastleigh shows Eastleigh, South West Hampshire and Hampshire and the Solent. Tick \"Compare all constituents\" to switch instead to every sibling at the nearest useful level — all historic districts within the selected unitary, or all unitaries within Hampshire and the Solent.",
-        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means).",
+        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means). The Fixed/Auto scale toggle above the chart applies here too — fixed to one true site-wide maximum, not a per-tier one, since this chart can mix tiers on one screen; see that toggle's own \"i\" button for why.",
         "Historic districts and current unitaries are the official DESNZ district figures, published directly. Every other region here — the four proposed unitaries and Hampshire and the Solent — is calculated by summing those same DESNZ district figures; none of them is an official published figure.",
         "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at its own net-zero target — a straight-line \"required pathway\" showing the average pace of reduction still needed from here. Winchester's own line targets 2030, its more ambitious district-wide carbon-neutral target from its Carbon Neutrality Action Plan; every other region has no target of its own yet, so its line targets 2050 instead, the Hampshire County Council area target (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024 (published 25 June 2026)."

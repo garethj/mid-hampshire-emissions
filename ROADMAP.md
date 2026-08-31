@@ -20,7 +20,6 @@ This dashboard deliberately starts small — a few headline figures, built on da
 
 - **Map view** — A choropleth map of the constituent districts, using free ONS boundary files, showing each district's share of the Mid-Hampshire total.
 - **Consumption-side sankey (fuel → sector)** — DESNZ's sub-national total final energy consumption dataset is structured as a genuine fuel × sector matrix (Coal/Oil/Gas/Electricity/Bioenergy, by domestic/industrial-commercial/transport), so a sankey from fuel type to sector would represent something DESNZ actually measures, not an inference. Deliberately **not** a sankey from local renewable generation to local consumption sectors — that would visually imply a local wind farm powers local homes directly, which the national grid doesn't do (locally generated power is exported/pooled, not routed to local sectors). Keep generation and consumption-by-fuel as separate charts, as now.
-- **Fixed scale for the trend chart** — Sector, gas, generation and consumption all share the "Fixed scale" toggle now (one axis per region tier). The trend chart doesn't, and isn't a simple extension of the same idea: it already shows more than one region (and often more than one tier — a district alongside its unitary and Hampshire and the Solent) on one chart at once, so "one chart, one tier, one shared scale" doesn't directly apply. Would need its own design, e.g. one global maximum across all 19 regions rather than a tier-based one.
 
 ## Usability
 

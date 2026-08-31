@@ -115,14 +115,15 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 }
 
 /* ---------- Chart scale toggle ---------- */
-/* Sector, gas, generation and consumption all read this control — everything below the trend
-   chart, which doesn't (it already compares more than one region/tier per chart, so a
-   per-tier fixed/auto scale doesn't apply to it — see its own "i" button reasoning below). It
-   lives right after the trend chart's card, so it visually reads as "this affects what's below",
-   not the trend chart above it — a real point of confusion when this toggle used to sit
-   page-wide in the region toggle row. Stacks below the control panel and region toggle, and
-   (like them) stops sticking once its own section — this row plus everything below it in
-   .chart-scale-scoped — scrolls past. */
+/* Every chart below this row reads it — trend, sector, gas, generation and consumption — so it
+   lives right after the region toggle and before the first chart card, the same "applies to
+   everything below" position the energy unit row uses for its own narrower scope. The trend
+   chart's own "fixed" scale is a single site-wide maximum (trendGlobalMax in app.js), not a
+   per-tier one like the others: it can show regions from more than one tier on the same chart at
+   once (a district alongside its unitary and Hampshire and the Solent), so "one shared scale per
+   tier" doesn't apply the same way — see the "i" button for the reasoning. Stacks below the
+   control panel and region toggle, and (like them) stops sticking once its own section — this
+   row plus every card below it — scrolls past. */
 .chart-scale-row {
   display: flex; align-items: center; gap: 10px; overflow-x: auto;
   position: sticky; top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px)); z-index: 22;
@@ -208,15 +209,14 @@ body.horizon-gwp20 .card { border-top: 3px solid var(--series-2); }
 
 /* ---------- Cards ---------- */
 /* scroll-margin-top keeps a card's own heading clear of the sticky stack above it (control panel
-   + region toggle; the chart scale row too for sector/gas/energy cards inside .chart-scale-scoped;
-   the energy unit row on top of that again for cards inside #energy-scoped) whenever a browser-
-   driven jump lands on it: in-page search (Cmd/Ctrl+F), a fragment link, or Tab focusing an
-   element inside the card. It doesn't (and can't) prevent a heading from briefly sitting under
-   the sticky bars mid-scroll during ordinary continuous scrolling — that's normal for any sticky
-   header design, the same way a page heading scrolls up behind a fixed nav bar on any site — this
-   only fixes browser-chosen "jump to here" landings actually stopping in the wrong place. */
-.card, .card-head h2, .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + 12px); }
-.chart-scale-scoped .card, .chart-scale-scoped .card-head h2, .chart-scale-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px) + 12px); }
+   + region toggle + chart scale row; the energy unit row on top of that again for cards inside
+   #energy-scoped) whenever a browser-driven jump lands on it: in-page search (Cmd/Ctrl+F), a
+   fragment link, or Tab focusing an element inside the card. It doesn't (and can't) prevent a
+   heading from briefly sitting under the sticky bars mid-scroll during ordinary continuous
+   scrolling — that's normal for any sticky header design, the same way a page heading scrolls up
+   behind a fixed nav bar on any site — this only fixes browser-chosen "jump to here" landings
+   actually stopping in the wrong place. */
+.card, .card-head h2, .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px) + 12px); }
 .energy-scoped .card, .energy-scoped .card-head h2, .energy-scoped .chart-wrap { scroll-margin-top: calc(var(--control-panel-h, 60px) + var(--region-toggle-h, 52px) + var(--chart-scale-row-h, 52px) + var(--energy-unit-row-h, 64px) + 12px); }
 .card { background: var(--surface-1); border: 1px solid var(--gridline); border-radius: 12px; padding: 18px 20px 20px; margin-bottom: 20px; }
 .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -255,15 +255,23 @@ table.data-table thead th { color: var(--text-secondary); font-weight: 700; bord
   position: absolute; pointer-events: none; background: var(--surface-1);
   border: 1px solid var(--gridline); border-radius: 8px; padding: 8px 10px;
   font-size: 0.8rem; box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 20;
-  opacity: 0; transition: opacity 0.1s; max-width: 320px;
+  opacity: 0; transition: opacity 0.1s; max-width: 360px;
 }
 .viz-tooltip.is-visible { opacity: 1; }
 .viz-tooltip .tt-title { font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
-.viz-tooltip .tt-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.viz-tooltip .tt-key { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); min-width: 0; }
+/* flex-wrap is the real regression fix here: a row whose label + value can't both fit on one
+   line used to rely on the label wrapping internally to free up space (see the .tt-key comment
+   below) — fine for a multi-word label like a sub-sector name, but a bare single-token label
+   like a year ("2024") has nothing to wrap *at*, so instead of wrapping it just collapsed to
+   zero width and painted directly on top of the value text. Letting the row itself wrap moves
+   the value onto its own line instead in that case, which never overlaps. */
+.viz-tooltip .tt-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 2px 10px; }
+.viz-tooltip .tt-key { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
 .viz-tooltip .tt-key .stroke { width: 10px; height: 2px; border-radius: 1px; flex: none; }
-/* Numbers/units must never break across lines (e.g. "1.08" wrapping away from "t") — the
-   label is what absorbs a width squeeze, wrapping onto a second line if it has to. */
+/* Numbers/units must never break across lines (e.g. "1.08" wrapping away from "t") — a
+   multi-word label is what absorbs a width squeeze first, wrapping onto a second line if it has
+   to (min-content above still lets that happen); flex-wrap on .tt-row above is the fallback for
+   a label with nothing to wrap at, like a bare year. */
 .viz-tooltip .tt-val { font-weight: 700; color: var(--text-primary); white-space: nowrap; flex: none; text-align: right; }
 .viz-tooltip .tt-subrow { padding-left: 12px; font-size: 0.92em; margin-top: 2px; }
 .viz-tooltip .tt-subrow-first { margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--gridline); }
