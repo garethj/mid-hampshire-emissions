@@ -503,6 +503,35 @@ test("fixed scale mode also gives regions in the same tier the same px-per-unit 
     "expected auto scale to render a visibly different bar width than fixed scale for Gosport");
 });
 
+test("gas chart's fixed-scale latest view scans only the latest year, not full history: Hampshire and the Solent's own largest gas reaches full bar width", async () => {
+  // Hampshire and the Solent is the only region in its own tier ("aggregate"), so its fixed-scale
+  // max used to come from scanning *its own* history back to 2005 — a genuine regression: local
+  // (and UK-wide) CO2 has fallen a lot since then, so the latest year's CO2 bar only reached a
+  // fraction of the chart width, comparing today's figure against a peak nobody currently has.
+  const dom = await loadApp({ region: "hampshire-solent" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  const svg = doc.querySelector("#gas-chart svg");
+  const vb = svg.getAttribute("viewBox").split(" ").map(Number);
+  const M = { left: 150, right: 80 };
+  const plotW = vb[2] - M.left - M.right;
+  const widths = Array.from(svg.querySelectorAll("rect")).map((r) => Number(r.getAttribute("width")));
+
+  assert.ok(Math.abs(Math.max(...widths) - plotW) < 1,
+    `expected the largest gas (CO2) bar to reach the full plot width (${plotW}px) under fixed scale, got ${Math.max(...widths)}px`);
+
+  // Sanity check this isn't trivially true because CO2 happens to be at an all-time high right
+  // now — confirm the latest year really is below the all-time peak, so a full-width bar here
+  // specifically demonstrates the latest-year-only scoping, not a coincidence of the data.
+  const ly = DATA.meta.years[DATA.meta.years.length - 1];
+  const latestCO2 = DATA.regions["hampshire-solent"].years[ly].gases_kt_co2e.CO2;
+  const historicalPeakCO2 = Math.max(...DATA.meta.years.map((y) => DATA.regions["hampshire-solent"].years[y].gases_kt_co2e.CO2));
+  assert.ok(latestCO2 < historicalPeakCO2,
+    `test assumption broken: expected ${ly}'s CO2 (${latestCO2}) to be below the historical peak (${historicalPeakCO2}) — otherwise this test can't tell latest-year scoping apart from an all-years scan`);
+});
+
 test("fixed scale mode's sector chart latest-year bars use a symmetric tier-wide magnitude (diverging LULUCF-aware)", async () => {
   const dom = await loadApp({ region: "new-forest" });
   const { window } = dom;

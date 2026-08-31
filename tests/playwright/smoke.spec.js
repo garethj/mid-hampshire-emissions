@@ -85,19 +85,18 @@ test("modal title and close button stay in view when the body content is scrolle
   await expect(page.locator("#modal-title")).toBeInViewport();
 });
 
-// Regression test for a real bug: the chart scale toggle used to live in the page-wide region
-// toggle row, directly above the trend chart — which reads as "this affects everything below,
-// including the trend chart," but the trend chart doesn't respond to it (it already compares more
-// than one region/tier per chart, so a per-tier fixed/auto scale doesn't apply). Moved to its own
-// row after the trend chart's card instead, so it only visually covers what it actually affects.
-test("chart scale toggle sits above the trend chart (and every other chart it governs), not the page-wide region toggle row", async ({ page }) => {
+// The chart scale toggle now governs every chart including the trend chart (its "fixed" scale is
+// a single site-wide maximum there, rather than a per-tier one — see trendGlobalMax in app.js),
+// so it lives in the same page-wide region toggle row as the region selector, rather than its own
+// separate sticky row, to avoid spending an extra row's worth of vertical space on it.
+test("chart scale toggle lives in the region toggle row, above every chart it governs including the trend chart", async ({ page }) => {
   await page.goto("index.html");
-  await expect(page.locator('.region-toggle-row [data-scale-mode]')).toHaveCount(0);
-  await expect(page.locator('#chart-scale-row [data-scale-mode="fixed"]')).toBeVisible();
+  const scaleToggle = page.locator('.region-toggle-row [data-scale-mode="fixed"]');
+  await expect(scaleToggle).toBeVisible();
 
-  const scaleRowBox = await page.locator("#chart-scale-row").boundingBox();
+  const scaleToggleBox = await scaleToggle.boundingBox();
   const trendTitleBox = await page.locator("#trend-chart-title").boundingBox();
-  expect(scaleRowBox.y, "chart scale row should render above the trend chart's own title").toBeLessThan(trendTitleBox.y);
+  expect(scaleToggleBox.y, "chart scale toggle should render above the trend chart's own title").toBeLessThan(trendTitleBox.y);
 });
 
 test("energy unit toggle sits above the generation/consumption charts, not the top control panel, and switches units live", async ({ page }) => {
