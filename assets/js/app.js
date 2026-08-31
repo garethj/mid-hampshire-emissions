@@ -41,6 +41,19 @@
   // metric changes don't need a second render path just to keep this one sentence in sync.
   let generationNoteText = "";
 
+  // "Which control combination currently sets this chart's fixed-scale ceiling" sentences —
+  // recomputed on every build*Chart() call for the chart in question and surfaced inside that
+  // chart's info modal (dynamicIntro below), the same pattern as generationNoteText above. Useful
+  // because the answer is rarely the obviously-selected region/year: for the sector, gas and trend
+  // charts it can come from the *other* GWP horizon entirely (see sectorTierMax/gasTierMax/
+  // trendGlobalMax's own comments), and for per-person figures it can come from a region outside
+  // the selected one's own tier (see tierScopeKey).
+  let sectorScaleNoteText = "";
+  let gasScaleNoteText = "";
+  let generationScaleNoteText = "";
+  let consumptionScaleNoteText = "";
+  let trendScaleNoteText = "";
+
   // Every region this site can show — built from DATA.meta.region_index (see region_index in
   // process.py) once data loads, rather than hardcoded here, since there are 19 of them across
   // three tiers (historic districts / current unitaries / proposed 2028 unitaries) plus
@@ -119,6 +132,33 @@
   }
   function tierScopeRegions(regionKey, metric) {
     return metric === "per_capita" ? REGIONS.map(r => r.key) : regionsInTier(regionKey);
+  }
+
+  // Tracks which single (region, year, category[, horizon]) combination sets a running max/min as
+  // a tier-max scan walks its comparison set — used to surface *which* control combination is
+  // currently responsible for a fixed-scale ceiling/floor in each chart's info dialog (see e.g.
+  // "sector-chart"'s dynamicIntro below), since it's rarely the obviously-selected region/year and
+  // can come from the *other* GWP horizon entirely (see the sector-chart info dialog).
+  function newExtentTracker() {
+    return { max: 0, maxSetter: null, min: 0, minSetter: null };
+  }
+  function trackMax(t, value, setter) {
+    if (value > t.max) { t.max = value; t.maxSetter = setter; }
+  }
+  function trackMin(t, value, setter) {
+    if (value < t.min) { t.min = value; t.minSetter = setter; }
+  }
+
+  // Renders a tracked setter as a short clause for an info-dialog sentence, e.g. "New Forest's
+  // Industry sector in 2007 (12.9 t CO2e/person, 20-year GWP)". `formatValue` turns the raw number
+  // into its displayed units; horizon is omitted from a setter that doesn't track one (generation/
+  // consumption figures aren't GWP-weighted, so they never differ by horizon).
+  function describeSetter(setter, formatValue) {
+    if (!setter) return null;
+    const horizonClause = setter.horizon === "gwp20" ? ", 20-year GWP" : "";
+    const categoryClause = setter.category ? "'s " + setter.category + " in " + setter.year : "'s " + setter.year + " figure";
+    return REGION_LABEL[setter.region] + categoryClause +
+      " (" + formatValue(setter.value) + horizonClause + ")";
   }
 
   // Display heading + explicit order for the region select's <optgroup>s. "aggregate"
@@ -804,41 +844,63 @@
   // handful of categories) to recompute on demand rather than precompute at load, so it's just
   // memoized per distinct (tier, metric, onlyYear, ...) combination actually asked for.
   const generationTierMaxCache = {};
+  const generationTierMaxMetaCache = {};
+  function generationTierMaxKey(regionKey, metric, onlyYear) {
+    return [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
+  }
   function generationTierMax(regionKey, metric, onlyYear) {
-    const cacheKey = [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
+    const cacheKey = generationTierMaxKey(regionKey, metric, onlyYear);
     if (generationTierMaxCache[cacheKey] !== undefined) return generationTierMaxCache[cacheKey];
     const years = onlyYear ? [onlyYear] : energyGenerationYears();
-    let max = 0;
+    const t = newExtentTracker();
     for (const r of tierScopeRegions(regionKey, metric)) {
       for (const year of years) {
         const gen = energyGeneration(r, year);
         if (!gen) continue;
         for (const tech of ENERGY_TECH_ORDER) {
           const v = generationMetricValue(r, year, gen.by_technology_mwh[tech], metric);
-          if (v > max) max = v;
+          trackMax(t, v, { region: r, year: year, category: tech, value: v });
         }
       }
     }
-    return (generationTierMaxCache[cacheKey] = max || 1);
+    generationTierMaxMetaCache[cacheKey] = t.maxSetter;
+    return (generationTierMaxCache[cacheKey] = t.max || 1);
+  }
+  // Which (region, year, technology) currently sets generationTierMax — see describeSetter/the
+  // generation chart's dynamicIntro.
+  function generationTierMaxSetter(regionKey, metric, onlyYear) {
+    generationTierMax(regionKey, metric, onlyYear);
+    return generationTierMaxMetaCache[generationTierMaxKey(regionKey, metric, onlyYear)];
   }
 
   const consumptionTierMaxCache = {};
+  const consumptionTierMaxMetaCache = {};
+  function consumptionTierMaxKey(regionKey, metric, detail, axis, onlyYear) {
+    return [tierScopeKey(regionKey, metric), metric, detail, axis, onlyYear || "all"].join("|");
+  }
   function consumptionTierMax(regionKey, metric, detail, axis, onlyYear) {
-    const cacheKey = [tierScopeKey(regionKey, metric), metric, detail, axis, onlyYear || "all"].join("|");
+    const cacheKey = consumptionTierMaxKey(regionKey, metric, detail, axis, onlyYear);
     if (consumptionTierMaxCache[cacheKey] !== undefined) return consumptionTierMaxCache[cacheKey];
     const cats = consumptionCategories(detail, axis);
     const years = onlyYear ? [onlyYear] : energyConsumptionYears();
-    let max = 0;
+    const t = newExtentTracker();
     for (const r of tierScopeRegions(regionKey, metric)) {
       for (const year of years) {
         if (!energyConsumption(r, year)) continue;
         for (const c of cats) {
           const v = consumptionValue(r, year, c.key, detail, metric, axis);
-          if (v !== null && v > max) max = v;
+          if (v !== null) trackMax(t, v, { region: r, year: year, category: c.label, value: v });
         }
       }
     }
-    return (consumptionTierMaxCache[cacheKey] = max || 1);
+    consumptionTierMaxMetaCache[cacheKey] = t.maxSetter;
+    return (consumptionTierMaxCache[cacheKey] = t.max || 1);
+  }
+  // Which (region, year, category) currently sets consumptionTierMax — see describeSetter/the
+  // consumption chart's dynamicIntro.
+  function consumptionTierMaxSetter(regionKey, metric, detail, axis, onlyYear) {
+    consumptionTierMax(regionKey, metric, detail, axis, onlyYear);
+    return consumptionTierMaxMetaCache[consumptionTierMaxKey(regionKey, metric, detail, axis, onlyYear)];
   }
 
   // Sector chart's bars diverge from a centre zero line (LULUCF usually runs negative), so its
@@ -853,11 +915,15 @@
   // (DATA.subsector_detail_latest_year has no history) regardless of onlyYear, since there's
   // nothing else to scan.
   const sectorTierMaxCache = {};
+  const sectorTierMaxMetaCache = {};
+  function sectorTierMaxKey(regionKey, metric, detail, onlyYear) {
+    return [tierScopeKey(regionKey, metric), metric, detail, onlyYear || "all"].join("|");
+  }
   function sectorTierMax(regionKey, metric, detail, onlyYear) {
-    const cacheKey = [tierScopeKey(regionKey, metric), metric, detail, onlyYear || "all"].join("|");
+    const cacheKey = sectorTierMaxKey(regionKey, metric, detail, onlyYear);
     if (sectorTierMaxCache[cacheKey] !== undefined) return sectorTierMaxCache[cacheKey];
     const regions = tierScopeRegions(regionKey, metric);
-    let max = 0;
+    const t = newExtentTracker();
     for (const horizon of ["gwp100", "gwp20"]) {
       withHorizon(horizon, () => {
         if (detail) {
@@ -865,7 +931,8 @@
           for (const r of regions) {
             for (const sector of SECTOR_ORDER) {
               for (const row of sectorSubrowsFor(r, ly, sector, metric)) {
-                if (Math.abs(row.value) > max) max = Math.abs(row.value);
+                const abs = Math.abs(row.value);
+                trackMax(t, abs, { region: r, year: ly, category: row.name, value: row.value, horizon: horizon });
               }
             }
           }
@@ -874,15 +941,22 @@
           for (const r of regions) {
             for (const year of years) {
               for (const sector of SECTOR_ORDER) {
-                const v = Math.abs(sectorMetricValue(r, year, sector, metric));
-                if (v > max) max = v;
+                const raw = sectorMetricValue(r, year, sector, metric);
+                trackMax(t, Math.abs(raw), { region: r, year: year, category: sector, value: raw, horizon: horizon });
               }
             }
           }
         }
       });
     }
-    return (sectorTierMaxCache[cacheKey] = max || 1);
+    sectorTierMaxMetaCache[cacheKey] = t.maxSetter;
+    return (sectorTierMaxCache[cacheKey] = t.max || 1);
+  }
+  // Which (region, year, sector[, horizon]) currently sets sectorTierMax's symmetric magnitude —
+  // see describeSetter/the sector chart's dynamicIntro.
+  function sectorTierMaxSetter(regionKey, metric, detail, onlyYear) {
+    sectorTierMax(regionKey, metric, detail, onlyYear);
+    return sectorTierMaxMetaCache[sectorTierMaxKey(regionKey, metric, detail, onlyYear)];
   }
 
   // The historical (line) chart's fixed-scale axis needs the tier's actual positive and negative
@@ -894,50 +968,73 @@
   // band below zero on every region's chart). Only used by the historical view, so always scans
   // every year — no onlyYear parameter needed here.
   const sectorTierRangeCache = {};
+  const sectorTierRangeMetaCache = {};
+  function sectorTierRangeKey(regionKey, metric) {
+    return [tierScopeKey(regionKey, metric), metric].join("|");
+  }
   function sectorTierRange(regionKey, metric) {
-    const cacheKey = [tierScopeKey(regionKey, metric), metric].join("|");
+    const cacheKey = sectorTierRangeKey(regionKey, metric);
     if (sectorTierRangeCache[cacheKey] !== undefined) return sectorTierRangeCache[cacheKey];
     const regions = tierScopeRegions(regionKey, metric);
-    let max = 0, min = 0;
+    const t = newExtentTracker();
     for (const horizon of ["gwp100", "gwp20"]) {
       withHorizon(horizon, () => {
         for (const r of regions) {
           for (const year of DATA.meta.years) {
             for (const sector of SECTOR_ORDER) {
               const v = sectorMetricValue(r, year, sector, metric);
-              if (v > max) max = v;
-              if (v < min) min = v;
+              const setter = { region: r, year: year, category: sector, value: v, horizon: horizon };
+              trackMax(t, v, setter);
+              trackMin(t, v, setter);
             }
           }
         }
       });
     }
-    return (sectorTierRangeCache[cacheKey] = { max: max || 1, min: min });
+    sectorTierRangeMetaCache[cacheKey] = { maxSetter: t.maxSetter, minSetter: t.minSetter };
+    return (sectorTierRangeCache[cacheKey] = { max: t.max || 1, min: t.min });
+  }
+  // Which (region, year, sector, horizon) currently sets sectorTierRange's ceiling/floor — see
+  // describeSetter/the sector chart's dynamicIntro.
+  function sectorTierRangeSetter(regionKey, metric) {
+    sectorTierRange(regionKey, metric);
+    return sectorTierRangeMetaCache[sectorTierRangeKey(regionKey, metric)];
   }
 
   // Gases are never negative, so this is a plain max (no divergence to account for) — otherwise
   // the same idea as sectorTierMax above, including scanning both horizons and the onlyYear
   // dependence.
   const gasTierMaxCache = {};
+  const gasTierMaxMetaCache = {};
+  function gasTierMaxKey(regionKey, metric, onlyYear) {
+    return [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
+  }
   function gasTierMax(regionKey, metric, onlyYear) {
-    const cacheKey = [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
+    const cacheKey = gasTierMaxKey(regionKey, metric, onlyYear);
     if (gasTierMaxCache[cacheKey] !== undefined) return gasTierMaxCache[cacheKey];
     const regions = tierScopeRegions(regionKey, metric);
     const years = onlyYear ? [onlyYear] : DATA.meta.years;
-    let max = 0;
+    const t = newExtentTracker();
     for (const horizon of ["gwp100", "gwp20"]) {
       withHorizon(horizon, () => {
         for (const r of regions) {
           for (const year of years) {
             for (const g of GAS_ORDER) {
               const v = gasMetricValue(r, year, g, metric);
-              if (v > max) max = v;
+              trackMax(t, v, { region: r, year: year, category: g, value: v, horizon: horizon });
             }
           }
         }
       });
     }
-    return (gasTierMaxCache[cacheKey] = max || 1);
+    gasTierMaxMetaCache[cacheKey] = t.maxSetter;
+    return (gasTierMaxCache[cacheKey] = t.max || 1);
+  }
+  // Which (region, year, gas, horizon) currently sets gasTierMax — see describeSetter/the gas
+  // chart's dynamicIntro.
+  function gasTierMaxSetter(regionKey, metric, onlyYear) {
+    gasTierMax(regionKey, metric, onlyYear);
+    return gasTierMaxMetaCache[gasTierMaxKey(regionKey, metric, onlyYear)];
   }
 
   // The trend chart isn't tier-scoped like the charts above — a "context" view can show a
@@ -952,22 +1049,34 @@
   // purely because the denominator moved, even though nothing about Hampshire and the Solent
   // itself had changed.
   const trendGlobalMaxCache = {};
+  const trendGlobalMaxMetaCache = {};
+  function trendGlobalMaxKey(metric, onlyYear) {
+    return [metric, onlyYear || "all"].join("|");
+  }
   function trendGlobalMax(metric, onlyYear) {
-    const cacheKey = [metric, onlyYear || "all"].join("|");
+    const cacheKey = trendGlobalMaxKey(metric, onlyYear);
     if (trendGlobalMaxCache[cacheKey] !== undefined) return trendGlobalMaxCache[cacheKey];
     const years = onlyYear ? [onlyYear] : DATA.meta.years;
-    let max = 0;
+    const t = newExtentTracker();
     for (const horizon of ["gwp100", "gwp20"]) {
       withHorizon(horizon, () => {
         for (const r of REGIONS) {
           for (const year of years) {
             const v = regionMetricValue(r.key, year, metric);
-            if (v > max) max = v;
+            trackMax(t, v, { region: r.key, year: year, category: null, value: v, horizon: horizon });
           }
         }
       });
     }
-    return (trendGlobalMaxCache[cacheKey] = max || 1);
+    trendGlobalMaxMetaCache[cacheKey] = t.maxSetter;
+    return (trendGlobalMaxCache[cacheKey] = t.max || 1);
+  }
+  // Which (region, year, horizon) currently sets trendGlobalMax — see describeSetter/the trend
+  // chart's dynamicIntro. Has no `category` (a region's whole-area total, not split further), so
+  // describeSetter's "region's X in year" phrasing is built with a plain "figure" placeholder.
+  function trendGlobalMaxSetter(metric, onlyYear) {
+    trendGlobalMax(metric, onlyYear);
+    return trendGlobalMaxMetaCache[trendGlobalMaxKey(metric, onlyYear)];
   }
 
   // For the two derived electricity-split categories only, shows the actual calculation behind
@@ -1071,6 +1180,12 @@
     const modeSuffix = compareMode === "constituents" ? " — constituents of " + REGION_LABEL[nearestHub(currentRegion)] : "";
     document.getElementById("trend-chart-title").textContent =
       metricLabel + ", " + (view === "historical" ? (years[0] + "–" + ly) : ly) + horizonTitleSuffix() + modeSuffix;
+
+    const trendValueFmt = v => fmtValue(metric, v) + " " + unitLabel(metric);
+    const trendSetter = view === "historical" ? trendGlobalMaxSetter(metric) : trendGlobalMaxSetter(metric, ly);
+    trendScaleNoteText = trendSetter
+      ? "Under fixed scale, this chart's axis is currently set by " + describeSetter(trendSetter, trendValueFmt) + "."
+      : "";
 
     if (view === "historical") {
       buildTrendChartHistorical(container, years, metric);
@@ -1424,6 +1539,22 @@
     document.getElementById("sector-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly) + horizonTitleSuffix();
 
+    const valueFmt = v => fmtValue(metric, v) + " " + unitLabel(metric);
+    if (view === "historical") {
+      const range = sectorTierRangeSetter(regionKey, metric);
+      const topDesc = range && describeSetter(range.maxSetter, valueFmt);
+      const bottomDesc = range && describeSetter(range.minSetter, valueFmt);
+      sectorScaleNoteText = topDesc
+        ? "Under fixed scale, this chart's axis currently reaches up to " + topDesc +
+          (bottomDesc ? ", and down to " + bottomDesc + "." : ".")
+        : "";
+    } else {
+      const setter = sectorTierMaxSetter(regionKey, metric, currentDetail, ly);
+      sectorScaleNoteText = setter
+        ? "Under fixed scale, this chart's axis is currently set by " + describeSetter(setter, valueFmt) + "."
+        : "";
+    }
+
     if (view === "historical") {
       buildSectorChartHistorical(container, regionKey, metric);
     } else {
@@ -1645,6 +1776,12 @@
     document.getElementById("gas-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " + (view === "historical" ? (DATA.meta.years[0] + "–" + ly) : ly) + horizonTitleSuffix();
 
+    const valueFmt = v => fmtValue(metric, v) + " " + unitLabel(metric);
+    const setter = view === "historical" ? gasTierMaxSetter(regionKey, metric) : gasTierMaxSetter(regionKey, metric, ly);
+    gasScaleNoteText = setter
+      ? "Under fixed scale, this chart's axis is currently set by " + describeSetter(setter, valueFmt) + "."
+      : "";
+
     if (view === "historical") {
       buildGasChartHistorical(container, regionKey, metric);
     } else {
@@ -1847,6 +1984,12 @@
       REGION_LABEL[regionKey] + " " + metricLabel + ", " +
       (view === "historical" ? (years[0] + "–" + gy) : gy);
     updateGenerationNote(regionKey, gy, metric, unit);
+
+    const genValueFmt = v => fmtGenerationMetric(metric, unit, v) + " " + generationUnitLabel(metric, unit);
+    const genSetter = view === "historical" ? generationTierMaxSetter(regionKey, metric) : generationTierMaxSetter(regionKey, metric, gy);
+    generationScaleNoteText = genSetter
+      ? "Under fixed scale, this chart's axis is currently set by " + describeSetter(genSetter, genValueFmt) + "."
+      : "";
 
     if (view === "historical") {
       buildGenerationChartHistorical(container, regionKey, years, metric, unit);
@@ -2064,6 +2207,14 @@
     document.getElementById("consumption-chart-title").textContent =
       REGION_LABEL[regionKey] + " " + metricLabel + ", " +
       (view === "historical" ? (years[0] + "–" + cy) : cy);
+
+    const conValueFmt = v => fmtConsumptionMetric(metric, unit, v) + " " + consumptionUnitLabel(metric, unit);
+    const conSetter = view === "historical"
+      ? consumptionTierMaxSetter(regionKey, metric, detail, axis)
+      : consumptionTierMaxSetter(regionKey, metric, detail, axis, cy);
+    consumptionScaleNoteText = conSetter
+      ? "Under fixed scale, this chart's axis is currently set by " + describeSetter(conSetter, conValueFmt) + "."
+      : "";
 
     if (view === "historical") {
       buildConsumptionChartHistorical(container, regionKey, years, detail, metric, unit, axis);
@@ -2316,6 +2467,7 @@
     },
     "trend-chart": {
       title: "Total emissions over time",
+      dynamicIntro: () => trendScaleNoteText,
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
         "This chart plots the selected region in its hierarchy context, not a fixed set of regions: it always shows Hampshire and the Solent, plus the selected region's own line, plus (for a historic district or current unitary) the proposed unitary it rolls up to — e.g. picking Eastleigh shows Eastleigh, South West Hampshire and Hampshire and the Solent. Tick \"Compare all constituents\" to switch instead to every sibling at the nearest useful level — all historic districts within the selected unitary, or all unitaries within Hampshire and the Solent.",
@@ -2328,6 +2480,7 @@
     },
     "sector-chart": {
       title: "Emissions by sector",
+      dynamicIntro: () => sectorScaleNoteText,
       body: [
         "Territorial emissions split by the eight DESNZ sectors (Agriculture, Commercial, Domestic, Industry, LULUCF, Public Sector, Transport, Waste), each summed across their sub-sectors and gases.",
         "Use the control panel above to switch between totals and per-person figures, and between a latest-year snapshot and each sector's trend since 2005. In the latest-year view, tick “Show sub-sector detail” to break each sector down further (e.g. Transport into road, rail and other) — sub-sector figures are only published for the latest year, so this detail isn't available in the historical trend view.",
@@ -2338,6 +2491,7 @@
     },
     "gas-chart": {
       title: "Emissions by greenhouse gas",
+      dynamicIntro: () => gasScaleNoteText,
       body: [
         "The same territorial emissions as the sector chart above, split instead by the three gases DESNZ publishes at local authority level: CO2, methane (CH4) and nitrous oxide (N2O) — each already converted to CO2e using the active time horizon (see the Time horizon toggle above).",
         "CO2 is almost entirely energy use — heating, electricity, vehicle fuel. CH4 is mostly agriculture (livestock) and waste (landfill). N2O is mostly agriculture (fertilised soils) and manure management. This split is a useful cross-check on the sector chart: two areas can have the same total emissions for very different reasons — one dominated by CO2 from transport and heating, another by CH4 from farming — and this chart is what makes that visible.",
@@ -2347,7 +2501,7 @@
     },
     "generation-chart": {
       title: "Renewable electricity generation by technology",
-      dynamicIntro: () => generationNoteText,
+      dynamicIntro: () => [generationNoteText, generationScaleNoteText],
       body: [
         "Renewable electricity generated within the area's boundary, split by technology: Solar (photovoltaics), Wind (onshore + offshore), Hydro, Bioenergy & waste (anaerobic digestion, sewage gas, landfill gas, municipal solid waste, animal and plant biomass, cofiring), and Other (wave/tidal, plus a small residual — see the note further down).",
         "This is generation, not consumption — how much renewable electricity is physically produced within the area, regardless of where it's ultimately used. The figure above compares this to local electricity demand (from DESNZ's separate energy consumption statistics) — but the two aren't directly connected: Great Britain runs on one shared national grid, so electricity generated by a local wind farm or solar array isn't routed to local homes and businesses, it's exported to the grid and pooled with generation from everywhere else, while local demand draws from that same shared pool. A ratio near or above 100% means an area generates roughly as much renewable electricity as it consumes in total, not that it's disconnected from the grid or self-sufficient in practice.",
@@ -2361,6 +2515,7 @@
     },
     "consumption-chart": {
       title: "Energy consumption by fuel",
+      dynamicIntro: () => consumptionScaleNoteText,
       body: [
         "Total final energy consumed within the area's boundary, covering every fuel — not just electricity: heating, cooking and industrial fuels, and road transport fuel. This is a different DESNZ dataset from the renewable generation chart above, and measures something different too: consumption of all fuel types, rather than local electricity generation. DESNZ publishes this dataset in ktoe (kilotonnes of oil equivalent) — the energy unit toggle just above lets you view it instead in the same GWh/kWh-per-person units as the generation chart; see that toggle's own \"i\" button for details.",
         "\"By fuel type\" (the default) groups everything into two: Fossil fuels and Green energy — tick \"Show all fuel types\" to break each down into its constituent parts (hovering a bar shows the same breakdown, without needing to tick the box). \"By sector\" switches to a different split of the same total: Domestic, Transport, and Industrial, Commercial and other — useful for telling how much of an area's consumption is households and cars versus workplaces and industry.",
@@ -2407,9 +2562,13 @@
     title.textContent = info.title;
     clearNode(body);
     if (info.dynamicIntro) {
-      const introEl = document.createElement("p");
-      introEl.textContent = info.dynamicIntro();
-      body.appendChild(introEl);
+      const intro = info.dynamicIntro();
+      const paragraphs = Array.isArray(intro) ? intro : [intro];
+      paragraphs.filter(Boolean).forEach(text => {
+        const introEl = document.createElement("p");
+        introEl.textContent = text;
+        body.appendChild(introEl);
+      });
     }
     (info.body || []).forEach(p => {
       const pEl = document.createElement("p");

@@ -686,6 +686,47 @@ test("fixed scale mode's sector chart historical trend uses the shared range's a
     `rendered axis min ${renderedAxisMin} t/person, expected ~${(expectedMin * 1.08).toFixed(2)} (min x 1.08 headroom) — not the symmetric -${(expectedMax * 1.08).toFixed(2)}`);
 });
 
+test("each fixed-scale chart's info dialog states which control combination currently sets its axis", async () => {
+  // New Forest's own 2007 Industry sector sets the sector chart's historical-trend ceiling — but
+  // via its *20-year* GWP figure, not its 100-year one (its Industry sector has a large enough
+  // methane component that GWP20 pushes it above every other region/year/sector/horizon
+  // combination) — see sectorTierRange in app.js. The info dialog should say so explicitly, not
+  // just render a passing axis: this is the exact confusion a user hit when the axis was higher
+  // than New Forest's own 100-year peak while looking at the default 100-year view.
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  function infoIntro(key) {
+    fireClick(window, doc.querySelector(`[data-info="${key}"]`));
+    const text = doc.querySelector("#modal-body p").textContent;
+    doc.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape" }));
+    return text;
+  }
+
+  const sectorIntro = infoIntro("sector-chart");
+  assert.match(sectorIntro, /New Forest/);
+  assert.match(sectorIntro, /Industry/);
+  assert.match(sectorIntro, /2007/);
+  assert.match(sectorIntro, /20-year GWP/);
+
+  // Gas and trend charts should likewise name a real (region, year[, horizon]) combination, not
+  // render an empty dynamicIntro.
+  assert.match(infoIntro("gas-chart"), /\b\d{4}\b/);
+  assert.match(infoIntro("trend-chart"), /\b\d{4}\b/);
+
+  // The latest-year view uses a different fixed-scale scope (sectorTierMax's symmetric magnitude,
+  // scanning only the latest year) from the historical view's range (sectorTierRange, scanning
+  // full history) — so its dialog text should read differently, not just repeat the same sentence.
+  fireClick(window, doc.querySelector('[data-view="latest"]'));
+  const latestIntro = infoIntro("sector-chart");
+  assert.notEqual(latestIntro, sectorIntro,
+    `expected the latest-year view's setter sentence to differ from the historical view's, got the same text: ${latestIntro}`);
+});
+
 test("sector chart's sub-sector detail view scales fixed axis to the shared latest-year sub-sector max, not full history", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;
