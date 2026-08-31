@@ -436,19 +436,19 @@ test("fixed scale mode also applies to the historical trend line (consumption ch
   fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
   fireClick(window, doc.querySelector('[data-energy-unit="toe"]')); // native ktoe/toe-per-person units, to compare directly against raw sector_ktoe
 
-  // Independently recompute the expected tier-wide axis max: the largest per-capita value of any
-  // sector, in any year, for any historic district — the same scope consumptionTierMax uses in
-  // app.js — then compare against the historical chart's actual rendered axis. The y-axis max
-  // itself isn't exposed in the DOM, so read it back off the topmost gridline label instead.
-  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
-  let expectedTierMax = 0;
-  for (const r of historicDistricts) {
+  // Independently recompute the expected axis max: the largest per-capita value of any sector, in
+  // any year, for any region — per-capita figures now share one scale across all 19 regions, not
+  // just New Forest's own tier (see tierScopeKey in app.js) — then compare against the historical
+  // chart's actual rendered axis. The y-axis max itself isn't exposed in the DOM, so read it back
+  // off the topmost gridline label instead.
+  let expectedMax = 0;
+  for (const r of DATA.meta.region_index.map((x) => x.key)) {
     for (const year of Object.keys(ENERGY_DATA.regions[r].consumption)) {
       const sectors = ENERGY_DATA.regions[r].consumption[year].sector_ktoe;
       const pop = DATA.regions[r].years[year].population_thousands;
       for (const v of Object.values(sectors)) {
         const perCapita = v / pop;
-        if (perCapita > expectedTierMax) expectedTierMax = perCapita;
+        if (perCapita > expectedMax) expectedMax = perCapita;
       }
     }
   }
@@ -460,10 +460,10 @@ test("fixed scale mode also applies to the historical trend line (consumption ch
     .map((t) => Number(t.replace(/,/g, "")));
   const renderedAxisMax = Math.max(...gridlineValues);
 
-  // New Forest's own oil-refining-driven peak should dominate this tier's max, so this is also an
-  // implicit check that New Forest itself is the region setting the shared scale here.
-  assert.ok(Math.abs(renderedAxisMax - expectedTierMax * 1.08) < 1,
-    `rendered axis max ${renderedAxisMax} toe/person, expected ~${(expectedTierMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+  // New Forest's own oil-refining-driven peak should dominate even this site-wide max, so this is
+  // also an implicit check that New Forest itself is the region setting the shared scale here.
+  assert.ok(Math.abs(renderedAxisMax - expectedMax * 1.08) < 1,
+    `rendered axis max ${renderedAxisMax} toe/person, expected ~${(expectedMax * 1.08).toFixed(2)} (max x 1.08 headroom)`);
 });
 
 test("fixed scale mode also gives regions in the same tier the same px-per-unit axis on the gas chart", async () => {
@@ -503,6 +503,67 @@ test("fixed scale mode also gives regions in the same tier the same px-per-unit 
     "expected auto scale to render a visibly different bar width than fixed scale for Gosport");
 });
 
+test("per-capita fixed scale gives regions in *different* tiers the same px-per-unit axis (gas chart) — total figures don't", async () => {
+  // Gosport is a historic district, Portsmouth a current unitary — different tiers, so total
+  // figures keep separate scales for them (population/area differ hugely), but per-capita figures
+  // now share one scale across every region regardless of tier (see tierScopeKey in app.js), since
+  // per-capita values already divide out exactly the difference tiers exist to separate.
+  const dom = await loadApp({ region: "gosport" });
+  const { window } = dom;
+  const { DATA } = getData(window);
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+
+  const ly = DATA.meta.years[DATA.meta.years.length - 1];
+  const perCapita = (regionKey) => {
+    const yd = DATA.regions[regionKey].years[ly];
+    return yd.gases_kt_co2e.CO2 / yd.population_thousands;
+  };
+
+  const gosportWidths = barWidthsByLabel(window, "gas-chart");
+  doc.getElementById("region-select").value = "portsmouth";
+  fireChange(window, doc.getElementById("region-select"));
+  const portsmouthWidths = barWidthsByLabel(window, "gas-chart");
+
+  const gosportPxPerUnit = gosportWidths.CO2 / perCapita("gosport");
+  const portsmouthPxPerUnit = portsmouthWidths.CO2 / perCapita("portsmouth");
+  assert.ok(Math.abs(gosportPxPerUnit - portsmouthPxPerUnit) < 0.01,
+    `expected the same px/unit scale across tiers for per-capita, got Gosport=${gosportPxPerUnit} vs Portsmouth=${portsmouthPxPerUnit}`);
+});
+
+test("fixed scale holds the axis steady across the 100-year/20-year GWP horizon toggle, for a single region", async () => {
+  // Unlike region tier (a population artifact per-capita washes out), a GWP horizon switch is a
+  // real change to the underlying numbers — but the fixed-scale range now spans both horizons at
+  // once (see withHorizon in app.js), so a region's own gas and sector bars/lines shouldn't resize
+  // just from flipping that toggle. CO2's own value is unaffected by the horizon (GWP20/GWP100 both
+  // weight it 1x), so its bar width is a direct read of whether the underlying axis moved.
+  const dom = await loadApp({ region: "new-forest" });
+  const { window } = dom;
+  const doc = window.document;
+
+  fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
+  const gwp100Widths = barWidthsByLabel(window, "gas-chart");
+
+  fireClick(window, doc.querySelector('[data-horizon="gwp20"]'));
+  const gwp20Widths = barWidthsByLabel(window, "gas-chart");
+
+  assert.equal(gwp100Widths.CO2, gwp20Widths.CO2,
+    `CO2 bar width shouldn't change between horizons under fixed scale, got ${gwp100Widths.CO2}px (100-year) vs ${gwp20Widths.CO2}px (20-year)`);
+
+  // Sector chart's historical-trend axis ticks are also exposed in the DOM (unlike the gas chart's
+  // axis) — check those stay put too, covering sectorTierRange's own horizon merge.
+  fireClick(window, doc.querySelector('[data-view="historical"]'));
+  fireClick(window, doc.querySelector('[data-horizon="gwp100"]'));
+  const tickValues = () => Array.from(doc.querySelectorAll('#sector-chart svg text[text-anchor="end"]'))
+    .map((t) => Number(t.textContent.replace(/,/g, "")));
+  const gwp100Max = Math.max(...tickValues());
+  fireClick(window, doc.querySelector('[data-horizon="gwp20"]'));
+  const gwp20Max = Math.max(...tickValues());
+  assert.equal(gwp100Max, gwp20Max,
+    `sector chart's historical-trend axis max shouldn't change between horizons under fixed scale, got ${gwp100Max} (100-year) vs ${gwp20Max} (20-year)`);
+});
+
 test("gas chart's fixed-scale latest view scans only the latest year, not full history: Hampshire and the Solent's own largest gas reaches full bar width", async () => {
   // Hampshire and the Solent is the only region in its own tier ("aggregate"), so its fixed-scale
   // max used to come from scanning *its own* history back to 2005 — a genuine regression: local
@@ -512,6 +573,11 @@ test("gas chart's fixed-scale latest view scans only the latest year, not full h
   const { window } = dom;
   const { DATA } = getData(window);
   const doc = window.document;
+
+  // Totals metric: per-capita fixed scale now spans every region (see tierScopeKey in app.js —
+  // per-person values wash out the population difference tiers exist for), so the aggregate's own
+  // tier-of-one triviality this test relies on only holds for totals.
+  fireClick(window, doc.querySelector('[data-metric="total"]'));
 
   const svg = doc.querySelector("#gas-chart svg");
   const vb = svg.getAttribute("viewBox").split(" ").map(Number);
@@ -532,7 +598,7 @@ test("gas chart's fixed-scale latest view scans only the latest year, not full h
     `test assumption broken: expected ${ly}'s CO2 (${latestCO2}) to be below the historical peak (${historicalPeakCO2}) — otherwise this test can't tell latest-year scoping apart from an all-years scan`);
 });
 
-test("fixed scale mode's sector chart latest-year bars use a symmetric tier-wide magnitude (diverging LULUCF-aware)", async () => {
+test("fixed scale mode's sector chart latest-year bars use a symmetric shared-scale magnitude (diverging LULUCF-aware)", async () => {
   const dom = await loadApp({ region: "new-forest" });
   const { window } = dom;
   const { DATA } = getData(window);
@@ -540,27 +606,28 @@ test("fixed scale mode's sector chart latest-year bars use a symmetric tier-wide
 
   fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
 
-  // Independently recompute the expected tier-wide magnitude: the largest |value| of any sector,
-  // in any year, for any historic district — mirrors sectorTierMax in app.js, including LULUCF's
-  // negative values (Math.abs, not a plain max). The latest-year bar chart is symmetric either
-  // side of zero, since a diverging bar's left/right length needs one consistent scale.
-  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
-  let expectedTierMax = 0;
-  for (const r of historicDistricts) {
+  // Independently recompute the expected magnitude: the largest |value| of any sector, in any
+  // year, for any region, under either GWP horizon — mirrors sectorTierMax in app.js (per-capita
+  // figures share one scale across all 19 regions, not just New Forest's own tier, and across both
+  // horizons at once — see tierScopeKey/withHorizon), including LULUCF's negative values (Math.abs,
+  // not a plain max). The latest-year bar chart is symmetric either side of zero, since a diverging
+  // bar's left/right length needs one consistent scale.
+  let expectedMax = 0;
+  for (const r of DATA.meta.region_index.map((x) => x.key)) {
     for (const year of DATA.meta.years) {
       const yd = DATA.regions[r].years[year];
-      for (const v of Object.values(yd.sectors_kt_co2e)) {
-        const abs = Math.abs(v / yd.population_thousands);
-        if (abs > expectedTierMax) expectedTierMax = abs;
+      for (const sectors of [yd.sectors_kt_co2e, yd.gwp20.sectors_kt_co2e]) {
+        for (const v of Object.values(sectors)) {
+          const abs = Math.abs(v / yd.population_thousands);
+          if (abs > expectedMax) expectedMax = abs;
+        }
       }
     }
   }
 
   // The zero baseline sits at the SVG's horizontal midpoint (zeroX = M.left + plotW/2); a bar's
-  // width as a fraction of the plot half-width, times expectedTierMax, gives back the axis scale
-  // implied by that bar — done for New Forest's own largest-magnitude row, which should equal
-  // expectedTierMax exactly since New Forest itself sets this tier's scale (Industry/Transport are
-  // its largest sectors).
+  // width as a fraction of the plot half-width, times expectedMax, gives back the axis scale
+  // implied by that bar, capped at the plot's own half-width.
   const svg = doc.querySelector("#sector-chart svg");
   const vb = svg.getAttribute("viewBox").split(" ").map(Number);
   const M = { left: 130, right: 70 };
@@ -569,10 +636,10 @@ test("fixed scale mode's sector chart latest-year bars use a symmetric tier-wide
   const widestBarWidth = Math.max(...rects.map((r) => Number(r.getAttribute("width"))));
   assert.ok(widestBarWidth <= plotHalfWidth + 1,
     `widest sector bar (${widestBarWidth}px) shouldn't exceed the fixed-scale plot half-width (${plotHalfWidth}px)`);
-  assert.ok(expectedTierMax > 0, "sanity check: expected some non-zero sector value in this tier");
+  assert.ok(expectedMax > 0, "sanity check: expected some non-zero sector value somewhere");
 });
 
-test("fixed scale mode's sector chart historical trend uses the tier's actual positive/negative extents independently, not a symmetric magnitude", async () => {
+test("fixed scale mode's sector chart historical trend uses the shared range's actual positive/negative extents independently, not a symmetric magnitude", async () => {
   const dom = await loadApp({ region: "new-forest" });
   const { window } = dom;
   const { DATA } = getData(window);
@@ -581,24 +648,29 @@ test("fixed scale mode's sector chart historical trend uses the tier's actual po
   fireClick(window, doc.querySelector('[data-view="historical"]'));
   fireClick(window, doc.querySelector('[data-metric="per_capita"]'));
 
-  // Independently recompute the expected tier-wide max and min (not abs) — mirrors
-  // sectorTierRange in app.js. LULUCF's actual negative range is far smaller in magnitude than
-  // some other sector's positive peak elsewhere in the tier, so these two extents genuinely
-  // differ — the regression this test guards is the axis wasting space forcing them to match.
-  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
+  // Independently recompute the expected max and min (not abs) — mirrors sectorTierRange in
+  // app.js. Per-capita figures now share one range across *every* region, not just New Forest's
+  // own tier (historic districts — see tierScopeKey), and that range spans both GWP horizons at
+  // once (see withHorizon in app.js), not just the currently-selected one, so both must be scanned
+  // here too even though the UI itself is left on the default 100-year view. LULUCF's actual
+  // negative range is far smaller in magnitude than some other sector's positive peak, so these
+  // two extents genuinely differ — the regression this test guards is the axis wasting space
+  // forcing them to match.
   let expectedMax = 0, expectedMin = 0;
-  for (const r of historicDistricts) {
+  for (const r of DATA.meta.region_index.map((x) => x.key)) {
     for (const year of DATA.meta.years) {
       const yd = DATA.regions[r].years[year];
-      for (const v of Object.values(yd.sectors_kt_co2e)) {
-        const perCapita = v / yd.population_thousands;
-        if (perCapita > expectedMax) expectedMax = perCapita;
-        if (perCapita < expectedMin) expectedMin = perCapita;
+      for (const sectors of [yd.sectors_kt_co2e, yd.gwp20.sectors_kt_co2e]) {
+        for (const v of Object.values(sectors)) {
+          const perCapita = v / yd.population_thousands;
+          if (perCapita > expectedMax) expectedMax = perCapita;
+          if (perCapita < expectedMin) expectedMin = perCapita;
+        }
       }
     }
   }
   assert.ok(expectedMax > Math.abs(expectedMin) * 2,
-    `test assumption broken: expected the tier's positive peak (${expectedMax}) to clearly exceed its negative magnitude (${expectedMin}) — otherwise this test can't distinguish symmetric from asymmetric axis sizing`);
+    `test assumption broken: expected the positive peak (${expectedMax}) to clearly exceed the negative magnitude (${expectedMin}) — otherwise this test can't distinguish symmetric from asymmetric axis sizing`);
 
   // Historical sector chart has no row labels (only axis ticks + a legend), so text-anchor="end"
   // cleanly isolates the y-axis value labels from the x-axis year labels (text-anchor="middle").
@@ -609,12 +681,12 @@ test("fixed scale mode's sector chart historical trend uses the tier's actual po
   const renderedAxisMin = Math.min(...tickValues);
 
   assert.ok(Math.abs(renderedAxisMax - expectedMax * 1.08) < 0.5,
-    `rendered axis max ${renderedAxisMax} t/person, expected ~${(expectedMax * 1.08).toFixed(2)} (tier max x 1.08 headroom)`);
+    `rendered axis max ${renderedAxisMax} t/person, expected ~${(expectedMax * 1.08).toFixed(2)} (max x 1.08 headroom)`);
   assert.ok(Math.abs(renderedAxisMin - expectedMin * 1.08) < 0.5,
-    `rendered axis min ${renderedAxisMin} t/person, expected ~${(expectedMin * 1.08).toFixed(2)} (tier min x 1.08 headroom) — not the symmetric -${(expectedMax * 1.08).toFixed(2)}`);
+    `rendered axis min ${renderedAxisMin} t/person, expected ~${(expectedMin * 1.08).toFixed(2)} (min x 1.08 headroom) — not the symmetric -${(expectedMax * 1.08).toFixed(2)}`);
 });
 
-test("sector chart's sub-sector detail view scales fixed axis to the tier's latest-year sub-sector max, not full history", async () => {
+test("sector chart's sub-sector detail view scales fixed axis to the shared latest-year sub-sector max, not full history", async () => {
   const dom = await loadApp({ region: "winchester" });
   const { window } = dom;
   const { DATA } = getData(window);
@@ -622,16 +694,19 @@ test("sector chart's sub-sector detail view scales fixed axis to the tier's late
 
   fireClick(window, doc.getElementById("sector-detail-toggle"));
 
+  // Per-capita figures share one scale across all 19 regions and both GWP horizons at once (see
+  // tierScopeKey/withHorizon in app.js), not just Winchester's own tier and the active horizon.
   const ly = DATA.meta.years[DATA.meta.years.length - 1];
-  const historicDistricts = DATA.meta.region_index.filter((r) => r.group === "historic-district").map((r) => r.key);
-  let expectedTierMax = 0;
-  for (const r of historicDistricts) {
-    const detail = DATA.subsector_detail_latest_year[r] || {};
+  let expectedMax = 0;
+  for (const r of DATA.meta.region_index.map((x) => x.key)) {
     const pop = DATA.regions[r].years[ly].population_thousands;
-    for (const subs of Object.values(detail)) {
-      for (const v of Object.values(subs)) {
-        const abs = Math.abs(v / pop);
-        if (abs > expectedTierMax) expectedTierMax = abs;
+    for (const detailRoot of [DATA.subsector_detail_latest_year, DATA.subsector_detail_latest_year.gwp20]) {
+      const detail = detailRoot[r] || {};
+      for (const subs of Object.values(detail)) {
+        for (const v of Object.values(subs)) {
+          const abs = Math.abs(v / pop);
+          if (abs > expectedMax) expectedMax = abs;
+        }
       }
     }
   }
@@ -642,13 +717,13 @@ test("sector chart's sub-sector detail view scales fixed axis to the tier's late
   const rects = Array.from(svg.querySelectorAll("rect.sector-bar"));
   const widestBarWidth = Math.max(...rects.map((r) => Number(r.getAttribute("width"))));
 
-  // The widest sub-sector bar shouldn't exceed what the tier-wide max would allow — a looser
-  // check than the exact-pixel comparisons above, since sub-sector detail can't scan full history
-  // the way the top-level view does, but it should still never let one region's own sub-sector
-  // exceed the shared axis.
+  // The widest sub-sector bar shouldn't exceed what the shared max would allow — a looser check
+  // than the exact-pixel comparisons above, since sub-sector detail can't scan full history the
+  // way the top-level view does, but it should still never let one region's own sub-sector exceed
+  // the shared axis.
   assert.ok(widestBarWidth <= plotHalfWidth + 1,
     `widest sub-sector bar (${widestBarWidth}px) shouldn't exceed the fixed-scale plot half-width (${plotHalfWidth}px)`);
-  assert.ok(expectedTierMax > 0, "sanity check: expected some non-zero sub-sector detail in this tier");
+  assert.ok(expectedMax > 0, "sanity check: expected some non-zero sub-sector detail somewhere");
 });
 
 test("trend chart's fixed scale is one site-wide maximum: Hampshire and the Solent's line doesn't change size when switching between two regions that share a parent", async () => {
@@ -677,11 +752,14 @@ test("trend chart's fixed scale is one site-wide maximum: Hampshire and the Sole
   assert.equal(newForestAxisMax, winchesterAxisMax,
     `fixed scale should give New Forest (${newForestAxisMax}) and Winchester (${winchesterAxisMax}) contexts the same axis, since both share Mid-Hampshire as parent`);
 
-  // Independently recompute the expected global max — mirrors trendGlobalMax in app.js.
+  // Independently recompute the expected global max — mirrors trendGlobalMax in app.js, which now
+  // scans both GWP horizons (see withHorizon in app.js) rather than just the currently-selected
+  // one, so a region's own 100/20-year toggle doesn't rescale this chart either.
   let expectedMax = 0;
   for (const r of DATA.meta.region_index) {
     for (const year of DATA.meta.years) {
-      const perCapita = DATA.regions[r.key].years[year].per_capita_t_co2e;
+      const yd = DATA.regions[r.key].years[year];
+      const perCapita = Math.max(yd.per_capita_t_co2e, yd.gwp20.per_capita_t_co2e);
       if (perCapita > expectedMax) expectedMax = perCapita;
     }
   }

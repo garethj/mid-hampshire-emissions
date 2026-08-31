@@ -108,6 +108,19 @@
     return REGIONS.filter(x => x.group === r.group).map(x => x.key);
   }
 
+  // Tier grouping exists only because *totals* scale with a region's population/area — a district's
+  // total is naturally smaller than a unitary's, so fixed scale keeps them apart to avoid squashing
+  // the smaller one. Per-person figures already divide that difference out, so there's no reason a
+  // district's per-person value and a unitary's shouldn't share one axis — these two helpers widen
+  // the comparison set to every region on a per-person metric, and stay tier-scoped for totals.
+  function tierScopeKey(regionKey, metric) {
+    if (metric === "per_capita") return "all";
+    return REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
+  }
+  function tierScopeRegions(regionKey, metric) {
+    return metric === "per_capita" ? REGIONS.map(r => r.key) : regionsInTier(regionKey);
+  }
+
   // Display heading + explicit order for the region select's <optgroup>s. "aggregate"
   // (Hampshire and the Solent) isn't listed — it renders as a loose top-level option, not inside
   // a group, since it's the one region that isn't a constituent of anything else on this site.
@@ -607,6 +620,20 @@
     return currentHorizon === "gwp20" ? Object.assign({}, yd, yd.gwp20) : yd;
   }
 
+  // Runs fn() under a specific GWP horizon, then restores whatever currentHorizon was before —
+  // used by the sector/gas tier-max scans below so they can find the true max across *both*
+  // horizons (see those functions for why) without permanently switching the horizon everyone
+  // else is reading.
+  function withHorizon(horizon, fn) {
+    const prev = currentHorizon;
+    currentHorizon = horizon;
+    try {
+      return fn();
+    } finally {
+      currentHorizon = prev;
+    }
+  }
+
   function regionSeriesTotals(regionKey) {
     return DATA.meta.years.map(y => yearData(regionKey, y).total_kt_co2e);
   }
@@ -778,12 +805,11 @@
   // memoized per distinct (tier, metric, onlyYear, ...) combination actually asked for.
   const generationTierMaxCache = {};
   function generationTierMax(regionKey, metric, onlyYear) {
-    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
-    const cacheKey = [tier, metric, onlyYear || "all"].join("|");
+    const cacheKey = [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
     if (generationTierMaxCache[cacheKey] !== undefined) return generationTierMaxCache[cacheKey];
     const years = onlyYear ? [onlyYear] : energyGenerationYears();
     let max = 0;
-    for (const r of regionsInTier(regionKey)) {
+    for (const r of tierScopeRegions(regionKey, metric)) {
       for (const year of years) {
         const gen = energyGeneration(r, year);
         if (!gen) continue;
@@ -798,13 +824,12 @@
 
   const consumptionTierMaxCache = {};
   function consumptionTierMax(regionKey, metric, detail, axis, onlyYear) {
-    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
-    const cacheKey = [tier, metric, detail, axis, onlyYear || "all"].join("|");
+    const cacheKey = [tierScopeKey(regionKey, metric), metric, detail, axis, onlyYear || "all"].join("|");
     if (consumptionTierMaxCache[cacheKey] !== undefined) return consumptionTierMaxCache[cacheKey];
     const cats = consumptionCategories(detail, axis);
     const years = onlyYear ? [onlyYear] : energyConsumptionYears();
     let max = 0;
-    for (const r of regionsInTier(regionKey)) {
+    for (const r of tierScopeRegions(regionKey, metric)) {
       for (const year of years) {
         if (!energyConsumption(r, year)) continue;
         for (const c of cats) {
@@ -819,36 +844,43 @@
   // Sector chart's bars diverge from a centre zero line (LULUCF usually runs negative), so its
   // fixed-scale maximum is the largest *magnitude* seen either side of zero, not a plain max — the
   // same idea as generationTierMax/consumptionTierMax above (including the onlyYear parameter for
-  // the same latest-view-vs-historical-view reason), but keyed on currentHorizon too
-  // (sectorMetricValue reweights by GWP20 when active, so a GWP20 tier max can be larger than the
-  // GWP100 one for the same tier). Sub-sector detail only exists for the latest year
+  // the same latest-view-vs-historical-view reason). Also scans *both* GWP horizons rather than
+  // just the active one: unlike region tier (a population artifact per-person washes out — see
+  // tierScopeKey), a horizon switch is a real change to the underlying numbers, but sharing one
+  // range across both means flipping the 100/20-year toggle for a single region doesn't rescale
+  // the axis, making that comparison legible too — auto scale is still there for whichever horizon
+  // ends up looking compressed. Sub-sector detail only exists for the latest year
   // (DATA.subsector_detail_latest_year has no history) regardless of onlyYear, since there's
   // nothing else to scan.
   const sectorTierMaxCache = {};
   function sectorTierMax(regionKey, metric, detail, onlyYear) {
-    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
-    const cacheKey = [tier, metric, detail, currentHorizon, onlyYear || "all"].join("|");
+    const cacheKey = [tierScopeKey(regionKey, metric), metric, detail, onlyYear || "all"].join("|");
     if (sectorTierMaxCache[cacheKey] !== undefined) return sectorTierMaxCache[cacheKey];
+    const regions = tierScopeRegions(regionKey, metric);
     let max = 0;
-    if (detail) {
-      const ly = latestYear();
-      for (const r of regionsInTier(regionKey)) {
-        for (const sector of SECTOR_ORDER) {
-          for (const row of sectorSubrowsFor(r, ly, sector, metric)) {
-            if (Math.abs(row.value) > max) max = Math.abs(row.value);
+    for (const horizon of ["gwp100", "gwp20"]) {
+      withHorizon(horizon, () => {
+        if (detail) {
+          const ly = latestYear();
+          for (const r of regions) {
+            for (const sector of SECTOR_ORDER) {
+              for (const row of sectorSubrowsFor(r, ly, sector, metric)) {
+                if (Math.abs(row.value) > max) max = Math.abs(row.value);
+              }
+            }
+          }
+        } else {
+          const years = onlyYear ? [onlyYear] : DATA.meta.years;
+          for (const r of regions) {
+            for (const year of years) {
+              for (const sector of SECTOR_ORDER) {
+                const v = Math.abs(sectorMetricValue(r, year, sector, metric));
+                if (v > max) max = v;
+              }
+            }
           }
         }
-      }
-    } else {
-      const years = onlyYear ? [onlyYear] : DATA.meta.years;
-      for (const r of regionsInTier(regionKey)) {
-        for (const year of years) {
-          for (const sector of SECTOR_ORDER) {
-            const v = Math.abs(sectorMetricValue(r, year, sector, metric));
-            if (v > max) max = v;
-          }
-        }
-      }
+      });
     }
     return (sectorTierMaxCache[cacheKey] = max || 1);
   }
@@ -863,38 +895,47 @@
   // every year — no onlyYear parameter needed here.
   const sectorTierRangeCache = {};
   function sectorTierRange(regionKey, metric) {
-    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
-    const cacheKey = [tier, metric, currentHorizon].join("|");
+    const cacheKey = [tierScopeKey(regionKey, metric), metric].join("|");
     if (sectorTierRangeCache[cacheKey] !== undefined) return sectorTierRangeCache[cacheKey];
+    const regions = tierScopeRegions(regionKey, metric);
     let max = 0, min = 0;
-    for (const r of regionsInTier(regionKey)) {
-      for (const year of DATA.meta.years) {
-        for (const sector of SECTOR_ORDER) {
-          const v = sectorMetricValue(r, year, sector, metric);
-          if (v > max) max = v;
-          if (v < min) min = v;
+    for (const horizon of ["gwp100", "gwp20"]) {
+      withHorizon(horizon, () => {
+        for (const r of regions) {
+          for (const year of DATA.meta.years) {
+            for (const sector of SECTOR_ORDER) {
+              const v = sectorMetricValue(r, year, sector, metric);
+              if (v > max) max = v;
+              if (v < min) min = v;
+            }
+          }
         }
-      }
+      });
     }
     return (sectorTierRangeCache[cacheKey] = { max: max || 1, min: min });
   }
 
   // Gases are never negative, so this is a plain max (no divergence to account for) — otherwise
-  // the same idea as sectorTierMax above, including the currentHorizon and onlyYear dependence.
+  // the same idea as sectorTierMax above, including scanning both horizons and the onlyYear
+  // dependence.
   const gasTierMaxCache = {};
   function gasTierMax(regionKey, metric, onlyYear) {
-    const tier = REGION_BY_KEY[regionKey] ? REGION_BY_KEY[regionKey].group : regionKey;
-    const cacheKey = [tier, metric, currentHorizon, onlyYear || "all"].join("|");
+    const cacheKey = [tierScopeKey(regionKey, metric), metric, onlyYear || "all"].join("|");
     if (gasTierMaxCache[cacheKey] !== undefined) return gasTierMaxCache[cacheKey];
+    const regions = tierScopeRegions(regionKey, metric);
     const years = onlyYear ? [onlyYear] : DATA.meta.years;
     let max = 0;
-    for (const r of regionsInTier(regionKey)) {
-      for (const year of years) {
-        for (const g of GAS_ORDER) {
-          const v = gasMetricValue(r, year, g, metric);
-          if (v > max) max = v;
+    for (const horizon of ["gwp100", "gwp20"]) {
+      withHorizon(horizon, () => {
+        for (const r of regions) {
+          for (const year of years) {
+            for (const g of GAS_ORDER) {
+              const v = gasMetricValue(r, year, g, metric);
+              if (v > max) max = v;
+            }
+          }
         }
-      }
+      });
     }
     return (gasTierMaxCache[cacheKey] = max || 1);
   }
@@ -912,15 +953,19 @@
   // itself had changed.
   const trendGlobalMaxCache = {};
   function trendGlobalMax(metric, onlyYear) {
-    const cacheKey = [metric, currentHorizon, onlyYear || "all"].join("|");
+    const cacheKey = [metric, onlyYear || "all"].join("|");
     if (trendGlobalMaxCache[cacheKey] !== undefined) return trendGlobalMaxCache[cacheKey];
     const years = onlyYear ? [onlyYear] : DATA.meta.years;
     let max = 0;
-    for (const r of REGIONS) {
-      for (const year of years) {
-        const v = regionMetricValue(r.key, year, metric);
-        if (v > max) max = v;
-      }
+    for (const horizon of ["gwp100", "gwp20"]) {
+      withHorizon(horizon, () => {
+        for (const r of REGIONS) {
+          for (const year of years) {
+            const v = regionMetricValue(r.key, year, metric);
+            if (v > max) max = v;
+          }
+        }
+      });
     }
     return (trendGlobalMaxCache[cacheKey] = max || 1);
   }
@@ -2262,10 +2307,11 @@
     "scale-mode-toggle": {
       title: "Fixed vs auto scale",
       body: [
-        "Every chart on this site defaults to \"Fixed scale\": one shared axis maximum for every region being compared, rather than each chart resizing itself to whichever region happens to be selected. For the sector, gas, generation and consumption charts that means one scale per tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way); for the trend chart it means one scale across all 19 regions at once, since a single trend chart can show more than one tier together (a district alongside its own unitary and Hampshire and the Solent). Switching the region selector no longer rescales the axis, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
+        "Every chart on this site defaults to \"Fixed scale\": one shared axis maximum for every region being compared, rather than each chart resizing itself to whichever region happens to be selected. For the sector, gas, generation and consumption charts, total figures share one scale per tier (historic districts share one scale, current unitaries another, proposed unitaries another — Hampshire and the Solent has no tier-mates, so it's unaffected either way), since tiers differ hugely in population and area; per-person figures instead share one scale across all 19 regions, since per-person values divide out exactly the population difference tiers exist to separate — a district's and a unitary's per-person figures are directly comparable. The trend chart always uses one scale across all 19 regions, on either metric, since a single trend chart can show more than one tier together (a district alongside its own unitary and Hampshire and the Solent). Switching the region selector no longer rescales the axis, so a real difference in volume stays visible as a difference in bar height or line position, not just a number you'd otherwise have to read closely to notice.",
         "The trade-off: a small area's bar can end up short on a shared scale, which can make its own internal split (which sector, which technology, which fuel) harder to read at a glance. \"Auto scale\" switches back to sizing each chart to its own region's figures, trading that comparability away for a clearer read of one area on its own — useful if you want to see a smaller area's own composition rather than compare it against a much larger neighbour.",
         "The \"Latest year\" and \"Historical trend\" views intentionally use different fixed maxima, rather than sharing one: \"Latest year\" scales to the highest value seen across the comparison set in that one latest year, so a genuine decline since earlier years (UK-wide territorial emissions have fallen substantially since 2005, for example) doesn't leave every current bar looking artificially small against a much higher historical peak. \"Historical trend\" scales to the highest value across the comparison set's *entire* published history, so its line doesn't rescale as you scan across years within that one view. A bar chart and a line chart aren't being compared side by side, so there's no need for the two views to share one number — expect the axis to change when you switch between them; that's by design, not a bug.",
-        "The sector chart's latest-year bars are the one case with a symmetric axis either side of zero (the largest magnitude in either direction, since a diverging bar's left/right length needs one consistent scale to stay comparable) — its historical trend line instead uses the tier's actual highest and lowest values independently, since a line's vertical position isn't a length comparison the same way. The sector chart's sub-sector detail view is a further exception: sub-sector figures are only published for the latest year, so that view's shared maximum only ever scans that one year, regardless of view."
+        "The sector, gas and trend charts' fixed scale also spans both the 100-year and 20-year GWP time horizons at once, rather than each getting its own maximum: unlike region tier, a horizon switch doesn't come from a population difference, but sharing one range means flipping that toggle for a single region doesn't rescale the axis either, so a genuine change in the picture (methane-heavy sectors growing under the 20-year weighting) stays visible as a change in bar or line size rather than a moving axis. If that leaves the 100-year view looking compressed, switch to auto scale.",
+        "The sector chart's latest-year bars are the one case with a symmetric axis either side of zero (the largest magnitude in either direction, since a diverging bar's left/right length needs one consistent scale to stay comparable) — its historical trend line instead uses the comparison set's actual highest and lowest values independently, since a line's vertical position isn't a length comparison the same way. The sector chart's sub-sector detail view is a further exception: sub-sector figures are only published for the latest year, so that view's shared maximum only ever scans that one year, regardless of view."
       ]
     },
     "trend-chart": {
@@ -2273,7 +2319,7 @@
       body: [
         "Territorial greenhouse gas emissions (CO2, CH4 and N2O, combined as CO2e) for each year 2005–2024, summed across all sectors.",
         "This chart plots the selected region in its hierarchy context, not a fixed set of regions: it always shows Hampshire and the Solent, plus the selected region's own line, plus (for a historic district or current unitary) the proposed unitary it rolls up to — e.g. picking Eastleigh shows Eastleigh, South West Hampshire and Hampshire and the Solent. Tick \"Compare all constituents\" to switch instead to every sibling at the nearest useful level — all historic districts within the selected unitary, or all unitaries within Hampshire and the Solent.",
-        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means). The Fixed/Auto scale toggle above the chart applies here too — fixed to one true site-wide maximum, not a per-tier one, since this chart can mix tiers on one screen; see that toggle's own \"i\" button for why.",
+        "Use the control panel above to switch between totals (kt CO2e) and per-person figures (t CO2e per person), between a single latest-year comparison and the full historical trend, and between the 100-year and 20-year GWP time horizons (see the \"i\" button next to Time horizon above for what that means). The Fixed/Auto scale toggle above the chart applies here too — fixed to one true site-wide maximum spanning both GWP horizons, not a per-tier or per-horizon one, since this chart can mix tiers on one screen and the point of fixing the scale is to make a region's own horizon switch legible too; see that toggle's own \"i\" button for why.",
         "Historic districts and current unitaries are the official DESNZ district figures, published directly. Every other region here — the four proposed unitaries and Hampshire and the Solent — is calculated by summing those same DESNZ district figures; none of them is an official published figure.",
         "In the historical trend view, dashed lines extend each region's latest actual figure out to zero at its own net-zero target — a straight-line \"required pathway\" showing the average pace of reduction still needed from here. Winchester's own line targets 2030, its more ambitious district-wide carbon-neutral target from its Carbon Neutrality Action Plan; every other region has no target of its own yet, so its line targets 2050 instead, the Hampshire County Council area target (aligned to the UK Government's own legally-binding 2050 target). This is the simplest honest read of the numbers, not a modelled decarbonisation forecast — real pathways are rarely a straight line.",
         "Source: DESNZ UK local authority and regional greenhouse gas emissions statistics, 2005–2024 (published 25 June 2026)."
